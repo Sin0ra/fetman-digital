@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fetman Digital is making a few improvements. Get in touch by email while we prepare the refreshed site.">
+    <title>Fetman Digital | Back Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #092a33;
+            --mint: #24c8bd;
+            --coral: #f2a367;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            background: linear-gradient(90deg, rgba(5, 28, 36, .96), rgba(5, 28, 36, .76)), url("Fetman Digital website background.jpg") center / cover fixed;
+            color: #fff;
+            font-family: "DM Sans", sans-serif;
+        }
+
+        .topbar,
+        .container,
+        .footer {
+            width: min(100% - 48px, 1140px);
+            margin: 0 auto;
+        }
+
+        .topbar {
+            padding-top: 28px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .topbar span {
+            color: var(--coral);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            padding: 72px 0;
+        }
+
+        .container {
+            animation: arrive .7s ease both;
+        }
+
+        .eyebrow {
+            margin: 0 0 18px;
+            color: var(--mint);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 780px;
+            margin: 0;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 64px;
+            line-height: 1.05;
+        }
+
+        h1 span {
+            color: var(--mint);
+        }
+
+        .message {
+            max-width: 540px;
+            margin: 24px 0 32px;
+            color: rgba(255, 255, 255, .76);
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .email-link {
+            display: inline-flex;
+            min-height: 48px;
+            align-items: center;
+            padding: 0 18px;
+            border: 1px solid var(--mint);
+            border-radius: 3px;
+            background: var(--mint);
+            color: var(--ink);
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .2s ease, transform .2s ease;
+        }
+
+        .email-link:hover {
+            background: #54ded4;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            padding: 20px 0 26px;
+            border-top: 1px solid rgba(255, 255, 255, .2);
+            color: rgba(255, 255, 255, .6);
+            font-size: 13px;
+        }
+
+        @keyframes arrive {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                background-image: linear-gradient(rgba(5, 28, 36, .94), rgba(5, 28, 36, .94)), url("Fetman Digital website background.jpg");
+                background-attachment: scroll;
+                background-position: left center;
+            }
+
+            h1 {
+                font-size: 44px;
+            }
+
+            .message {
+                font-size: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">Fetman Digital<span>.</span></header>
+    <main>
+        <div class="container">
+            <p class="eyebrow">A little studio refresh is underway</p>
+            <h1>We’ll be back<br><span>with fresh ideas.</span></h1>
+            <p class="message">We’re making a few improvements to the site. Need help with a project in the meantime? Send us a note and we’ll get back to you.</p>
+            <a class="email-link" href="mailto:info@fetmandigital.com">Email the studio <span aria-hidden="true">&nbsp;↗</span></a>
+        </div>
+    </main>
+    <footer class="footer">Fetman Digital (PTY) LTD · Durban, South Africa</footer>
+</body>
+</html>

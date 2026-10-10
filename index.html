@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetman Digital | Graphic Design & Branding in Durban, South Africa</title>
+<meta name="description" content="Fetman Digital is a graphic design agency in Durban offering logo design, branding, web design, illustration, and creative solutions to grow your business.">
+<meta name="keywords" content="graphic design Durban, logo design, branding, web design, illustration, South Africa creative agency">
+<meta name="author" content="Fetman Digital">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph (Facebook & LinkedIn) -->
+<meta property="og:title" content="Fetman Digital | Graphic Design & Branding in Durban, South Africa">
+<meta property="og:description" content="Creative graphic design, branding, and web solutions for businesses in South Africa.">
+<meta property="og:image" content="https://fetmandigital.com/logo%20img/fetman%20digital%202023%20black.png">
+<meta property="og:url" content="https://fetmandigital.com">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fetman Digital | Graphic Design & Branding in Durban">
+<meta name="twitter:description" content="Creative graphic design, branding, and web solutions for businesses in South Africa.">
+<meta name="twitter:image" content="https://fetmandigital.com/logo%20img/fetman%20digital%202023%20black.png">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css for animation effects -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f1faff;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #034150;
+        }
+
+        .navbar-brand {
+            color: white !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: url('Fetman Digital website background.jpg') no-repeat center center/cover;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 60px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounceIn 2s ease-out;
+        }
+
+        .hero .words {
+            display: inline-block;
+            font-size: 60px;
+            font-weight: 600;
+            color: #1ef3f3;
+            animation: fadeInWord 2s infinite ease-out;
+            white-space: nowrap;
+        }
+
+        /* Hero Text Animation */
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            60% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInWord {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .about,
+        .services {
+            padding: 60px 0;
+            text-align: center;
+            background-color: #e8f4fd;
+        }
+
+        .about h2,
+        .services h2 {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4a90e2;
+        }
+
+        .about p,
+        .services p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .service-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-item img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            background-color: #4a90e2;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Animation for fadeIn */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 767px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .service-item img {
+                width: 80px;
+            }
+        }
+
+        /* About Section */
+        .about {
+            background-color: #f7f9fc;
+            padding: 80px 0;
+            color: #333;
+            text-align: left;
+            position: relative;
+        }
+
+        /* Heading styles */
+        .about h2 {
+            font-size: 42px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4a90e2;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        /* Paragraph text styles */
+        .about p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 20px;
+            animation: fadeInUp 1.5s ease-out;
+        }
+
+        /* Add some padding and border radius to the image */
+        .about-image img {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            transition: transform 0.3s;
+        }
+
+        .about-image img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Make sure the text and image align well in larger screens */
+        .about .row {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .about h2 {
+                font-size: 36px;
+                text-align: center;
+            }
+
+            .about p {
+                font-size: 16px;
+                text-align: center;
+            }
+
+            .about .row {
+                flex-direction: column;
+            }
+
+            .about-image img {
+                margin-top: 20px;
+            }
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* for tablet screens */
+        @media (max-width: 992px) {
+    .hero {
+        height: auto;
+        padding: 80px 20px;
+    }
+    .hero h1, .hero .words {
+        font-size: 40px;
+    }
+}
+     /* for medium screens */
+@media (max-width: 768px) {
+    .navbar-nav {
+        text-align: center;
+    }
+    .hero h1, .hero .words {
+        font-size: 30px;
+    }
+    .about h2, .services h2 {
+        font-size: 28px;
+    }
+    .about p, .services p {
+        font-size: 16px;
+    }
+    .service-item {
+        padding: 15px;
+    }
+}
+    /* for mobile phones */
+    @media (max-width: 480px) {
+    .hero h1, .hero .words {
+        font-size: 24px;
+    }
+    .about p, .services p {
+        font-size: 14px;
+    }
+    
+}
+    </style>
+</head>
+
+<body>
+    <script>
+        if (localStorage.getItem("maintenanceMode") === "true") {
+            window.location.replace("maintenance.html");
+        }
+    </script>
+
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#top">Fetman Digital<span class="brand-mark">.</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero" id="top">
+        <div class="container hero-content">
+            <p class="eyebrow">Independent creative studio · Durban, South Africa</p>
+            <h1>Make your brand<br><span>impossible to ignore.</span></h1>
+            <p class="hero-copy">Thoughtful design for businesses ready to make their next move.</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#portfolio">Explore our work</a>
+                <a class="hero-link" href="#contact">Start a project <span aria-hidden="true">↗</span></a>
+            </div>
+        </div>
+        <a class="hero-scroll" href="#about" aria-label="Scroll to about section">Scroll to discover <span aria-hidden="true">↓</span></a>
+    </section>
+
+ <!-- About Section -->
+<section id="about" class="about">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="animate__animated animate__fadeInUp">About Us</h2>
+                <p class="animate__animated animate__fadeInUp">
+                    Fetman Digital (PTY) LTD is a dynamic and innovative graphic design company based in the vibrant heart of Durban. 
+                    Established with a passion for creativity and a commitment to excellence, we specialize in providing cutting-edge graphic design solutions that elevate brands,
+                    captivate audiences, and drive business growth.
+                </p>
+                <p class="animate__animated animate__fadeInUp">
+                    Our mission is to empower businesses of all sizes by transforming their ideas into visually stunning and impactful designs. We strive to be a trusted partner,
+                    helping our clients communicate their unique stories through compelling graphics, whether it's for digital or print media.
+                </p>
+
+                <!-- Hidden Content -->
+                <div id="more-text" style="display:none;" class="animate__animated animate__fadeInUp">
+                    <p>
+                        Fetman Digital has had the privilege of working with a diverse range of clients, including startups, small and medium-sized enterprises (SMEs), non-profit organizations,
+                        and established corporations across various industries.
+                    </p>
+                </div>
+
+                <!-- Read More Button -->
+                <button id="read-more-btn" class="btn btn-primary" onclick="toggleText()">Read More</button>
+            </div>
+            <div class="col-md-6">
+                <div class="about-image">
+                    <img src="fetman digital 2023 black.png" alt="Fetman Digital studio logo" class="img-fluid animate__animated animate__fadeInRight">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function toggleText() {
+        var moreText = document.getElementById("more-text");
+        var btn = document.getElementById("read-more-btn");
+        if (moreText.style.display === "none") {
+            moreText.style.display = "block";
+            btn.innerHTML = "Read Less";
+        } else {
+            moreText.style.display = "none";
+            btn.innerHTML = "Read More";
+        }
+    }
+</script>
+
+   <!-- Services Section -->
+<!-- Our Services Section -->
+<section id="services" class="services py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5 animate__animated animate__fadeInUp">Our Services</h2>
+
+        <div class="accordion" id="servicesAccordion">
+
+            <!-- Service 1 -->
+            <div class="accordion-item service-card">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        <i class="bi bi-brush-fill me-2 text-primary"></i> Logo & Print Design
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        <p class="price-range">Price Range: R1800 - R9000</p>
+                        <ul class="service-list">
+                            <li>Custom Logo Design</li>
+                            <li>Business Cards</li>
+                            <li>Brochures & Flyers</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="accordion-item service-card">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="bi bi-palette-fill me-2 text-success"></i> Branding & Illustration
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        <p class="price-range">Price Range: R2700 - R10800</p>
+                        <ul class="service-list">
+                            <li>Brand Identity - R2700</li>
+                            <li>Illustration Services - R7200</li>
+                            <li>Typography Design - R10800</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="accordion-item service-card">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <i class="bi bi-box-seam me-2 text-warning"></i> Packaging & Publication Design
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        <p class="price-range">Price Range: R3600 - R12600</p>
+                        <ul class="service-list">
+                            <li>Product Packaging - R3600</li>
+                            <li>Book & Magazine Layout - R9000</li>
+                            <li>Label Design - R12600</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 4 -->
+            <div class="accordion-item service-card">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        <i class="bi bi-easel-fill me-2 text-danger"></i> Corporate Presentations & Consultation
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        <p class="price-range">Price Range: R2160 - R9900</p>
+                        <ul class="service-list">
+                            <li>Presentation Design - R2160</li>
+                            <li>Business Strategy Consultation - R6300</li>
+                            <li>Brand Development - R9900</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 5 -->
+            <div class="accordion-item service-card">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        <i class="bi bi-laptop-fill me-2 text-info"></i> Digital Design
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#servicesAccordion">
+                    <div class="accordion-body">
+                        <p class="price-range">Price Range: R1500 - R14400</p>
+                        <ul class="service-list">
+                            <li>Website Design - R1500 to R3000</li>
+                            <li>Mobile App UI/UX - R7000 to R20000</li>
+                            <li>Social Media Graphics - R14400</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<style>
+    .accordion-button {
+        font-weight: bold;
+        color: #333;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+    }
+    .accordion-button:hover {
+        background-color: #e9ecef;
+    }
+    .service-logo {
+        width: 30px;
+        height: 30px;
+    }
+    .price-range {
+        color: #007bff;
+        font-weight: bold;
+    }
+    .service-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    .service-list li {
+        padding: 5px 0;
+    }
+</style>
+
+<!-- Portfolio Section -->
+<section id="portfolio" class="portfolio py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 animate__animated animate__fadeInUp" style="color: #007bff;">Our Work</h2>
+
+           <!-- Search Bar -->
+           <div class="mb-4 text-center">
+            <input type="text" id="search-bar" class="form-control w-50 mx-auto" placeholder="Search portfolio items...">
+        </div>
+
+
+        <!-- Filter Buttons -->
+        <div class="text-center mb-4">
+            <button class="btn btn-primary filter-btn" data-filter="all">All</button>
+            <button class="btn btn-outline-primary filter-btn" data-filter="logo">Logo Design</button>
+            <button class="btn btn-outline-primary filter-btn" data-filter="branding">Branding</button>
+            <button class="btn btn-outline-primary filter-btn" data-filter="print">Print</button>
+        </div>
+
+        <!-- Portfolio Items -->
+        <div class="row">
+            <!-- Portfolio Item 1 (Logo Design) -->
+            <div class="col-md-4 portfolio-item logo">
+                <div class="card">
+                    <img src="logo img/Sino and Sma Trading.jpg" class="card-img-top" alt="Logo Design">
+                    <div class="card-body">
+                        <h5 class="card-title">Sino and Sma Trading</h5>
+                        <p class="card-text">Logo design and brand identity.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 portfolio-item logo">
+                <div class="card">
+                    <img src="logo img/Totana white logo.png" class="card-img-top" alt="Logo Design">
+                    <div class="card-body">
+                        <h5 class="card-title">Totana</h5>
+                        <p class="card-text">Distinctive identity design.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 portfolio-item logo">
+                <div class="card">
+                    <img src="logo img/fetman digital 2023 black.png" class="card-img-top" alt="Logo Design">
+                    <div class="card-body">
+                        <h5 class="card-title">Fetman Digital</h5>
+                        <p class="card-text">The studio's own visual identity.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Item 2 (Branding) -->
+            <div class="col-md-4 portfolio-item branding">
+                <div class="card">
+                    <img src="Branding%20img/deals%20on%20wheels%20Poster-SHAQ.jpg" class="card-img-top" alt="Deals on Wheels promotional poster">
+                    <div class="card-body">
+                        <h5 class="card-title">Deals on Wheels</h5>
+                        <p class="card-text">Promotional poster design.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 portfolio-item branding">
+                <div class="card">
+                    <img src="Branding%20img/DJ%20OLGA%20BOOKINGS.jpg" class="card-img-top" alt="DJ Olga bookings promotional artwork">
+                    <div class="card-body">
+                        <h5 class="card-title">DJ Olga Bookings</h5>
+                        <p class="card-text">Event and booking artwork.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 portfolio-item branding">
+                <div class="card">
+                    <img src="Branding%20img/Pub%20on%20Frere%20turns%202.jpg" class="card-img-top" alt="Pub on Frere anniversary artwork">
+                    <div class="card-body">
+                        <h5 class="card-title">Pub on Frere</h5>
+                        <p class="card-text">Anniversary campaign design.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 portfolio-item branding">
+                <div class="card">
+                    <img src="Branding%20img/thursday%20braaiday-Recovered~1.jpg" class="card-img-top" alt="Thursday Braaiday promotional artwork">
+                    <div class="card-body">
+                        <h5 class="card-title">Thursday Braaiday</h5>
+                        <p class="card-text">Promotional campaign artwork.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Item 3 (Web Design) -->
+            <div class="col-md-4 portfolio-item branding">
+                <div class="card">
+                    <img src="Branding%20img/Fetman%20Digital%20Company%20Profile%201.jpg" class="card-img-top" alt="Fetman Digital company profile design">
+                    <div class="card-body">
+                        <h5 class="card-title">Company Profile</h5>
+                        <p class="card-text">Editorial layout and brand presentation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 portfolio-item print">
+                <div class="card">
+                    <img src="Branding%20img/1.jpg" class="card-img-top" alt="Fetman Digital company profile spread">
+                    <div class="card-body">
+                        <h5 class="card-title">Company Profile Design</h5>
+                        <p class="card-text">A multi-page print identity piece.</p>
+                    </div>
+                </div>
+            </div>
+
+               <!-- Portfolio Item 6 (Applications) -->
+               <div class="col-md-4 portfolio-item print">
+                <div class="card">
+                    <img src="Branding%20img/1.jpg" class="card-img-top" alt="Printed brand profile design">
+                    <div class="card-body">
+                        <h5 class="card-title">Print & Editorial</h5>
+                        <p class="card-text">Information design for a growing brand.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Item 4 (Illustration) -->
+            <div class="col-md-4 portfolio-item print">
+                <div class="card">
+                    <img src="Branding%20img/1.jpg" class="card-img-top" alt="Fetman Digital print portfolio">
+                    <div class="card-body">
+                        <h5 class="card-title">Brand Collateral</h5>
+                        <p class="card-text">Print-ready collateral and layout.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for Search Functionality -->
+<script>
+    const portfolioItems = document.querySelectorAll(".portfolio-item");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const searchBar = document.getElementById("search-bar");
+    let activeFilter = "all";
+
+    function updatePortfolio() {
+        const query = searchBar.value.trim().toLowerCase();
+
+        portfolioItems.forEach(item => {
+            const matchesCategory = activeFilter === "all" || item.classList.contains(activeFilter);
+            const matchesSearch = item.textContent.toLowerCase().includes(query);
+            item.hidden = !matchesCategory || !matchesSearch;
+        });
+    }
+
+    searchBar.addEventListener("input", updatePortfolio);
+    filterButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            activeFilter = button.dataset.filter;
+            filterButtons.forEach(filterButton => {
+                const isActive = filterButton === button;
+                filterButton.classList.toggle("btn-primary", isActive);
+                filterButton.classList.toggle("btn-outline-primary", !isActive);
+                filterButton.setAttribute("aria-pressed", String(isActive));
+            });
+            updatePortfolio();
+        });
+        button.setAttribute("aria-pressed", String(button.dataset.filter === activeFilter));
+    });
+
+    updatePortfolio();
+</script>
+
+<!-- Filtering Script -->
+<style>
+    .portfolio-item[hidden] {
+        display: none !important;
+    }
+</style>
+
+
+<!-- CSS Styling -->
+<style>
+    .portfolio .card {
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px #4a90e2;
+        transition: transform 0.3s ease-in-out;
+    }
+    .portfolio .card:hover {
+        transform: scale(1.05);
+    }
+    .portfolio img {
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px 10px 0 0;
+    }
+    .filter-btn {
+        margin: 5px;
+    }
+</style>
+
+
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="animate__animated animate__fadeInUp">Contact Us</h2>
+            <p class="animate__animated animate__fadeInUp">If you're looking for a graphic design partner in South Africa that is dedicated to helping your brand thrive through creative design solutions,
+                 look no further than Fetman Digital (PTY) LTD. Contact us today, and let's embark on a journey to bring your visions to life through the power of design.</p>
+            <p class="animate__animated animate__fadeInUp"><strong>Email us at:</strong> info@fetmandigital.com</p>
+
+            <!-- Contact Form -->
+        <div class="contact-links text-center">
+  <p class="animate__animated animate__fadeInUp mb-4">
+    Reach out via Email, WhatsApp, or follow us on Facebook.
+  </p>
+  <div class="d-flex justify-content-center gap-3">
+
+    <!-- Email Link -->
+    <a href="mailto:info@fetmandigital.com" title="Email Us" style="color:inherit;">
+      <!-- Envelope SVG -->
+      <!-- Paste the full Envelope SVG code from above here -->
+       <svg fill="#000000" width="24px" height="24px" viewBox="0 0 36 36" version="1.1"  preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>email-solid</title>
+    <path class="clr-i-solid clr-i-solid-path-1" d="M32.33,6a2,2,0,0,0-.41,0h-28a2,2,0,0,0-.53.08L17.84,20.47Z"></path><path class="clr-i-solid clr-i-solid-path-2" d="M33.81,7.39,19.25,21.89a2,2,0,0,1-2.82,0L2,7.5a2,2,0,0,0-.07.5V28a2,2,0,0,0,2,2h28a2,2,0,0,0,2-2V8A2,2,0,0,0,33.81,7.39ZM5.3,28H3.91V26.57l7.27-7.21,1.41,1.41Zm26.61,0H30.51l-7.29-7.23,1.41-1.41,7.27,7.21Z"></path>
+    <rect x="0" y="0" width="36" height="36" fill-opacity="0"/>
+</svg>
+    </a>
+
+    <!-- WhatsApp Link -->
+    <a href="https://wa.me/27712345678" target="_blank" rel="noopener noreferrer" title="WhatsApp Chat" style="color:inherit;">
+      <!-- WhatsApp SVG code here -->
+       <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" id="svg8" inkscape:version="0.92.4 (5da689c313, 2019-01-14)" sodipodi:docname="1881161.svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  xml:space="preserve"><path id="path4" inkscape:connector-curvature="0" d="M16.6,14c-0.2-0.1-1.5-0.7-1.7-0.8c-0.2-0.1-0.4-0.1-0.6,0.1c-0.2,0.2-0.6,0.8-0.8,1c-0.1,0.2-0.3,0.2-0.5,0.1c-0.7-0.3-1.4-0.7-2-1.2c-0.5-0.5-1-1.1-1.4-1.7c-0.1-0.2,0-0.4,0.1-0.5c0.1-0.1,0.2-0.3,0.4-0.4c0.1-0.1,0.2-0.3,0.2-0.4c0.1-0.1,0.1-0.3,0-0.4c-0.1-0.1-0.6-1.3-0.8-1.8C9.4,7.3,9.2,7.3,9,7.3c-0.1,0-0.3,0-0.5,0C8.3,7.3,8,7.5,7.9,7.6C7.3,8.2,7,8.9,7,9.7c0.1,0.9,0.4,1.8,1,2.6c1.1,1.6,2.5,2.9,4.2,3.7c0.5,0.2,0.9,0.4,1.4,0.5c0.5,0.2,1,0.2,1.6,0.1c0.7-0.1,1.3-0.6,1.7-1.2c0.2-0.4,0.2-0.8,0.1-1.2C17,14.2,16.8,14.1,16.6,14 M19.1,4.9C15.2,1,8.9,1,5,4.9c-3.2,3.2-3.8,8.1-1.6,12L2,22l5.3-1.4c1.5,0.8,3.1,1.2,4.7,1.2h0c5.5,0,9.9-4.4,9.9-9.9C22,9.3,20.9,6.8,19.1,4.9 M16.4,18.9c-1.3,0.8-2.8,1.3-4.4,1.3h0c-1.5,0-2.9-0.4-4.2-1.1l-0.3-0.2l-3.1,0.8l0.8-3l-0.2-0.3C2.6,12.4,3.8,7.4,7.7,4.9S16.6,3.7,19,7.5C21.4,11.4,20.3,16.5,16.4,18.9"/></svg>
+    </a>
+
+    <!-- Facebook Link -->
+    <a href="https://www.facebook.com/fetmandigital" target="_blank" rel="noopener noreferrer" title="Facebook Page" style="color:inherit;">
+      <!-- Facebook SVG code here -->
+       <svg width="24px" height="24px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path fill="#444" d="M7.2 16v-7.5h-2v-2.7h2c0 0 0-1.1 0-2.3 0-1.8 1.2-3.5 3.9-3.5 1.1 0 1.9 0.1 1.9 0.1l-0.1 2.5c0 0-0.8 0-1.7 0-1 0-1.1 0.4-1.1 1.2 0 0.6 0-1.3 0 2h2.9l-0.1 2.7h-2.8v7.5h-2.9z"></path>
+</svg>
+    </a>
+
+  </div>
+</div>
+
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; <span id="current-year">2026</span> Fetman Digital. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById("current-year").textContent = new Date().getFullYear();
+
+        document.querySelectorAll(".navbar-collapse .nav-link").forEach(link => {
+            link.addEventListener("click", () => {
+                const menu = document.getElementById("navbarNav");
+                if (menu.classList.contains("show")) {
+                    bootstrap.Collapse.getOrCreateInstance(menu).hide();
+                }
+            });
+        });
+
+        const revealObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll(".about .row, #services .accordion-item, .portfolio-item, .contact-links").forEach(element => {
+            element.classList.add("reveal");
+            revealObserver.observe(element);
+        });
+    </script>
+
+    <style>
+        :root {
+            --ink: #102f35;
+            --deep: #082a33;
+            --teal: #0d7776;
+            --bright: #24c8bd;
+            --coral: #f2a367;
+            --paper: #f4f2ec;
+            --muted: #647477;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 84px;
+        }
+
+        body {
+            color: var(--ink);
+            background: #fff;
+            font-family: "DM Sans", sans-serif;
+            line-height: 1.65;
+        }
+
+        h1, h2, h3, h4, h5, .navbar-brand {
+            font-family: "Space Grotesk", sans-serif;
+            letter-spacing: 0;
+        }
+
+        .navbar {
+            padding: 17px 0;
+            background: rgba(8, 42, 51, .94);
+            backdrop-filter: blur(12px);
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .brand-mark {
+            color: var(--coral);
+        }
+
+        .navbar .nav-link {
+            color: rgba(255, 255, 255, .78);
+            font-size: .94rem;
+            margin-left: 15px;
+            transition: color .2s ease;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link:focus {
+            color: var(--bright);
+        }
+
+        .hero {
+            min-height: 720px;
+            height: 100svh;
+            max-height: 980px;
+            padding: 120px 0 70px;
+            justify-content: flex-start;
+            text-align: left;
+            background-image: linear-gradient(90deg, rgba(5, 28, 36, .93) 0%, rgba(5, 28, 36, .83) 49%, rgba(5, 28, 36, .2) 100%), url("Fetman Digital website background.jpg");
+            background-position: center;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            position: absolute;
+            right: 7%;
+            bottom: 9%;
+            width: 110px;
+            height: 4px;
+            background: var(--coral);
+            content: "";
+            transform: rotate(-45deg);
+            opacity: .9;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+            margin-bottom: auto;
+            animation: rise-in .8s ease both;
+        }
+
+        .hero .eyebrow {
+            color: var(--bright);
+            font-size: .82rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            max-width: 790px;
+            margin: 20px 0;
+            font-size: 68px;
+            font-weight: 700;
+            line-height: 1.04;
+        }
+
+        .hero h1 span {
+            color: var(--bright);
+        }
+
+        .hero-copy {
+            max-width: 490px;
+            margin: 0 0 30px;
+            color: rgba(255, 255, 255, .8);
+            font-size: 18px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .btn-primary {
+            padding: 12px 20px;
+            border: 1px solid var(--bright);
+            border-radius: 3px;
+            background: var(--bright);
+            color: var(--deep);
+            font-weight: 700;
+            transition: transform .2s ease, background .2s ease;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            border-color: #54ded4;
+            background: #54ded4;
+            color: var(--deep);
+            transform: translateY(-2px);
+        }
+
+        .hero-link {
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .hero-link span {
+            color: var(--coral);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            z-index: 1;
+            bottom: 32px;
+            left: max(24px, calc((100vw - 1140px) / 2));
+            color: rgba(255, 255, 255, .75);
+            font-size: .8rem;
+            text-decoration: none;
+        }
+
+        .hero-scroll span {
+            margin-left: 8px;
+            color: var(--bright);
+        }
+
+        .about,
+        .services,
+        .portfolio,
+        .contact {
+            padding: 92px 0 !important;
+        }
+
+        .about {
+            background: var(--paper);
+        }
+
+        .about .row {
+            gap: 0;
+        }
+
+        .about h2,
+        .services h2,
+        .portfolio h2,
+        .contact h2 {
+            margin-bottom: 20px;
+            color: var(--ink);
+            font-size: 42px;
+            font-weight: 700;
+        }
+
+        .about h2::before,
+        .services h2::before,
+        .portfolio h2::before {
+            display: block;
+            width: 42px;
+            height: 4px;
+            margin-bottom: 16px;
+            background: var(--coral);
+            content: "";
+        }
+
+        .about p,
+        .services p,
+        .contact p {
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .about-image {
+            padding: 20px;
+            background: #fff;
+            border: 1px solid rgba(16, 47, 53, .08);
+            box-shadow: 18px 18px 0 rgba(13, 119, 118, .12);
+        }
+
+        .about-image img {
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        #read-more-btn {
+            border-radius: 3px;
+        }
+
+        .services {
+            background: #fff !important;
+        }
+
+        .services h2 {
+            text-align: left !important;
+        }
+
+        .service-card {
+            margin-bottom: 12px;
+            overflow: hidden;
+            border: 1px solid #e3e9e7 !important;
+            border-radius: 4px !important;
+            box-shadow: none;
+            transition: border-color .2s ease, transform .2s ease;
+        }
+
+        .service-card:hover {
+            border-color: rgba(13, 119, 118, .5) !important;
+            transform: translateY(-2px);
+        }
+
+        .accordion-button {
+            min-height: 66px;
+            padding: 18px 22px;
+            background: #fff;
+            color: var(--ink);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            box-shadow: none !important;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: #f0f8f6;
+            color: var(--teal);
+        }
+
+        .accordion-button::after {
+            filter: hue-rotate(125deg);
+        }
+
+        .accordion-button i {
+            color: var(--teal) !important;
+        }
+
+        .price-range {
+            color: var(--teal) !important;
+            font-weight: 700;
+        }
+
+        .service-list {
+            color: var(--muted);
+        }
+
+        .portfolio {
+            background: var(--paper);
+        }
+
+        .portfolio h2 {
+            text-align: left !important;
+        }
+
+        #search-bar {
+            width: min(100%, 430px) !important;
+            min-height: 48px;
+            margin: 0 0 16px !important;
+            border: 1px solid #d6dfdc;
+            border-radius: 3px;
+            box-shadow: none;
+        }
+
+        #search-bar:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13, 119, 118, .12);
+        }
+
+        .filter-btn {
+            margin: 0 7px 8px 0;
+            padding: 8px 14px;
+            border: 1px solid #cbd8d5;
+            border-radius: 3px;
+            background: transparent;
+            color: var(--ink);
+            font-size: .9rem;
+            transition: color .2s ease, background .2s ease, border-color .2s ease;
+        }
+
+        .filter-btn.btn-primary,
+        .filter-btn.btn-primary:hover {
+            border-color: var(--teal);
+            background: var(--teal);
+            color: #fff;
+        }
+
+        .portfolio .row {
+            row-gap: 24px;
+        }
+
+        .portfolio-item {
+            transition: opacity .35s ease, transform .35s ease;
+        }
+
+        .portfolio .card {
+            height: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(16, 47, 53, .08);
+            border-radius: 4px;
+            background: #fff;
+            box-shadow: none;
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+
+        .portfolio .card:hover {
+            box-shadow: 0 14px 30px rgba(8, 42, 51, .12);
+            transform: translateY(-5px);
+        }
+
+        .portfolio img {
+            width: 100%;
+            height: 230px;
+            border-radius: 0;
+            background: #e9eeeb;
+            object-fit: cover;
+        }
+
+        .portfolio .card-body {
+            padding: 20px;
+        }
+
+        .portfolio .card-title {
+            color: var(--ink);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .portfolio .card-text {
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .contact {
+            background: var(--deep);
+            color: white;
+        }
+
+        .contact h2 {
+            color: white;
+        }
+
+        .contact h2::before {
+            display: block;
+            width: 42px;
+            height: 4px;
+            margin-bottom: 16px;
+            background: var(--coral);
+            content: "";
+        }
+
+        .contact p {
+            max-width: 760px;
+            color: rgba(255, 255, 255, .7);
+        }
+
+        .contact-links {
+            padding-top: 15px;
+        }
+
+        .contact-links a {
+            display: grid;
+            width: 50px;
+            height: 50px;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .25);
+            border-radius: 50%;
+            color: var(--bright) !important;
+            transition: background .2s ease, transform .2s ease;
+        }
+
+        .contact-links a:hover {
+            background: rgba(36, 200, 189, .12);
+            transform: translateY(-3px);
+        }
+
+        .contact-links svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .contact-links svg path {
+            fill: currentColor;
+        }
+
+        .footer {
+            padding: 18px;
+            background: #061f26;
+            color: rgba(255, 255, 255, .65);
+            font-size: 13px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity .65s ease, transform .65s ease;
+        }
+
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes rise-in {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                min-height: 680px;
+                height: 88svh;
+                background-position: 57% center;
+            }
+
+            .hero h1 {
+                max-width: 560px;
+                font-size: 48px;
+            }
+
+            .hero-copy {
+                font-size: 16px;
+            }
+
+            .hero-scroll {
+                left: 24px;
+            }
+
+            .about,
+            .services,
+            .portfolio,
+            .contact {
+                padding: 68px 0 !important;
+            }
+
+            .about h2,
+            .services h2,
+            .portfolio h2,
+            .contact h2 {
+                font-size: 34px;
+            }
+
+            .about-image {
+                margin-top: 28px;
+            }
+
+            .services h2 {
+                text-align: left !important;
+            }
+
+            .portfolio .text-center {
+                text-align: left !important;
+            }
+
+            #search-bar {
+                margin-left: 0 !important;
+            }
+
+            .portfolio img {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 11px 0;
+            }
+
+            .hero {
+                min-height: 620px;
+                height: 88svh;
+                padding-top: 100px;
+                background-position: 60% center;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero-actions {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .accordion-button {
+                padding: 16px;
+                font-size: 15px;
+            }
+
+            .portfolio img {
+                height: 220px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+
+</body>
+
+</html>
