@@ -1,0 +1,11 @@
+# Local environment variables and secrets
+.env
+.env.*
+
+# Node.js dependencies and logs
+node_modules/
+npm-debug.log*
+
+# Operating system files
+Thumbs.db
+.DS_Store

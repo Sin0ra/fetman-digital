@@ -30,19 +30,19 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Animate.css for animation effects -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
+
     <!-- Custom CSS -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f1faff;
+            background-color: #f3f3f1;
         }
 
         /* Navbar */
         .navbar {
-            background-color: #034150;
+            background-color: #2e3237;
         }
 
         .navbar-brand {
@@ -74,7 +74,7 @@
             display: inline-block;
             font-size: 60px;
             font-weight: 600;
-            color: #1ef3f3;
+            color: #dfe1e2;
             animation: fadeInWord 2s infinite ease-out;
             white-space: nowrap;
         }
@@ -123,7 +123,7 @@
             font-size: 36px;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #4a90e2;
+            color: #68747D;
         }
 
         .about p,
@@ -153,7 +153,7 @@
         }
 
         .footer {
-            background-color: #4a90e2;
+            background-color: #68747D;
             color: white;
             text-align: center;
             padding: 20px;
@@ -202,7 +202,7 @@
             font-size: 42px;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #4a90e2;
+            color: #68747D;
             animation: fadeInUp 1s ease-out;
         }
 
@@ -302,7 +302,7 @@
     .about p, .services p {
         font-size: 14px;
     }
-    
+
 }
     </style>
 </head>
@@ -331,8 +331,12 @@
                     <a class="nav-link" href="#services">Services</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="#it-division">IT Solutions</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="#contact">Contact</a>
                 </li>
+
             </ul>
         </div>
     </div>
@@ -353,205 +357,140 @@
         <a class="hero-scroll" href="#about" aria-label="Scroll to about section">Scroll to discover <span aria-hidden="true">↓</span></a>
     </section>
 
+    <section class="trust-strip">
+        <div class="container">
+            <div class="strip-grid">
+                <span>Logo Design</span>
+                <span>Brand Identity</span>
+                <span>Marketing Design</span>
+                <span>Corporate Design</span>
+                <span>Digital Design</span>
+            </div>
+        </div>
+    </section>
+
  <!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h2 class="animate__animated animate__fadeInUp">About Us</h2>
-                <p class="animate__animated animate__fadeInUp">
-                    Fetman Digital (PTY) LTD is a dynamic and innovative graphic design company based in the vibrant heart of Durban. 
-                    Established with a passion for creativity and a commitment to excellence, we specialize in providing cutting-edge graphic design solutions that elevate brands,
-                    captivate audiences, and drive business growth.
-                </p>
-                <p class="animate__animated animate__fadeInUp">
-                    Our mission is to empower businesses of all sizes by transforming their ideas into visually stunning and impactful designs. We strive to be a trusted partner,
-                    helping our clients communicate their unique stories through compelling graphics, whether it's for digital or print media.
-                </p>
+ <section id="about" class="about">
+     <div class="container">
+         <div class="row align-items-center g-5">
+             <div class="col-lg-6">
+                 <span class="section-kicker">About the studio</span>
+                 <h2 class="animate__animated animate__fadeInUp">Creative design that helps businesses speak clearly.</h2>
+                 <p class="animate__animated animate__fadeInUp">
+                     Fetman Digital (PTY) LTD is a Durban-based graphic design studio helping businesses turn ideas into confident visual identities. We create branding, promotional design, corporate materials and digital visuals that communicate clearly and stand out in a crowded market.
+                 </p>
+                 <p class="animate__animated animate__fadeInUp">
+                     From logo concepts and full brand systems to flyers, posters, company profiles and digital marketing assets, our work is shaped to help each client present themselves professionally and with purpose.
+                 </p>
+                 <div id="more-text" style="display:none;" class="animate__animated animate__fadeInUp">
+                     <p>
+                         We work with business owners, SMEs and growing brands that want thoughtful, effective design without unnecessary complexity. Whether the need is a single flyer or a broader visual identity, the goal is always the same: make the brand easier to understand and harder to ignore.
+                     </p>
+                 </div>
+                 <div class="about-actions">
+                     <button id="read-more-btn" class="btn btn-primary" onclick="toggleText()">Read More</button>
+                     <a class="inline-link" href="#contact">Book a consultation</a>
+                 </div>
+             </div>
+             <div class="col-lg-6">
+                 <div class="about-image">
+                     <img src="fetman digital 2023 black.png" alt="Fetman Digital studio logo" class="img-fluid animate__animated animate__fadeInRight">
+                 </div>
+             </div>
+         </div>
+     </div>
+ </section>
 
-                <!-- Hidden Content -->
-                <div id="more-text" style="display:none;" class="animate__animated animate__fadeInUp">
-                    <p>
-                        Fetman Digital has had the privilege of working with a diverse range of clients, including startups, small and medium-sized enterprises (SMEs), non-profit organizations,
-                        and established corporations across various industries.
-                    </p>
-                </div>
+ <script>
+     function toggleText() {
+         var moreText = document.getElementById("more-text");
+         var btn = document.getElementById("read-more-btn");
+         if (moreText.style.display === "none") {
+             moreText.style.display = "block";
+             btn.innerHTML = "Read Less";
+         } else {
+             moreText.style.display = "none";
+             btn.innerHTML = "Read More";
+         }
+     }
+ </script>
 
-                <!-- Read More Button -->
-                <button id="read-more-btn" class="btn btn-primary" onclick="toggleText()">Read More</button>
-            </div>
-            <div class="col-md-6">
-                <div class="about-image">
-                    <img src="fetman digital 2023 black.png" alt="Fetman Digital studio logo" class="img-fluid animate__animated animate__fadeInRight">
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    <!-- Services Section -->
+ <section id="services" class="services py-5 bg-light">
+     <div class="container">
+         <div class="section-heading">
+             <span class="section-kicker">What we create</span>
+             <h2>Creative services for modern brands.</h2>
+         </div>
 
-<script>
-    function toggleText() {
-        var moreText = document.getElementById("more-text");
-        var btn = document.getElementById("read-more-btn");
-        if (moreText.style.display === "none") {
-            moreText.style.display = "block";
-            btn.innerHTML = "Read Less";
-        } else {
-            moreText.style.display = "none";
-            btn.innerHTML = "Read More";
-        }
-    }
-</script>
+         <div class="services-grid">
+             <article class="service-card">
+                 <div class="service-icon"><i class="bi bi-brush-fill"></i></div>
+                 <h3>Logo & Brand Identity</h3>
+                 <p>Custom logo design, visual direction, colour systems and brand foundations for businesses wanting a stronger identity.</p>
+                 <ul>
+                     <li>Logo concepts</li>
+                     <li>Brand visuals</li>
+                     <li>Typography & colour guidance</li>
+                 </ul>
+                 <a href="#contact">Enquire now</a>
+             </article>
 
-   <!-- Services Section -->
-<!-- Our Services Section -->
-<section id="services" class="services py-5 bg-light">
-    <div class="container">
-        <h2 class="text-center mb-5 animate__animated animate__fadeInUp">Our Services</h2>
+             <article class="service-card">
+                 <div class="service-icon"><i class="bi bi-megaphone-fill"></i></div>
+                 <h3>Marketing Design</h3>
+                 <p>Promotional graphics, social content and campaign artwork designed to help businesses get attention and communicate offers clearly.</p>
+                 <ul>
+                     <li>Posters & flyers</li>
+                     <li>Event artwork</li>
+                     <li>Campaign graphics</li>
+                 </ul>
+                 <a href="#contact">Enquire now</a>
+             </article>
 
-        <div class="accordion" id="servicesAccordion">
+             <article class="service-card">
+                 <div class="service-icon"><i class="bi bi-file-earmark-richtext-fill"></i></div>
+                 <h3>Corporate Design</h3>
+                 <p>Company profiles, presentations, stationery and professional documents that help teams present themselves consistently.</p>
+                 <ul>
+                     <li>Business cards</li>
+                     <li>Profiles & stationery</li>
+                     <li>Presentation design</li>
+                 </ul>
+                 <a href="#contact">Enquire now</a>
+             </article>
 
-            <!-- Service 1 -->
-            <div class="accordion-item service-card">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                        <i class="bi bi-brush-fill me-2 text-primary"></i> Logo & Print Design
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        <p class="price-range">Price Range: R1800 - R9000</p>
-                        <ul class="service-list">
-                            <li>Custom Logo Design</li>
-                            <li>Business Cards</li>
-                            <li>Brochures & Flyers</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
-                    </div>
-                </div>
-            </div>
+             <article class="service-card">
+                 <div class="service-icon"><i class="bi bi-box-seam-fill"></i></div>
+                 <h3>Print & Packaging</h3>
+                 <p>Print-ready layouts and packaging artwork for products, promotions and brand collateral that need a polished production finish.</p>
+                 <ul>
+                     <li>Packaging art</li>
+                     <li>Brochures & labels</li>
+                     <li>Print layouts</li>
+                 </ul>
+                 <a href="#contact">Enquire now</a>
+             </article>
 
-            <!-- Service 2 -->
-            <div class="accordion-item service-card">
-                <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        <i class="bi bi-palette-fill me-2 text-success"></i> Branding & Illustration
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        <p class="price-range">Price Range: R2700 - R10800</p>
-                        <ul class="service-list">
-                            <li>Brand Identity - R2700</li>
-                            <li>Illustration Services - R7200</li>
-                            <li>Typography Design - R10800</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Service 3 -->
-            <div class="accordion-item service-card">
-                <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        <i class="bi bi-box-seam me-2 text-warning"></i> Packaging & Publication Design
-                    </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        <p class="price-range">Price Range: R3600 - R12600</p>
-                        <ul class="service-list">
-                            <li>Product Packaging - R3600</li>
-                            <li>Book & Magazine Layout - R9000</li>
-                            <li>Label Design - R12600</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Service 4 -->
-            <div class="accordion-item service-card">
-                <h2 class="accordion-header" id="headingFour">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                        <i class="bi bi-easel-fill me-2 text-danger"></i> Corporate Presentations & Consultation
-                    </button>
-                </h2>
-                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        <p class="price-range">Price Range: R2160 - R9900</p>
-                        <ul class="service-list">
-                            <li>Presentation Design - R2160</li>
-                            <li>Business Strategy Consultation - R6300</li>
-                            <li>Brand Development - R9900</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Service 5 -->
-            <div class="accordion-item service-card">
-                <h2 class="accordion-header" id="headingFive">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                        <i class="bi bi-laptop-fill me-2 text-info"></i> Digital Design
-                    </button>
-                </h2>
-                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#servicesAccordion">
-                    <div class="accordion-body">
-                        <p class="price-range">Price Range: R1500 - R14400</p>
-                        <ul class="service-list">
-                            <li>Website Design - R1500 to R3000</li>
-                            <li>Mobile App UI/UX - R7000 to R20000</li>
-                            <li>Social Media Graphics - R14400</li>
-                        </ul>
-                        <a href="#contact" class="btn btn-sm btn-primary mt-2">Get a Quote</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<style>
-    .accordion-button {
-        font-weight: bold;
-        color: #333;
-        background-color: #f8f9fa;
-        display: flex;
-        align-items: center;
-    }
-    .accordion-button:hover {
-        background-color: #e9ecef;
-    }
-    .service-logo {
-        width: 30px;
-        height: 30px;
-    }
-    .price-range {
-        color: #007bff;
-        font-weight: bold;
-    }
-    .service-list {
-        list-style: none;
-        padding-left: 0;
-    }
-    .service-list li {
-        padding: 5px 0;
-    }
-</style>
+             <article class="service-card">
+                 <div class="service-icon"><i class="bi bi-laptop-fill"></i></div>
+                 <h3>Digital Design</h3>
+                 <p>Visual assets for online promotion, brand communication and digital campaigns that keep digital presence aligned with the brand.</p>
+                 <ul>
+                     <li>Website graphics</li>
+                     <li>Online ads</li>
+                     <li>Digital promotional design</li>
+                 </ul>
+                 <a href="#contact">Enquire now</a>
+             </article>
+         </div>
+     </div>
+ </section>
 
 <!-- Portfolio Section -->
 <section id="portfolio" class="portfolio py-5">
     <div class="container">
-        <h2 class="text-center mb-4 animate__animated animate__fadeInUp" style="color: #007bff;">Our Work</h2>
+        <h2 class="text-center mb-4 animate__animated animate__fadeInUp">Our Work</h2>
 
            <!-- Search Bar -->
            <div class="mb-4 text-center">
@@ -687,6 +626,87 @@
     </div>
 </section>
 
+<section id="it-division" class="it-division">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">IT & Digital Development</span>
+            <h2>Websites, Applications & Digital Solutions</h2>
+        </div>
+        <p class="it-intro">From professional websites to custom digital tools, we help businesses establish their online presence and build digital experiences around their needs.</p>
+
+        <div class="it-grid">
+            <article class="it-card">
+                <div class="it-icon"><i class="bi bi-globe2"></i></div>
+                <h3>Website Development</h3>
+                <p>Business websites, landing pages and portfolio websites designed to communicate clearly and support customer engagement.</p>
+                <span class="chip">Scope to confirm</span>
+            </article>
+
+            <article class="it-card">
+                <div class="it-icon"><i class="bi bi-bag-check"></i></div>
+                <h3>E-commerce Development</h3>
+                <p>Online stores and product catalogues for businesses looking to sell online with a structured, user-friendly storefront.</p>
+                <span class="chip">Scope to confirm</span>
+            </article>
+
+            <article class="it-card">
+                <div class="it-icon"><i class="bi bi-kanban"></i></div>
+                <h3>Web Applications & Business Systems</h3>
+                <p>Custom dashboards, customer portals and management systems tailored to business workflows and operational needs.</p>
+                <span class="chip">Scope to confirm</span>
+            </article>
+
+            <article class="it-card">
+                <div class="it-icon"><i class="bi bi-phone"></i></div>
+                <h3>Mobile Application Development</h3>
+                <p>Android and iOS app concepts and builds where the required capabilities, technical scope and project requirements are supported.</p>
+                <span class="chip">Scope to confirm</span>
+            </article>
+
+            <article class="it-card">
+                <div class="it-icon"><i class="bi bi-tools"></i></div>
+                <h3>Website Maintenance & Technical Support</h3>
+                <p>Website updates, troubleshooting and ongoing technical support for existing online presences and digital assets.</p>
+                <span class="chip">Scope to confirm</span>
+            </article>
+
+            <article class="it-card">
+                <div class="it-icon"><i class="bi bi-envelope-at"></i></div>
+                <h3>Domain & Business Email Services</h3>
+                <p>Domain registration assistance and professional business email setup to support a more established online presence.</p>
+                <span class="chip">Scope to confirm</span>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="dev-portfolio">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">Development portfolio</span>
+            <h2>Project-ready space for future technical work.</h2>
+        </div>
+        <p class="dev-portfolio-note">This area is ready to be populated with verified website, app and digital solutions projects as real work is completed.</p>
+        <div class="dev-portfolio-grid">
+            <article class="dev-placeholder">
+                <span class="placeholder-tag">Website project</span>
+                <h3>Project placeholder</h3>
+                <p>Add a live website case study once a client project is confirmed and approved for publication.</p>
+            </article>
+            <article class="dev-placeholder">
+                <span class="placeholder-tag">Application project</span>
+                <h3>Project placeholder</h3>
+                <p>Add an application or business-system case study once the final work and scope have been verified.</p>
+            </article>
+            <article class="dev-placeholder">
+                <span class="placeholder-tag">Digital solution</span>
+                <h3>Project placeholder</h3>
+                <p>Add a digital solution case study once a completed, verified implementation is available for display.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
 <!-- JavaScript for Search Functionality -->
 <script>
     const portfolioItems = document.querySelectorAll(".portfolio-item");
@@ -722,80 +742,235 @@
     updatePortfolio();
 </script>
 
-<!-- Filtering Script -->
-<style>
-    .portfolio-item[hidden] {
-        display: none !important;
-    }
-</style>
+<section class="why-choose">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">Why choose us</span>
+            <h2>Clear thinking, thoughtful design, and work that fits your business.</h2>
+        </div>
+        <div class="feature-grid">
+            <article class="feature-card">
+                <div class="feature-icon"><i class="bi bi-lightbulb-fill"></i></div>
+                <h3>Thoughtful visual direction</h3>
+                <p>Every design decision is shaped around clarity, brand personality, and how your business needs to be seen.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon"><i class="bi bi-diagram-3-fill"></i></div>
+                <h3>Consistent brand presentation</h3>
+                <p>Design is set up to work across print, digital and promotional use so your message feels coherent.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon"><i class="bi bi-chat-square-text-fill"></i></div>
+                <h3>Design tailored to your goals</h3>
+                <p>Creative concepts are built around your business objectives, audience and communication needs.</p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon"><i class="bi bi-check2-circle"></i></div>
+                <h3>Professional delivery</h3>
+                <p>Projects are prepared with clear scope, refined deliverables and a practical approach to final output.</p>
+            </article>
+        </div>
+    </div>
+</section>
 
+<section class="process">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">Our process</span>
+            <h2>A simple process designed around your goals.</h2>
+        </div>
+        <div class="process-grid">
+            <article class="process-card">
+                <span class="step-number">01</span>
+                <h3>Discover</h3>
+                <p>We begin by understanding your business, objectives and the look or message you want to communicate.</p>
+            </article>
+            <article class="process-card">
+                <span class="step-number">02</span>
+                <h3>Plan</h3>
+                <p>We agree on the scope, deliverables, quotation and timeline before the design work begins.</p>
+            </article>
+            <article class="process-card">
+                <span class="step-number">03</span>
+                <h3>Create</h3>
+                <p>Design concepts are developed, refined and reviewed through the agreed revision process.</p>
+            </article>
+            <article class="process-card">
+                <span class="step-number">04</span>
+                <h3>Deliver</h3>
+                <p>Approved final artwork is supplied in the formats agreed for your project and usage.</p>
+            </article>
+        </div>
+    </div>
+</section>
 
-<!-- CSS Styling -->
-<style>
-    .portfolio .card {
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px #4a90e2;
-        transition: transform 0.3s ease-in-out;
-    }
-    .portfolio .card:hover {
-        transform: scale(1.05);
-    }
-    .portfolio img {
-        height: 200px;
-        object-fit: cover;
-        border-radius: 10px 10px 0 0;
-    }
-    .filter-btn {
-        margin: 5px;
-    }
-</style>
+<section class="pricing">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">Project options</span>
+            <h2>Flexible design packages tailored to your needs.</h2>
+        </div>
+        <div class="pricing-grid">
+            <article class="price-card">
+                <span class="plan-tag">Logo Starter</span>
+                <h3>Logo design</h3>
+                <p class="price-placeholder">From quote-based pricing</p>
+                <ul>
+                    <li>Initial concept exploration</li>
+                    <li>Recommended design direction</li>
+                    <li>Basic logo refinement</li>
+                    <li>Editable source files where applicable</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Request a quote</a>
+            </article>
+            <article class="price-card featured-plan">
+                <span class="plan-tag">Most popular</span>
+                <h3>Brand identity</h3>
+                <p class="price-placeholder">Project-based pricing</p>
+                <ul>
+                    <li>Logo and brand direction</li>
+                    <li>Colour palette and typography</li>
+                    <li>Brand collateral support</li>
+                    <li>Refined design system</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Discuss your brief</a>
+            </article>
+            <article class="price-card">
+                <span class="plan-tag">Marketing design</span>
+                <h3>Promotional design</h3>
+                <p class="price-placeholder">Pricing based on scope</p>
+                <ul>
+                    <li>Flyers and posters</li>
+                    <li>Social media graphics</li>
+                    <li>Campaign design support</li>
+                    <li>Production-ready artwork</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Ask for a quote</a>
+            </article>
+        </div>
+    </div>
+</section>
 
-
+<section class="faq">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">FAQ</span>
+            <h2>Common questions before we begin.</h2>
+        </div>
+        <div class="accordion faq-accordion" id="faqAccordion">
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="false" aria-controls="faqCollapseOne">What design services do you offer?</button>
+                </h2>
+                <div id="faqCollapseOne" class="accordion-collapse collapse" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Fetman Digital provides logo design, branding and identity work, marketing and promotional design, print-ready layouts, corporate design and digital design support.</div>
+                </div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">How do I request a quotation?</button>
+                </h2>
+                <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Send an enquiry through the contact form or email the studio with your business name, service required and a brief overview of your project.</div>
+                </div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">What information should I provide before a project begins?</button>
+                </h2>
+                <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Useful information includes your business name, target audience, design goals, references, required deliverables and any deadlines or brand materials you already have.</div>
+                </div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">How do revisions work?</button>
+                </h2>
+                <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Revision rounds are agreed at project commencement and refined through the design process to ensure the final artwork matches the approved brief.</div>
+                </div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFive" aria-expanded="false" aria-controls="faqCollapseFive">Which file formats can I receive?</button>
+                </h2>
+                <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">Final file formats are discussed with each client and may include editable source files and production-ready versions depending on the project.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
-            <h2 class="animate__animated animate__fadeInUp">Contact Us</h2>
-            <p class="animate__animated animate__fadeInUp">If you're looking for a graphic design partner in South Africa that is dedicated to helping your brand thrive through creative design solutions,
-                 look no further than Fetman Digital (PTY) LTD. Contact us today, and let's embark on a journey to bring your visions to life through the power of design.</p>
-            <p class="animate__animated animate__fadeInUp"><strong>Email us at:</strong> info@fetmandigital.com</p>
+            <div class="row g-5 align-items-start">
+                <div class="col-lg-6">
+                    <span class="section-kicker contact-kicker">Let's talk</span>
+                    <h2 class="animate__animated animate__fadeInUp">Let's create something remarkable.</h2>
+                    <p class="animate__animated animate__fadeInUp">Tell us about your business and the design you need. We’ll discuss your requirements and help you plan the next step.</p>
+                    <div class="contact-details">
+                        <p><strong>Email:</strong> <a href="mailto:info@fetmandigital.com">info@fetmandigital.com</a></p>
+                        <p><strong>WhatsApp:</strong> <a href="https://wa.me/27712345678" target="_blank" rel="noopener noreferrer">+27 71 234 5678</a></p>
+                    </div>
+                    <div class="contact-links">
+                        <a href="mailto:info@fetmandigital.com" title="Email Us" aria-label="Email Us">✉</a>
+                        <a href="https://wa.me/27712345678" target="_blank" rel="noopener noreferrer" title="WhatsApp Chat" aria-label="WhatsApp Chat">✆</a>
+                        <a href="https://www.facebook.com/fetmandigital" target="_blank" rel="noopener noreferrer" title="Facebook Page" aria-label="Facebook Page">f</a>
+                    </div>
+                </div>
 
-            <!-- Contact Form -->
-        <div class="contact-links text-center">
-  <p class="animate__animated animate__fadeInUp mb-4">
-    Reach out via Email, WhatsApp, or follow us on Facebook.
-  </p>
-  <div class="d-flex justify-content-center gap-3">
-
-    <!-- Email Link -->
-    <a href="mailto:info@fetmandigital.com" title="Email Us" style="color:inherit;">
-      <!-- Envelope SVG -->
-      <!-- Paste the full Envelope SVG code from above here -->
-       <svg fill="#000000" width="24px" height="24px" viewBox="0 0 36 36" version="1.1"  preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>email-solid</title>
-    <path class="clr-i-solid clr-i-solid-path-1" d="M32.33,6a2,2,0,0,0-.41,0h-28a2,2,0,0,0-.53.08L17.84,20.47Z"></path><path class="clr-i-solid clr-i-solid-path-2" d="M33.81,7.39,19.25,21.89a2,2,0,0,1-2.82,0L2,7.5a2,2,0,0,0-.07.5V28a2,2,0,0,0,2,2h28a2,2,0,0,0,2-2V8A2,2,0,0,0,33.81,7.39ZM5.3,28H3.91V26.57l7.27-7.21,1.41,1.41Zm26.61,0H30.51l-7.29-7.23,1.41-1.41,7.27,7.21Z"></path>
-    <rect x="0" y="0" width="36" height="36" fill-opacity="0"/>
-</svg>
-    </a>
-
-    <!-- WhatsApp Link -->
-    <a href="https://wa.me/27712345678" target="_blank" rel="noopener noreferrer" title="WhatsApp Chat" style="color:inherit;">
-      <!-- WhatsApp SVG code here -->
-       <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" id="svg8" inkscape:version="0.92.4 (5da689c313, 2019-01-14)" sodipodi:docname="1881161.svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  xml:space="preserve"><path id="path4" inkscape:connector-curvature="0" d="M16.6,14c-0.2-0.1-1.5-0.7-1.7-0.8c-0.2-0.1-0.4-0.1-0.6,0.1c-0.2,0.2-0.6,0.8-0.8,1c-0.1,0.2-0.3,0.2-0.5,0.1c-0.7-0.3-1.4-0.7-2-1.2c-0.5-0.5-1-1.1-1.4-1.7c-0.1-0.2,0-0.4,0.1-0.5c0.1-0.1,0.2-0.3,0.4-0.4c0.1-0.1,0.2-0.3,0.2-0.4c0.1-0.1,0.1-0.3,0-0.4c-0.1-0.1-0.6-1.3-0.8-1.8C9.4,7.3,9.2,7.3,9,7.3c-0.1,0-0.3,0-0.5,0C8.3,7.3,8,7.5,7.9,7.6C7.3,8.2,7,8.9,7,9.7c0.1,0.9,0.4,1.8,1,2.6c1.1,1.6,2.5,2.9,4.2,3.7c0.5,0.2,0.9,0.4,1.4,0.5c0.5,0.2,1,0.2,1.6,0.1c0.7-0.1,1.3-0.6,1.7-1.2c0.2-0.4,0.2-0.8,0.1-1.2C17,14.2,16.8,14.1,16.6,14 M19.1,4.9C15.2,1,8.9,1,5,4.9c-3.2,3.2-3.8,8.1-1.6,12L2,22l5.3-1.4c1.5,0.8,3.1,1.2,4.7,1.2h0c5.5,0,9.9-4.4,9.9-9.9C22,9.3,20.9,6.8,19.1,4.9 M16.4,18.9c-1.3,0.8-2.8,1.3-4.4,1.3h0c-1.5,0-2.9-0.4-4.2-1.1l-0.3-0.2l-3.1,0.8l0.8-3l-0.2-0.3C2.6,12.4,3.8,7.4,7.7,4.9S16.6,3.7,19,7.5C21.4,11.4,20.3,16.5,16.4,18.9"/></svg>
-    </a>
-
-    <!-- Facebook Link -->
-    <a href="https://www.facebook.com/fetmandigital" target="_blank" rel="noopener noreferrer" title="Facebook Page" style="color:inherit;">
-      <!-- Facebook SVG code here -->
-       <svg width="24px" height="24px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<path fill="#444" d="M7.2 16v-7.5h-2v-2.7h2c0 0 0-1.1 0-2.3 0-1.8 1.2-3.5 3.9-3.5 1.1 0 1.9 0.1 1.9 0.1l-0.1 2.5c0 0-0.8 0-1.7 0-1 0-1.1 0.4-1.1 1.2 0 0.6 0-1.3 0 2h2.9l-0.1 2.7h-2.8v7.5h-2.9z"></path>
-</svg>
-    </a>
-
-  </div>
-</div>
-
-
+                <div class="col-lg-6">
+                    <form class="contact-form" id="projectEnquiryForm">
+                        <div class="form-row">
+                            <label for="name">Name</label>
+                            <input id="name" name="name" type="text" required>
+                        </div>
+                        <div class="form-row two-up">
+                            <div>
+                                <label for="email">Email</label>
+                                <input id="email" name="email" type="email" required>
+                            </div>
+                            <div>
+                                <label for="business">Business name</label>
+                                <input id="business" name="business" type="text">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label for="service">Service required</label>
+                            <select id="service" name="service">
+                                <option value="Logo & Brand Identity">Logo & Brand Identity</option>
+                                <option value="Marketing & Promotional Design">Marketing & Promotional Design</option>
+                                <option value="Corporate Design">Corporate Design</option>
+                                <option value="Website Development">Website Development</option>
+                                <option value="E-commerce Development">E-commerce Development</option>
+                                <option value="Web Application">Web Application</option>
+                                <option value="Mobile Application">Mobile Application</option>
+                                <option value="Website Maintenance">Website Maintenance</option>
+                                <option value="Domain & Business Email">Domain & Business Email</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="project">Project description</label>
+                            <textarea id="project" name="project" rows="4" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label for="budget">Budget range</label>
+                            <select id="budget" name="budget">
+                                <option value="Not sure yet">Not sure yet</option>
+                                <option value="Under R3,000">Under R3,000</option>
+                                <option value="R3,000 - R10,000">R3,000 - R10,000</option>
+                                <option value="R10,000 - R25,000">R10,000 - R25,000</option>
+                                <option value="R25,000+">R25,000+</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary submit-btn">Send enquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
@@ -831,17 +1006,44 @@
             element.classList.add("reveal");
             revealObserver.observe(element);
         });
+
+        const projectEnquiryForm = document.getElementById("projectEnquiryForm");
+        if (projectEnquiryForm) {
+            projectEnquiryForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                const formData = new FormData(projectEnquiryForm);
+                const name = (formData.get("name") || "").toString().trim();
+                const email = (formData.get("email") || "").toString().trim();
+                const business = (formData.get("business") || "").toString().trim();
+                const service = (formData.get("service") || "").toString().trim();
+                const project = (formData.get("project") || "").toString().trim();
+                const budget = (formData.get("budget") || "").toString().trim();
+
+                const subject = encodeURIComponent(`Project enquiry: ${service}`);
+                const body = encodeURIComponent(
+                    `Name: ${name}\nEmail: ${email}\nBusiness: ${business || "Not provided"}\nService: ${service}\nBudget: ${budget}\n\nProject details:\n${project}`
+                );
+
+                window.location.href = `mailto:info@fetmandigital.com?subject=${subject}&body=${body}`;
+            });
+        }
     </script>
 
     <style>
         :root {
-            --ink: #102f35;
-            --deep: #082a33;
-            --teal: #0d7776;
-            --bright: #24c8bd;
-            --coral: #f2a367;
-            --paper: #f4f2ec;
-            --muted: #647477;
+            --ink: #18343A;
+            --deep: #062B33;
+            --teal: #0FAFA9;
+            --bright: #20C4BE;
+            --bright-soft: #DDF7F2;
+            --cream: #F5F2EB;
+            --white: #FFFFFF;
+            --subtle: #D5DADD;
+            --neutral-light: #EEF7F6;
+            --neutral-medium: #B9C3C7;
+            --neutral-dark: #4B5F67;
+            --paper: #F9F7F3;
+            --muted: #5F6E73;
         }
 
         html {
@@ -863,7 +1065,7 @@
 
         .navbar {
             padding: 17px 0;
-            background: rgba(8, 42, 51, .94);
+            background: rgba(6, 43, 51, .92);
             backdrop-filter: blur(12px);
         }
 
@@ -873,7 +1075,7 @@
         }
 
         .brand-mark {
-            color: var(--coral);
+            color: var(--accent-muted);
         }
 
         .navbar .nav-link {
@@ -884,8 +1086,9 @@
         }
 
         .navbar .nav-link:hover,
-        .navbar .nav-link:focus {
-            color: var(--bright);
+        .navbar .nav-link:focus,
+        .navbar .nav-link.active {
+            color: var(--bright-soft);
         }
 
         .hero {
@@ -895,7 +1098,7 @@
             padding: 120px 0 70px;
             justify-content: flex-start;
             text-align: left;
-            background-image: linear-gradient(90deg, rgba(5, 28, 36, .93) 0%, rgba(5, 28, 36, .83) 49%, rgba(5, 28, 36, .2) 100%), url("Fetman Digital website background.jpg");
+            background-image: linear-gradient(90deg, rgba(6, 43, 51, .96) 0%, rgba(6, 43, 51, .86) 48%, rgba(6, 43, 51, .28) 100%), url("Fetman Digital website background.jpg");
             background-position: center;
             background-size: cover;
             overflow: hidden;
@@ -907,7 +1110,7 @@
             bottom: 9%;
             width: 110px;
             height: 4px;
-            background: var(--coral);
+            background: var(--accent-muted);
             content: "";
             transform: rotate(-45deg);
             opacity: .9;
@@ -922,7 +1125,7 @@
         }
 
         .hero .eyebrow {
-            color: var(--bright);
+            color: var(--bright-soft);
             font-size: .82rem;
             font-weight: 700;
             letter-spacing: 0;
@@ -958,18 +1161,32 @@
             padding: 12px 20px;
             border: 1px solid var(--bright);
             border-radius: 3px;
-            background: var(--bright);
+            background: linear-gradient(135deg, var(--bright) 0%, var(--teal) 100%);
             color: var(--deep);
             font-weight: 700;
-            transition: transform .2s ease, background .2s ease;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+            box-shadow: 0 18px 32px rgba(32, 196, 190, .18);
         }
 
         .btn-primary:hover,
         .btn-primary:focus {
-            border-color: #54ded4;
-            background: #54ded4;
+            border-color: var(--teal);
+            background: linear-gradient(135deg, #30d2cb 0%, #0fa4a3 100%);
             color: var(--deep);
             transform: translateY(-2px);
+            box-shadow: 0 20px 36px rgba(32, 196, 190, .22);
+        }
+
+        .btn:focus-visible {
+            outline: 3px solid var(--neutral-dark);
+            outline-offset: 2px;
+            box-shadow: none;
+        }
+
+        .navbar-toggler:focus-visible {
+            outline: 2px solid var(--bright);
+            outline-offset: 2px;
+            box-shadow: none;
         }
 
         .hero-link {
@@ -979,7 +1196,7 @@
         }
 
         .hero-link span {
-            color: var(--coral);
+            color: var(--accent-muted);
         }
 
         .hero-scroll {
@@ -997,6 +1214,43 @@
             color: var(--bright);
         }
 
+        .trust-strip {
+            background: var(--white);
+            border-bottom: 1px solid rgba(24, 52, 58, .08);
+        }
+
+        .strip-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 8px;
+            padding: 18px 0;
+        }
+
+        .strip-grid span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            border: 1px solid rgba(16, 164, 163, .18);
+            background: rgba(221, 247, 242, .7);
+            color: var(--deep);
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            border-radius: 999px;
+        }
+
+        .section-kicker {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: var(--teal);
+            font-size: .76rem;
+            font-weight: 700;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+        }
+
         .about,
         .services,
         .portfolio,
@@ -1010,6 +1264,19 @@
 
         .about .row {
             gap: 0;
+        }
+
+        .about-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .inline-link {
+            color: var(--deep);
+            font-weight: 700;
+            text-decoration: none;
         }
 
         .about h2,
@@ -1029,7 +1296,7 @@
             width: 42px;
             height: 4px;
             margin-bottom: 16px;
-            background: var(--coral);
+            background: var(--accent-muted);
             content: "";
         }
 
@@ -1044,8 +1311,8 @@
         .about-image {
             padding: 20px;
             background: #fff;
-            border: 1px solid rgba(16, 47, 53, .08);
-            box-shadow: 18px 18px 0 rgba(13, 119, 118, .12);
+            border: 1px solid rgba(47, 51, 56, .08);
+            box-shadow: 18px 18px 0 rgba(32, 196, 190, .12);
         }
 
         .about-image img {
@@ -1061,22 +1328,368 @@
             background: #fff !important;
         }
 
+        .section-heading {
+            margin-bottom: 28px;
+        }
+
         .services h2 {
             text-align: left !important;
         }
 
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 20px;
+        }
+
         .service-card {
-            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            padding: 26px 20px 20px;
             overflow: hidden;
-            border: 1px solid #e3e9e7 !important;
-            border-radius: 4px !important;
-            box-shadow: none;
-            transition: border-color .2s ease, transform .2s ease;
+            border: 1px solid rgba(24, 52, 58, .08);
+            border-radius: 18px;
+            background: linear-gradient(180deg, #fff 0%, #f8fbfa 100%);
+            box-shadow: 0 12px 30px rgba(11, 38, 45, .04);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
         }
 
         .service-card:hover {
-            border-color: rgba(13, 119, 118, .5) !important;
-            transform: translateY(-2px);
+            border-color: rgba(32, 196, 190, .5);
+            transform: translateY(-5px);
+            box-shadow: 0 18px 36px rgba(11, 38, 45, .08);
+        }
+
+        .service-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 18px;
+            border-radius: 14px;
+            background: rgba(32, 196, 190, .15);
+            color: var(--deep);
+            font-size: 1.3rem;
+        }
+
+        .service-card h3 {
+            margin-bottom: 12px;
+            color: var(--ink);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .service-card p {
+            margin-bottom: 16px;
+            color: var(--muted);
+            font-size: 0.96rem;
+            line-height: 1.7;
+        }
+
+        .service-card ul {
+            margin: 0 0 18px;
+            padding-left: 18px;
+            color: var(--ink);
+            font-size: 0.9rem;
+            line-height: 1.85;
+        }
+
+        .service-card a {
+            margin-top: auto;
+            color: var(--deep);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .why-choose,
+        .process,
+        .pricing,
+        .faq {
+            padding: 92px 0;
+            background: var(--paper);
+        }
+
+        .feature-grid,
+        .process-grid,
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .it-division,
+        .dev-portfolio {
+            padding: 92px 0;
+            background: #fff;
+        }
+
+        .it-intro,
+        .dev-portfolio-note {
+            max-width: 760px;
+            margin-bottom: 28px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .it-grid,
+        .dev-portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .it-card,
+        .dev-placeholder {
+            display: flex;
+            flex-direction: column;
+            padding: 24px 22px;
+            border: 1px solid rgba(24, 52, 58, .08);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(221, 247, 242, .25), rgba(255,255,255,1));
+            box-shadow: 0 12px 30px rgba(11, 38, 45, .04);
+        }
+
+        .it-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            background: rgba(32, 196, 190, .12);
+            color: var(--deep);
+            font-size: 1.3rem;
+        }
+
+        .it-card h3,
+        .dev-placeholder h3 {
+            margin-bottom: 12px;
+            color: var(--ink);
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .it-card p,
+        .dev-placeholder p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .chip,
+        .placeholder-tag {
+            display: inline-block;
+            width: fit-content;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(32, 196, 190, .12);
+            color: var(--deep);
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .dev-placeholder {
+            background: rgba(249, 247, 243, .95);
+        }
+
+        .feature-card,
+        .process-card,
+        .price-card {
+            padding: 26px 22px;
+            border: 1px solid rgba(24, 52, 58, .08);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .8);
+            box-shadow: 0 12px 30px rgba(11, 38, 45, .04);
+        }
+
+        .feature-icon {
+            display: inline-flex;
+            width: 46px;
+            height: 46px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            background: rgba(32, 196, 190, .12);
+            color: var(--deep);
+            font-size: 1.2rem;
+        }
+
+        .feature-card h3,
+        .process-card h3,
+        .price-card h3 {
+            margin-bottom: 12px;
+            color: var(--ink);
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .feature-card p,
+        .process-card p,
+        .price-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .process-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .step-number {
+            display: inline-block;
+            margin-bottom: 18px;
+            color: var(--bright);
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+
+        .pricing {
+            background: #fff;
+        }
+
+        .pricing-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .price-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 28px 24px;
+        }
+
+        .plan-tag {
+            display: inline-block;
+            width: fit-content;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(32, 196, 190, .12);
+            color: var(--deep);
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .price-placeholder {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--deep) !important;
+        }
+
+        .price-card ul {
+            margin: 0 0 20px;
+            padding-left: 18px;
+            color: var(--ink);
+            line-height: 1.8;
+        }
+
+        .featured-plan {
+            border-color: rgba(32, 196, 190, .45);
+            background: linear-gradient(180deg, rgba(221, 247, 242, .8), rgba(255, 255, 255, 1));
+        }
+
+        .faq {
+            background: var(--paper);
+            padding-bottom: 120px;
+        }
+
+        .faq-accordion .accordion-item {
+            border: 1px solid rgba(24, 52, 58, .08);
+            border-radius: 14px !important;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background: #fff;
+        }
+
+        .faq-accordion .accordion-button {
+            padding: 18px 20px;
+            font-weight: 700;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        .faq-accordion .accordion-button:not(.collapsed) {
+            background: rgba(221, 247, 242, .7);
+            color: var(--deep);
+        }
+
+        .faq-accordion .accordion-body {
+            padding: 0 20px 20px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .contact {
+            background: rgba(6, 43, 51, 1);
+        }
+
+        .contact-kicker {
+            color: var(--bright);
+        }
+
+        .contact-details {
+            margin-top: 28px;
+        }
+
+        .contact-details p,
+        .contact-details a {
+            color: rgba(255,255,255,.8);
+            text-decoration: none;
+        }
+
+        .contact-form {
+            padding: 28px 24px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .two-up {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .contact-form label {
+            color: rgba(255,255,255,.8);
+            font-size: .85rem;
+            font-weight: 700;
+        }
+
+        .contact-form input,
+        .contact-form textarea,
+        .contact-form select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            background: rgba(255,255,255,.04);
+            color: #fff;
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 130px;
+        }
+
+        .submit-btn {
+            width: 100%;
         }
 
         .accordion-button {
@@ -1090,17 +1703,22 @@
             box-shadow: none !important;
         }
 
+        .accordion-button:focus-visible {
+            outline: 3px solid var(--neutral-dark);
+            outline-offset: -3px;
+        }
+
         .accordion-button:not(.collapsed) {
-            background: #f0f8f6;
-            color: var(--teal);
+            background: #eef1f3;
+            color: var(--deep);
         }
 
         .accordion-button::after {
-            filter: hue-rotate(125deg);
+            filter: grayscale(1);
         }
 
         .accordion-button i {
-            color: var(--teal) !important;
+            color: var(--neutral-dark) !important;
         }
 
         .price-range {
@@ -1130,14 +1748,14 @@
         }
 
         #search-bar:focus {
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(13, 119, 118, .12);
+            border-color: var(--neutral-dark);
+            box-shadow: 0 0 0 3px rgba(104, 116, 125, .24);
         }
 
         .filter-btn {
             margin: 0 7px 8px 0;
             padding: 8px 14px;
-            border: 1px solid #cbd8d5;
+            border: 1px solid var(--neutral-medium);
             border-radius: 3px;
             background: transparent;
             color: var(--ink);
@@ -1145,11 +1763,17 @@
             transition: color .2s ease, background .2s ease, border-color .2s ease;
         }
 
+        .filter-btn.btn-outline-primary:hover,
+        .filter-btn.btn-outline-primary:focus,
+        .filter-btn.btn-outline-primary:active,
         .filter-btn.btn-primary,
-        .filter-btn.btn-primary:hover {
-            border-color: var(--teal);
-            background: var(--teal);
-            color: #fff;
+        .filter-btn.btn-primary:hover,
+        .filter-btn.btn-primary:focus,
+        .filter-btn.btn-primary:active {
+            border-color: var(--neutral-medium);
+            background: var(--neutral-light);
+            color: var(--ink);
+            box-shadow: none;
         }
 
         .portfolio .row {
@@ -1213,7 +1837,7 @@
             width: 42px;
             height: 4px;
             margin-bottom: 16px;
-            background: var(--coral);
+            background: var(--accent-muted);
             content: "";
         }
 
