@@ -1902,46 +1902,195 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @media (max-width: 991.98px) {
+            .navbar {
+                padding: 12px 0;
+            }
+
+            .navbar .container {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .navbar-nav {
+                gap: 4px;
+                padding: 10px 0 8px;
+            }
+
+            .navbar .nav-link {
+                margin-left: 0;
+                padding: 10px 0;
+            }
+
+            .navbar {
+                z-index: 1030;
+            }
+
+            .navbar-collapse {
+                position: relative;
+                z-index: 1040;
+                margin-top: 10px;
+                padding: 0 14px 8px;
+                border-radius: 12px;
+                background: rgba(6, 43, 51, .96);
+            }
+        }
+
         @media (max-width: 767px) {
+            * {
+                box-sizing: border-box;
+            }
+
+            img,
+            svg,
+            video,
+            embed,
+            iframe {
+                max-width: 100%;
+                height: auto;
+            }
+
+            a,
+            button,
+            input,
+            textarea,
+            select {
+                word-break: break-word;
+                overflow-wrap: anywhere;
+            }
+
+            .container {
+                padding-left: 18px !important;
+                padding-right: 18px !important;
+            }
+
             .hero {
-                min-height: 680px;
-                height: 88svh;
-                background-position: 57% center;
+                min-height: 620px;
+                height: auto;
+                padding-top: 108px;
+                background-position: 58% center;
+            }
+
+            .hero-content {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .hero .eyebrow {
+                font-size: .72rem;
             }
 
             .hero h1 {
-                max-width: 560px;
-                font-size: 48px;
+                max-width: 100%;
+                font-size: clamp(2.6rem, 9vw, 4.1rem);
+                line-height: .94;
+            }
+
+            .hero h1 br {
+                display: none;
             }
 
             .hero-copy {
-                font-size: 16px;
+                font-size: 1rem;
+                max-width: 100%;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
             }
 
             .hero-scroll {
-                left: 24px;
+                left: 18px;
+                bottom: 18px;
+            }
+
+            .strip-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .strip-grid span {
+                min-height: 48px;
+                padding: 10px 12px;
+                font-size: .66rem;
+                letter-spacing: .09em;
+                text-align: center;
             }
 
             .about,
             .services,
             .portfolio,
-            .contact {
+            .contact,
+            .why-choose,
+            .process,
+            .pricing,
+            .faq,
+            .it-division,
+            .dev-portfolio {
                 padding: 68px 0 !important;
             }
 
             .about h2,
             .services h2,
             .portfolio h2,
-            .contact h2 {
-                font-size: 34px;
+            .contact h2,
+            .why-choose h2,
+            .process h2,
+            .pricing h2,
+            .faq h2 {
+                font-size: clamp(2.1rem, 7vw, 3.1rem);
+            }
+
+            .about .row,
+            .row.g-5,
+            .row.g-5 > [class*="col-"] {
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .about .row {
+                display: block;
+            }
+
+            .about-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
 
             .about-image {
                 margin-top: 28px;
+                padding: 14px;
+                box-shadow: 0 10px 22px rgba(11, 38, 45, .08);
             }
 
             .services h2 {
                 text-align: left !important;
+            }
+
+            .services-grid,
+            .it-grid,
+            .feature-grid,
+            .process-grid,
+            .pricing-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .service-card,
+            .it-card,
+            .feature-card,
+            .process-card,
+            .price-card,
+            .dev-placeholder {
+                min-height: 0;
+            }
+
+            .portfolio .row {
+                margin-left: 0;
+                margin-right: 0;
+                row-gap: 18px;
             }
 
             .portfolio .text-center {
@@ -1949,11 +2098,26 @@
             }
 
             #search-bar {
+                width: 100% !important;
                 margin-left: 0 !important;
             }
 
             .portfolio img {
                 height: 250px;
+            }
+
+            .two-up {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-links a {
+                width: 44px;
+                height: 44px;
+            }
+
+            .accordion-button {
+                padding: 16px 18px;
+                font-size: 15px;
             }
         }
 
@@ -1962,26 +2126,47 @@
                 padding: 11px 0;
             }
 
+            .navbar-brand {
+                font-size: 1.14rem;
+            }
+
+            .navbar-toggler {
+                padding: 0.3rem 0.5rem;
+            }
+
             .hero {
-                min-height: 620px;
-                height: 88svh;
-                padding-top: 100px;
+                min-height: 540px;
+                padding-top: 96px;
                 background-position: 60% center;
             }
 
             .hero h1 {
-                font-size: 40px;
+                font-size: clamp(2.2rem, 10vw, 3.4rem);
             }
 
-            .hero-actions {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 16px;
+            .hero-copy {
+                max-width: 100%;
             }
 
-            .accordion-button {
-                padding: 16px;
-                font-size: 15px;
+            .strip-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid,
+            .it-grid,
+            .feature-grid,
+            .process-grid,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-actions {
+                width: 100%;
+            }
+
+            .about-actions .btn,
+            .about-actions .inline-link {
+                width: auto;
             }
 
             .portfolio img {
