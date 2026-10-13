@@ -33,11 +33,15 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Animate.css for animation effects -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Animate.css is used below the hero, so load it without blocking the first render. -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></noscript>
 
     <!-- Custom CSS -->
     <style>
@@ -312,10 +316,6 @@
     }
 
 }
-
-        body {
-            overflow-x: hidden;
-        }
 
         .navbar {
             backdrop-filter: blur(12px);
@@ -705,18 +705,17 @@
     <div class="container">
         <h2 class="text-center mb-4 animate__animated animate__fadeInUp">Our Work</h2>
 
-           <!-- Search Bar -->
-           <div class="mb-4 text-center">
-            <input type="text" id="search-bar" class="form-control w-50 mx-auto" placeholder="Search portfolio items...">
-        </div>
-
-
-        <!-- Filter Buttons -->
-        <div class="text-center mb-4">
-            <button class="btn btn-primary filter-btn" data-filter="all">All</button>
-            <button class="btn btn-outline-primary filter-btn" data-filter="logo">Logo Design</button>
-            <button class="btn btn-outline-primary filter-btn" data-filter="branding">Branding</button>
-            <button class="btn btn-outline-primary filter-btn" data-filter="print">Print</button>
+        <div class="portfolio-controls">
+            <div class="portfolio-search">
+                <label class="visually-hidden" for="search-bar">Search portfolio items</label>
+                <input type="text" id="search-bar" class="form-control" placeholder="Search portfolio items...">
+            </div>
+            <div class="portfolio-filters" role="group" aria-label="Filter portfolio projects">
+                <button class="btn btn-primary filter-btn" data-filter="all">All</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="logo">Logo Design</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="branding">Branding</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="print">Print</button>
+            </div>
         </div>
 
         <!-- Portfolio Items -->
@@ -724,7 +723,7 @@
             <!-- Portfolio Item 1 (Logo Design) -->
             <div class="col-md-4 portfolio-item logo">
                 <div class="card">
-                    <img src="logo%20img/Sino-and-Sma-Trading-1200.jpg" srcset="logo%20img/Sino-and-Sma-Trading-480.jpg 480w, logo%20img/Sino-and-Sma-Trading-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1024" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
+                    <img src="logo%20img/Sino-and-Sma-Trading-1200.jpg" srcset="logo%20img/Sino-and-Sma-Trading-480.jpg 480w, logo%20img/Sino-and-Sma-Trading-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1024" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Sino and Sma Trading</h5>
                         <p class="card-text">Logo design and brand identity.</p>
@@ -755,7 +754,7 @@
             <!-- Portfolio Item 2 (Branding) -->
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/deals-on-wheels-1200.jpg" srcset="Branding%20img/deals-on-wheels-480.jpg 480w, Branding%20img/deals-on-wheels-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1200" class="card-img-top" alt="Deals on Wheels promotional poster" loading="lazy" decoding="async">
+                    <img src="Branding%20img/deals-on-wheels-1200.jpg" srcset="Branding%20img/deals-on-wheels-480.jpg 480w, Branding%20img/deals-on-wheels-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1200" class="card-img-top" alt="Deals on Wheels promotional poster" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Deals on Wheels</h5>
                         <p class="card-text">Promotional poster design.</p>
@@ -765,7 +764,7 @@
 
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/dj-olga-bookings-1200.jpg" srcset="Branding%20img/dj-olga-bookings-480.jpg 480w, Branding%20img/dj-olga-bookings-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1200" class="card-img-top" alt="DJ Olga bookings promotional artwork" loading="lazy" decoding="async">
+                    <img src="Branding%20img/dj-olga-bookings-1200.jpg" srcset="Branding%20img/dj-olga-bookings-480.jpg 480w, Branding%20img/dj-olga-bookings-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1200" class="card-img-top" alt="DJ Olga bookings promotional artwork" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">DJ Olga Bookings</h5>
                         <p class="card-text">Event and booking artwork.</p>
@@ -775,7 +774,7 @@
 
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/pub-on-frere-1200.jpg" srcset="Branding%20img/pub-on-frere-480.jpg 480w, Branding%20img/pub-on-frere-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1683" class="card-img-top" alt="Pub on Frere anniversary artwork" loading="lazy" decoding="async">
+                    <img src="Branding%20img/pub-on-frere-1200.jpg" srcset="Branding%20img/pub-on-frere-480.jpg 480w, Branding%20img/pub-on-frere-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1683" class="card-img-top" alt="Pub on Frere anniversary artwork" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Pub on Frere</h5>
                         <p class="card-text">Anniversary campaign design.</p>
@@ -785,7 +784,7 @@
 
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/thursday-braaiday-1200.jpg" srcset="Branding%20img/thursday-braaiday-480.jpg 480w, Branding%20img/thursday-braaiday-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Thursday Braaiday promotional artwork" loading="lazy" decoding="async">
+                    <img src="Branding%20img/thursday-braaiday-1200.jpg" srcset="Branding%20img/thursday-braaiday-480.jpg 480w, Branding%20img/thursday-braaiday-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Thursday Braaiday promotional artwork" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Thursday Braaiday</h5>
                         <p class="card-text">Promotional campaign artwork.</p>
@@ -796,7 +795,7 @@
             <!-- Portfolio Item 3 (Web Design) -->
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/fetman-company-profile-1200.jpg" srcset="Branding%20img/fetman-company-profile-480.jpg 480w, Branding%20img/fetman-company-profile-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1544" class="card-img-top" alt="Fetman Digital company profile design" loading="lazy" decoding="async">
+                    <img src="Branding%20img/fetman-company-profile-1200.jpg" srcset="Branding%20img/fetman-company-profile-480.jpg 480w, Branding%20img/fetman-company-profile-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1544" class="card-img-top" alt="Fetman Digital company profile design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Company Profile</h5>
                         <p class="card-text">Editorial layout and brand presentation.</p>
@@ -806,7 +805,7 @@
 
             <div class="col-md-4 portfolio-item print">
                 <div class="card">
-                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital company profile spread" loading="lazy" decoding="async">
+                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital company profile spread" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Company Profile Design</h5>
                         <p class="card-text">A multi-page print identity piece.</p>
@@ -817,7 +816,7 @@
                <!-- Portfolio Item 6 (Applications) -->
                <div class="col-md-4 portfolio-item print">
                 <div class="card">
-                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Printed brand profile design" loading="lazy" decoding="async">
+                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Printed brand profile design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Print & Editorial</h5>
                         <p class="card-text">Information design for a growing brand.</p>
@@ -828,7 +827,7 @@
             <!-- Portfolio Item 4 (Illustration) -->
             <div class="col-md-4 portfolio-item print">
                 <div class="card">
-                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital print portfolio" loading="lazy" decoding="async">
+                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital print portfolio" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Brand Collateral</h5>
                         <p class="card-text">Print-ready collateral and layout.</p>
@@ -1984,13 +1983,32 @@
             text-align: left !important;
         }
 
+        .portfolio-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .portfolio-search {
+            width: min(100%, 430px);
+        }
+
         #search-bar {
-            width: min(100%, 430px) !important;
+            width: 100% !important;
             min-height: 48px;
-            margin: 0 0 16px !important;
+            margin: 0 !important;
             border: 1px solid #d6dfdc;
             border-radius: 3px;
             box-shadow: none;
+        }
+
+        .portfolio-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
         }
 
         #search-bar:focus {
@@ -1999,7 +2017,7 @@
         }
 
         .filter-btn {
-            margin: 0 7px 8px 0;
+            margin: 0;
             padding: 8px 14px;
             border: 1px solid var(--neutral-medium);
             border-radius: 3px;
@@ -2027,10 +2045,12 @@
         }
 
         .portfolio-item {
+            min-width: 0;
             transition: opacity .35s ease, transform .35s ease;
         }
 
         .portfolio .card {
+            min-width: 0;
             height: 100%;
             overflow: hidden;
             border: 1px solid rgba(16, 47, 53, .08);
@@ -2046,18 +2066,24 @@
         }
 
         .portfolio img {
+            display: block;
             width: 100%;
-            height: 230px;
+            height: auto;
+            aspect-ratio: 4 / 3;
             border-radius: 0;
             background: #e9eeeb;
             object-fit: cover;
         }
 
         .portfolio .card-body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
             padding: 20px;
         }
 
         .portfolio .card-title {
+            min-height: 2.7em;
             color: var(--ink);
             font-size: 18px;
             font-weight: 700;
@@ -2195,6 +2221,10 @@
         @media (max-width: 767px) {
             * {
                 box-sizing: border-box;
+            }
+
+            .about-image img.animate__fadeInRight {
+                animation-name: fadeIn;
             }
 
             img,
@@ -2350,17 +2380,12 @@
                 row-gap: 18px;
             }
 
-            .portfolio .text-center {
-                text-align: left !important;
+            .portfolio-controls {
+                width: 100%;
             }
 
-            #search-bar {
-                width: 100% !important;
-                margin-left: 0 !important;
-            }
-
-            .portfolio img {
-                height: 250px;
+            .portfolio-search {
+                max-width: none;
             }
 
             .two-up {
@@ -2379,8 +2404,25 @@
         }
 
         @media (max-width: 430px) {
-            .dev-portfolio-grid {
+            .dev-portfolio .dev-portfolio-grid {
                 grid-template-columns: minmax(0, 1fr);
+                width: 100%;
+            }
+
+            .dev-portfolio .dev-placeholder {
+                position: static;
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            .dev-portfolio .dev-placeholder h3,
+            .dev-portfolio .dev-placeholder p,
+            .dev-portfolio .placeholder-tag {
+                max-width: 100%;
+                white-space: normal;
+                overflow-wrap: anywhere;
             }
         }
 
@@ -2432,9 +2474,6 @@
                 width: auto;
             }
 
-            .portfolio img {
-                height: 220px;
-            }
         }
 
         @media (prefers-reduced-motion: reduce) {
