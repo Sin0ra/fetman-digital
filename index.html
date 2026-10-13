@@ -23,6 +23,14 @@
 <meta name="twitter:description" content="Creative graphic design, branding, and web solutions for businesses in South Africa.">
 <meta name="twitter:image" content="https://fetmandigital.com/logo%20img/fetman%20digital%202023%20black.png">
 
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="image" href="Fetman%20Digital%20website%20background-optimized-1920.jpg"
+        imagesrcset="Fetman%20Digital%20website%20background-optimized-960.jpg 1x, Fetman%20Digital%20website%20background-optimized-1920.jpg 2x"
+        fetchpriority="high">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -52,7 +60,7 @@
         /* Hero Section */
         .hero {
             height: 100vh;
-            background: url('Fetman Digital website background.jpg') no-repeat center center/cover;
+            background: url('Fetman Digital website background-optimized-1920.jpg') no-repeat center center/cover;
             background-size: cover;
             display: flex;
             justify-content: center;
@@ -304,6 +312,211 @@
     }
 
 }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .navbar-brand {
+            letter-spacing: -0.05em;
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 700;
+        }
+
+        .navbar-nav {
+            gap: 0.6rem;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 0.95rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .hero {
+            min-height: 100vh;
+            padding: 120px 1rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            width: min(100%, 900px);
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin: 0 0 1.5rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(3.2rem, 7vw, 8rem);
+            line-height: 0.9;
+            letter-spacing: -0.06em;
+            max-width: 760px;
+            text-wrap: balance;
+            text-align: left;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: #dfe8eb;
+        }
+
+        .hero-copy {
+            max-width: 36rem;
+            margin: 1.25rem 0 0;
+            font-size: clamp(1.05rem, 2vw, 1.35rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1.75rem;
+        }
+
+        .hero .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.9rem 1.5rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .hero-link {
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .hero-scroll {
+            position: absolute;
+            right: 2rem;
+            bottom: 2rem;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-nav {
+                padding-top: 0.75rem;
+            }
+
+            .hero {
+                padding-top: 120px;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navbar {
+                background: rgba(12, 28, 30, 0.9);
+            }
+
+            .navbar-nav {
+                text-align: center;
+                width: 100%;
+                gap: 0.25rem;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 110px 1rem 3rem;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .eyebrow {
+                font-size: 0.62rem;
+                letter-spacing: 0.18em;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.7rem, 13vw, 5rem);
+                line-height: 0.95;
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            .hero h1 span {
+                display: block;
+            }
+
+            .hero-copy {
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 1rem;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .hero-scroll {
+                position: static;
+                display: inline-flex;
+                justify-content: center;
+                margin-top: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.8rem;
+            }
+
+            .hero {
+                padding-top: 96px;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.2rem, 15vw, 3.4rem);
+            }
+
+            .hero-copy {
+                font-size: 0.95rem;
+            }
+
+            .hero .btn,
+            .hero-link {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
 </head>
 
@@ -394,7 +607,7 @@
              </div>
              <div class="col-lg-6">
                  <div class="about-image">
-                     <img src="fetman digital 2023 black.png" alt="Fetman Digital studio logo" class="img-fluid animate__animated animate__fadeInRight">
+                     <img src="fetman digital 2023 black.png" alt="Fetman Digital studio logo" class="img-fluid animate__animated animate__fadeInRight" width="1500" height="1500" loading="lazy" decoding="async">
                  </div>
              </div>
          </div>
@@ -511,7 +724,7 @@
             <!-- Portfolio Item 1 (Logo Design) -->
             <div class="col-md-4 portfolio-item logo">
                 <div class="card">
-                    <img src="logo img/Sino and Sma Trading.jpg" class="card-img-top" alt="Logo Design">
+                    <img src="logo%20img/Sino-and-Sma-Trading-1200.jpg" srcset="logo%20img/Sino-and-Sma-Trading-480.jpg 480w, logo%20img/Sino-and-Sma-Trading-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1024" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Sino and Sma Trading</h5>
                         <p class="card-text">Logo design and brand identity.</p>
@@ -521,7 +734,7 @@
 
             <div class="col-md-4 portfolio-item logo">
                 <div class="card">
-                    <img src="logo img/Totana white logo.png" class="card-img-top" alt="Logo Design">
+                    <img src="logo img/Totana white logo.png" width="483" height="268" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Totana</h5>
                         <p class="card-text">Distinctive identity design.</p>
@@ -531,7 +744,7 @@
 
             <div class="col-md-4 portfolio-item logo">
                 <div class="card">
-                    <img src="logo img/fetman digital 2023 black.png" class="card-img-top" alt="Logo Design">
+                    <img src="logo img/fetman digital 2023 black.png" width="1500" height="1500" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Fetman Digital</h5>
                         <p class="card-text">The studio's own visual identity.</p>
@@ -542,7 +755,7 @@
             <!-- Portfolio Item 2 (Branding) -->
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/deals%20on%20wheels%20Poster-SHAQ.jpg" class="card-img-top" alt="Deals on Wheels promotional poster">
+                    <img src="Branding%20img/deals-on-wheels-1200.jpg" srcset="Branding%20img/deals-on-wheels-480.jpg 480w, Branding%20img/deals-on-wheels-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1200" class="card-img-top" alt="Deals on Wheels promotional poster" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Deals on Wheels</h5>
                         <p class="card-text">Promotional poster design.</p>
@@ -552,7 +765,7 @@
 
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/DJ%20OLGA%20BOOKINGS.jpg" class="card-img-top" alt="DJ Olga bookings promotional artwork">
+                    <img src="Branding%20img/dj-olga-bookings-1200.jpg" srcset="Branding%20img/dj-olga-bookings-480.jpg 480w, Branding%20img/dj-olga-bookings-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1200" class="card-img-top" alt="DJ Olga bookings promotional artwork" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">DJ Olga Bookings</h5>
                         <p class="card-text">Event and booking artwork.</p>
@@ -562,7 +775,7 @@
 
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/Pub%20on%20Frere%20turns%202.jpg" class="card-img-top" alt="Pub on Frere anniversary artwork">
+                    <img src="Branding%20img/pub-on-frere-1200.jpg" srcset="Branding%20img/pub-on-frere-480.jpg 480w, Branding%20img/pub-on-frere-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1683" class="card-img-top" alt="Pub on Frere anniversary artwork" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Pub on Frere</h5>
                         <p class="card-text">Anniversary campaign design.</p>
@@ -572,7 +785,7 @@
 
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/thursday%20braaiday-Recovered~1.jpg" class="card-img-top" alt="Thursday Braaiday promotional artwork">
+                    <img src="Branding%20img/thursday-braaiday-1200.jpg" srcset="Branding%20img/thursday-braaiday-480.jpg 480w, Branding%20img/thursday-braaiday-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Thursday Braaiday promotional artwork" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Thursday Braaiday</h5>
                         <p class="card-text">Promotional campaign artwork.</p>
@@ -583,7 +796,7 @@
             <!-- Portfolio Item 3 (Web Design) -->
             <div class="col-md-4 portfolio-item branding">
                 <div class="card">
-                    <img src="Branding%20img/Fetman%20Digital%20Company%20Profile%201.jpg" class="card-img-top" alt="Fetman Digital company profile design">
+                    <img src="Branding%20img/fetman-company-profile-1200.jpg" srcset="Branding%20img/fetman-company-profile-480.jpg 480w, Branding%20img/fetman-company-profile-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1544" class="card-img-top" alt="Fetman Digital company profile design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Company Profile</h5>
                         <p class="card-text">Editorial layout and brand presentation.</p>
@@ -593,7 +806,7 @@
 
             <div class="col-md-4 portfolio-item print">
                 <div class="card">
-                    <img src="Branding%20img/1.jpg" class="card-img-top" alt="Fetman Digital company profile spread">
+                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital company profile spread" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Company Profile Design</h5>
                         <p class="card-text">A multi-page print identity piece.</p>
@@ -604,7 +817,7 @@
                <!-- Portfolio Item 6 (Applications) -->
                <div class="col-md-4 portfolio-item print">
                 <div class="card">
-                    <img src="Branding%20img/1.jpg" class="card-img-top" alt="Printed brand profile design">
+                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Printed brand profile design" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Print & Editorial</h5>
                         <p class="card-text">Information design for a growing brand.</p>
@@ -615,7 +828,7 @@
             <!-- Portfolio Item 4 (Illustration) -->
             <div class="col-md-4 portfolio-item print">
                 <div class="card">
-                    <img src="Branding%20img/1.jpg" class="card-img-top" alt="Fetman Digital print portfolio">
+                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 36px), (max-width: 991px) 230px, (max-width: 1399px) 33vw, 440px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital print portfolio" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Brand Collateral</h5>
                         <p class="card-text">Print-ready collateral and layout.</p>
@@ -1098,10 +1311,18 @@
             padding: 120px 0 70px;
             justify-content: flex-start;
             text-align: left;
-            background-image: linear-gradient(90deg, rgba(6, 43, 51, .96) 0%, rgba(6, 43, 51, .86) 48%, rgba(6, 43, 51, .28) 100%), url("Fetman Digital website background.jpg");
+            background-image: linear-gradient(90deg, rgba(6, 43, 51, .96) 0%, rgba(6, 43, 51, .86) 48%, rgba(6, 43, 51, .28) 100%),
+                image-set(url("Fetman Digital website background-optimized-960.jpg") 1x, url("Fetman Digital website background-optimized-1920.jpg") 2x);
             background-position: center;
             background-size: cover;
             overflow: hidden;
+        }
+
+        @supports not (background-image: image-set(url("image.jpg") 1x)) {
+            .hero {
+                background-image: linear-gradient(90deg, rgba(6, 43, 51, .96) 0%, rgba(6, 43, 51, .86) 48%, rgba(6, 43, 51, .28) 100%),
+                    url("Fetman Digital website background-optimized-1920.jpg");
+            }
         }
 
         .hero::after {
@@ -1441,6 +1662,15 @@
             gap: 22px;
         }
 
+        .services-grid > *,
+        .feature-grid > *,
+        .process-grid > *,
+        .pricing-grid > *,
+        .it-grid > *,
+        .dev-portfolio-grid > * {
+            min-width: 0;
+        }
+
         .it-card,
         .dev-placeholder {
             display: flex;
@@ -1496,6 +1726,22 @@
 
         .dev-placeholder {
             background: rgba(249, 247, 243, .95);
+            min-width: 0;
+        }
+
+        .dev-placeholder h3 {
+            margin-top: 8px;
+            overflow-wrap: break-word;
+        }
+
+        .dev-placeholder p {
+            overflow-wrap: break-word;
+        }
+
+        .dev-placeholder .placeholder-tag {
+            align-self: flex-start;
+            max-width: 100%;
+            white-space: normal;
         }
 
         .feature-card,
@@ -1903,6 +2149,16 @@
         }
 
         @media (max-width: 991.98px) {
+            .services-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .feature-grid,
+            .process-grid,
+            .pricing-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
             .navbar {
                 padding: 12px 0;
             }
@@ -2072,6 +2328,7 @@
 
             .services-grid,
             .it-grid,
+            .dev-portfolio-grid,
             .feature-grid,
             .process-grid,
             .pricing-grid {
@@ -2121,6 +2378,12 @@
             }
         }
 
+        @media (max-width: 430px) {
+            .dev-portfolio-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
         @media (max-width: 480px) {
             .navbar {
                 padding: 11px 0;
@@ -2141,7 +2404,7 @@
             }
 
             .hero h1 {
-                font-size: clamp(2.2rem, 10vw, 3.4rem);
+                font-size: clamp(2rem, 10vw, 3.4rem);
             }
 
             .hero-copy {
