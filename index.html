@@ -901,7 +901,7 @@
             <h2>Project-ready space for future technical work.</h2>
         </div>
         <p class="dev-portfolio-note">This area is ready to be populated with verified website, app and digital solutions projects as real work is completed.</p>
-        <div class="dev-portfolio-grid">
+        <div class="dev-portfolio-grid" id="devPortfolioGrid">
             <article class="dev-placeholder">
                 <span class="placeholder-tag">Website project</span>
                 <h3>Project placeholder</h3>
@@ -2360,7 +2360,6 @@
 
             .services-grid,
             .it-grid,
-            .dev-portfolio-grid,
             .feature-grid,
             .process-grid,
             .pricing-grid {
@@ -2405,35 +2404,35 @@
             }
         }
 
-        @media (max-width: 430px) {
-            .dev-portfolio .dev-portfolio-grid {
+        @media (max-width: 767px) {
+            #devPortfolioGrid {
                 display: grid;
                 grid-template-columns: minmax(0, 1fr);
                 width: 100%;
                 min-width: 0;
             }
 
-            .dev-portfolio .dev-portfolio-grid > .dev-placeholder {
+            #devPortfolioGrid > .dev-placeholder {
                 width: 100%;
                 min-width: 0;
                 max-width: 100%;
-                height: auto;
                 box-sizing: border-box;
             }
 
-            .dev-portfolio .dev-placeholder > * {
+            #devPortfolioGrid > .dev-placeholder > * {
                 max-width: 100%;
+                min-width: 0;
                 box-sizing: border-box;
             }
 
-            .dev-portfolio .dev-placeholder h3,
-            .dev-portfolio .dev-placeholder p,
-            .dev-portfolio .placeholder-tag {
+            #devPortfolioGrid .dev-placeholder h3,
+            #devPortfolioGrid .dev-placeholder p,
+            #devPortfolioGrid .placeholder-tag {
                 white-space: normal;
                 overflow-wrap: anywhere;
             }
 
-            .dev-portfolio .placeholder-tag {
+            #devPortfolioGrid .placeholder-tag {
                 width: fit-content;
             }
         }
