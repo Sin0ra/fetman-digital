@@ -1,11 +1,21 @@
 # Local environment variables and secrets
 .env
 .env.*
+!.env.example
+!backend/.env.example
 
 # Node.js dependencies and logs
 node_modules/
 npm-debug.log*
+backend/secure-uploads/
 
 # Operating system files
 Thumbs.db
 .DS_Store
+
+# Generated reports and local database setup scripts
+/backend/audit-report.json
+/backend/sql/create-database-and-user.sql
+
+# Temporary diagnostic backups
+/backend/src/scripts/*.diagnostic-backup
