@@ -36,6 +36,12 @@ type DesignContent = {
   description: string
   alt_text: string
   asset_id: number | null
+  category: string
+  tags: string[] | string
+  display_order: number
+  publication_status: 'draft' | 'published'
+  source_key: string | null
+  legacy_image_url: string | null
 }
 
 type ContentForm = {
@@ -44,6 +50,9 @@ type ContentForm = {
   description: string
   altText: string
   assetId: string
+  category: string
+  tags: string
+  displayOrder: string
 }
 
 type DialogState = {
@@ -61,6 +70,9 @@ const emptyContentForm: ContentForm = {
   description: '',
   altText: '',
   assetId: '',
+  category: 'logo',
+  tags: '',
+  displayOrder: '0',
 }
 
 async function requestJson(path: string, init?: RequestInit) {
@@ -119,24 +131,30 @@ function GraphicDesignDashboard({
   const [newTaskDeadline, setNewTaskDeadline] = useState('')
   const [uploadTaskId, setUploadTaskId] = useState('')
   const [busy, setBusy] = useState(false)
+  const [loadingWorkspace, setLoadingWorkspace] = useState(true)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [dialog, setDialog] = useState<DialogState | null>(null)
 
   async function refreshWorkspace() {
-    const [taskResponse, assetResponse, contentResponse] = await Promise.all([
-      requestJson('/api/graphic-design/tasks'),
-      requestJson('/api/graphic-design/assets'),
-      requestJson('/api/graphic-design/content'),
-    ])
-    const [taskResult, assetResult, contentResult] = await Promise.all([
-      responseData<{ tasks: Task[] }>(taskResponse),
-      responseData<{ assets: Asset[] }>(assetResponse),
-      responseData<{ content: DesignContent[] }>(contentResponse),
-    ])
-    setTasks(taskResult.tasks)
-    setAssets(assetResult.assets)
-    setContent(contentResult.content)
+    setLoadingWorkspace(true)
+    try {
+      const [taskResponse, assetResponse, contentResponse] = await Promise.all([
+        requestJson('/api/graphic-design/tasks'),
+        requestJson('/api/graphic-design/assets'),
+        requestJson('/api/graphic-design/content'),
+      ])
+      const [taskResult, assetResult, contentResult] = await Promise.all([
+        responseData<{ tasks: Task[] }>(taskResponse),
+        responseData<{ assets: Asset[] }>(assetResponse),
+        responseData<{ content: DesignContent[] }>(contentResponse),
+      ])
+      setTasks(taskResult.tasks)
+      setAssets(assetResult.assets)
+      setContent(contentResult.content)
+    } finally {
+      setLoadingWorkspace(false)
+    }
   }
 
   useEffect(() => {
@@ -247,8 +265,18 @@ function GraphicDesignDashboard({
     event.preventDefault()
     await runAction(async () => {
       const body = {
-        ...contentForm,
-        assetId: contentForm.assetId || null,
+        type: contentForm.type,
+        title: contentForm.title,
+        description: contentForm.description,
+        altText: contentForm.altText,
+        category: contentForm.category,
+        tags: contentForm.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+        displayOrder: Number(contentForm.displayOrder),
+        ...(editingContentId
+          ? contentForm.assetId
+            ? { assetId: contentForm.assetId }
+            : {}
+          : { assetId: contentForm.assetId || null }),
       }
       if (editingContentId) {
         await mutate(`/api/graphic-design/content/${editingContentId}`, 'PATCH', body)
@@ -258,7 +286,7 @@ function GraphicDesignDashboard({
       setEditingContentId(null)
       setContentForm(emptyContentForm)
       await refreshWorkspace()
-    }, editingContentId ? 'Draft updated and version saved.' : 'Draft created.')
+    }, editingContentId ? 'Content updated and version saved.' : 'Draft created.')
   }
 
   function editContent(item: DesignContent) {
@@ -269,7 +297,18 @@ function GraphicDesignDashboard({
       description: item.description,
       altText: item.alt_text,
       assetId: item.asset_id ? String(item.asset_id) : '',
+      category: item.category || 'logo',
+      tags: (Array.isArray(item.tags) ? item.tags : []).join(', '),
+      displayOrder: String(item.display_order ?? 0),
     })
+  }
+
+  async function changePublication(item: DesignContent) {
+    await runAction(async () => {
+      const action = item.publication_status === 'published' ? 'unpublish' : 'publish'
+      await mutate(`/api/graphic-design/content/${item.id}/${action}`, 'POST')
+      await refreshWorkspace()
+    }, item.publication_status === 'published' ? 'Content unpublished.' : 'Content published to the public website.')
   }
 
   async function removeContent(item: DesignContent) {
@@ -335,8 +374,9 @@ function GraphicDesignDashboard({
       <section className="dashboard-content" aria-labelledby="graphic-design-title">
         <p className="eyebrow">Graphic Design workspace</p>
         <h1 id="graphic-design-title">Your creative work, in one place.</h1>
-        <p className="dashboard-intro">Manage your assigned work, revisions, design assets, and private website-content drafts.</p>
+        <p className="dashboard-intro">Manage your assigned work, design assets, and graphic-design content published on the public website.</p>
         {error && <p className="form-error" role="alert">{error}</p>}
+        {loadingWorkspace && <p role="status">Loading your design workspace…</p>}
         {notice && <p className="success-message" role="status">{notice}</p>}
         {logoutError && <p className="form-error" role="alert">{logoutError}</p>}
 
@@ -388,7 +428,7 @@ function GraphicDesignDashboard({
           </div>
           <form className="workspace-form upload-form" onSubmit={uploadAsset}>
             <h3>Add an image</h3>
-            <p>JPEG, PNG, and WebP only; maximum 5 MB. Files remain private to your account.</p>
+            <p>JPEG, PNG, and WebP only; maximum 5 MB. Assets stay private until attached to published content.</p>
             <label>Attach to task (optional)
               <select value={uploadTaskId} onChange={(event) => setUploadTaskId(event.target.value)}>
                 <option value="">No task</option>
@@ -412,43 +452,47 @@ function GraphicDesignDashboard({
 
         <section className="workspace-section" aria-labelledby="content-title">
           <div className="section-heading">
-            <div><p className="eyebrow">Not published</p><h2 id="content-title">Website content drafts</h2></div>
-            <span className="stage">Private preview only</span>
+            <div><p className="eyebrow">Public website</p><h2 id="content-title">Portfolio content</h2></div>
+            <span className="stage">{content.filter((item) => item.publication_status === 'published').length} published · {content.filter((item) => item.publication_status !== 'published').length} drafts</span>
           </div>
-          <p className="draft-notice">The public website is a separately deployed static site. These drafts and previews do not publish changes to it.</p>
+          <p className="draft-notice">Save drafts for private review, preview them before publishing, or unpublish them without deleting the saved content. The public site reads published portfolio items from the management API.</p>
           <form className="workspace-form content-form" onSubmit={saveContent}>
-            <h3>{editingContentId ? 'Edit draft' : 'Create a content draft'}</h3>
-            <label>Content type<select value={contentForm.type} onChange={(event) => setContentForm((current) => ({ ...current, type: event.target.value as DesignContent['type'] }))}>
-              <option value="portfolio">Portfolio item</option><option value="banner">Banner</option><option value="visual">Other visual</option>
-            </select></label>
+            <h3>{editingContentId ? 'Edit content' : 'Create a portfolio draft'}</h3>
             <label>Title<input required maxLength={160} value={contentForm.title} onChange={(event) => setContentForm((current) => ({ ...current, title: event.target.value }))} /></label>
             <label>Description<textarea rows={3} maxLength={5000} value={contentForm.description} onChange={(event) => setContentForm((current) => ({ ...current, description: event.target.value }))} /></label>
             <label>Image alt text<input maxLength={250} value={contentForm.altText} onChange={(event) => setContentForm((current) => ({ ...current, altText: event.target.value }))} /></label>
+            <label>Portfolio category<select value={contentForm.category} onChange={(event) => setContentForm((current) => ({ ...current, category: event.target.value }))}>
+              <option value="logo">Logo design</option><option value="branding">Branding</option><option value="print">Print</option>
+            </select></label>
+            <label>Tags, separated by commas<input maxLength={500} value={contentForm.tags} onChange={(event) => setContentForm((current) => ({ ...current, tags: event.target.value }))} /></label>
+            <label>Display order<input type="number" min={0} max={100000} value={contentForm.displayOrder} onChange={(event) => setContentForm((current) => ({ ...current, displayOrder: event.target.value }))} /></label>
             <label>Attach an image<select value={contentForm.assetId} onChange={(event) => setContentForm((current) => ({ ...current, assetId: event.target.value }))}>
-              <option value="">No image</option>{assets.map((asset) => <option key={asset.id} value={asset.id}>{asset.original_name}</option>)}
+              <option value="">Keep existing image / no replacement</option>{assets.map((asset) => <option key={asset.id} value={asset.id}>{asset.original_name}</option>)}
             </select></label>
             <div className="form-actions">
-              <button className="button button-primary" type="submit" disabled={busy}>{editingContentId ? 'Save draft' : 'Create draft'}</button>
+              <button className="button button-primary" type="submit" disabled={busy}>{editingContentId ? 'Save changes' : 'Save draft'}</button>
               {editingContentId && <button className="button button-secondary" type="button" onClick={() => { setEditingContentId(null); setContentForm(emptyContentForm) }}>Cancel edit</button>}
             </div>
           </form>
           <div className="workspace-grid">
             {content.map((item) => (
               <article className="workspace-card" key={item.id}>
-                <span className="stage">{item.type} · Draft</span>
+                <span className="stage">{item.type} · {item.publication_status === 'published' ? 'Published' : 'Draft'}</span>
                 <h3>{item.title}</h3>
                 {item.asset_id && <img className="content-thumbnail" src={`/api/graphic-design/assets/${item.asset_id}/preview`} alt={item.alt_text} loading="lazy" />}
+                {!item.asset_id && item.legacy_image_url && <img className="content-thumbnail" src={new URL(item.legacy_image_url, 'https://fetmandigital.com/').href} alt={item.alt_text} loading="lazy" />}
                 <p className="workspace-description">{item.description || 'No description.'}</p>
                 <div className="form-actions">
-                  <a className="button button-secondary" href={`/api/graphic-design/content/${item.id}/preview`} target="_blank" rel="noreferrer">Preview draft</a>
+                  <a className="button button-secondary" href={`/api/graphic-design/content/${item.id}/preview`} target="_blank" rel="noreferrer">Preview</a>
                   <button className="button button-secondary" type="button" onClick={() => editContent(item)}>Edit</button>
+                  <button className="button button-primary" type="button" disabled={busy} onClick={() => void changePublication(item)}>{item.publication_status === 'published' ? 'Unpublish' : 'Publish'}</button>
                   <button className="button button-danger" type="button" disabled={busy} onClick={() => void removeContent(item)}>Remove</button>
                   <button className="text-button" type="button" onClick={() => void loadRevisions(item.id)}>Version history</button>
                 </div>
                 {revisions[item.id] && <pre className="revision-list">{JSON.stringify(revisions[item.id], null, 2)}</pre>}
               </article>
             ))}
-            {content.length === 0 && <p className="empty-state">No website content drafts yet.</p>}
+            {content.length === 0 && <p className="empty-state">No website portfolio content yet. Create a draft to get started.</p>}
           </div>
         </section>
       </section>

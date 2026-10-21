@@ -209,21 +209,24 @@ type or wider grant is requested.
 Reset audit events are written to the backend log without credentials or
 session data and are not retained in a dedicated audit table.
 
-### Graphic Design Phase 1
+### Graphic Design content publishing
 
-The public site at the repository root is static HTML and is deployed
-separately. There is no CMS or publishing/deployment integration. Graphic
-Design content therefore stays in private backend storage as drafts; the
-authenticated preview explicitly indicates that it is unpublished. No
-management operation modifies the public website or deploys files.
+The public site at the repository root remains a separately deployed static
+site. The Graphic Design Portal now stores draft and published portfolio
+content in the existing MySQL content table. The public site requests
+`/api/public/design-portfolio`, updates matching legacy cards by stable key,
+adds newly published cards, and removes unpublished managed cards. Its
+original hardcoded cards remain intact as a fallback if the API is unavailable.
+Drafts remain private; authenticated previews do not publish them.
 
-After inspecting the existing database, manually apply
+After inspecting and backing up the database as appropriate, manually apply
 [`backend/migrations/002_graphic_design.sql`](./backend/migrations/002_graphic_design.sql)
-with an authorised schema administrator. Do not re-apply
-`001_developer_auth.sql` if its tables already exist. If any Graphic Design
-table already exists, stop and reconcile it before applying the migration.
-Give the existing runtime account DML privileges only on the five new
-Graphic Design tables, preserving its current account host restriction.
+if the Graphic Design tables do not already exist, create an active
+Graphic Design user, then apply
+[`backend/migrations/004_graphic_design_publishing.sql`](./backend/migrations/004_graphic_design_publishing.sql).
+The latter seeds the current eleven portfolio cards without deleting existing
+rows. Do not re-apply `001_developer_auth.sql`; if any expected table or
+publishing column already exists, inspect and reconcile it before proceeding.
 Migrations are never run automatically.
 
 From the repository root, after that inspection and approval, the migration
@@ -238,6 +241,19 @@ Get-Content -Raw .\backend\migrations\002_graphic_design.sql |
 The MySQL client prompts privately for the administrator password. Never
 use the runtime account for schema changes or put a password on the command
 line.
+
+After creating a Graphic Design account, apply the publishing migration with
+the same authorized schema administrator:
+
+```powershell
+Get-Content -Raw .\backend\migrations\004_graphic_design_publishing.sql |
+  & 'C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe' `
+    --user=YOUR_SCHEMA_ADMIN --password --database=fetman_management
+```
+
+Migration 004 creates and removes a temporary stored procedure while
+conditionally adding its columns; the schema administrator needs routine
+creation privileges. Confirm it completed before restarting the API.
 
 An authorised system owner can create each staff login locally:
 
@@ -254,12 +270,14 @@ routes to `/graphic-design`. The backend independently enforces the role and
 restricts task, asset, and content queries to that staff member.
 
 The dashboard supports assigned task status changes, progress/revision
-notes, private image uploads, and versioned website-content drafts with
-authenticated previews. Uploads accept JPEG, PNG, or WebP up to 5 MB and are
-stored under the ignored `backend/secure-uploads/` directory, not the public
-website. Draft removal requires confirmation and preserves a revision entry.
-Graphic Designers can create tasks for themselves; a manager-facing task
-assignment interface is not part of this phase.
+notes, private image uploads, and versioned portfolio drafts with
+authenticated previews, publication, and unpublishing. Uploads accept JPEG,
+PNG, or WebP up to 5 MB and are stored under the ignored
+`backend/secure-uploads/` directory, not the public website. An uploaded
+image becomes publicly readable only while referenced by published content.
+Draft removal requires confirmation and preserves a revision entry. Graphic
+Designers can create tasks for themselves; a manager-facing task assignment
+interface is not part of this phase.
 
 Run the backend tests and management frontend checks from the repository
 root:
@@ -271,5 +289,15 @@ npm --prefix .\management-frontend run build
 npm --prefix .\management-frontend run lint
 ```
 
-The Graphic Design endpoints require the manual migration and the
-corresponding least-privilege grants before they can be used with MySQL.
+Publishing endpoints require the manual migrations and corresponding
+least-privilege grants before they can be used with MySQL.
+
+For public publishing, deploy the backend behind a secure, public HTTPS
+reverse proxy or another approved API host; the current server listens on
+`127.0.0.1` and is not directly reachable from the static Netlify website.
+The public site defaults to a same-origin `/api` path. If the API is hosted on
+a different origin, set the `design-api-base` meta tag in `index.html` to that
+HTTPS API origin and add the exact public-site origin to backend
+`CORS_ORIGINS`. The unauthenticated public routes expose only published
+content and assets referenced by that content. Do not put credentials or
+deployment tokens in the static site. No production deployment was performed.

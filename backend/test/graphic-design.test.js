@@ -34,6 +34,15 @@ let assetDirectory;
 
 function createPool() {
   return {
+    async getConnection() {
+      return {
+        execute: this.execute.bind(this),
+        async beginTransaction() {},
+        async commit() {},
+        async rollback() {},
+        release() {},
+      };
+    },
     async execute(sql, parameters = []) {
       const statement = sql.replace(/\s+/g, " ").trim();
 
@@ -188,10 +197,45 @@ function createPool() {
           description: parameters[3],
           alt_text: parameters[4],
           asset_id: parameters[5],
+          category: parameters[6],
+          tags: JSON.parse(parameters[7]),
+          display_order: parameters[8],
+          publication_status: "draft",
+          source_key: null,
+          legacy_image_url: null,
           is_deleted: false,
         };
         database.content.push(item);
         return [{ insertId: item.id, affectedRows: 1 }, []];
+      }
+      if (statement.startsWith("SELECT COUNT(*) AS total FROM graphic_design_content")) {
+        return [
+          [{ total: database.content.filter((item) => item.type === "portfolio" && item.source_key).length }],
+          [],
+        ];
+      }
+      if (statement.includes("FROM graphic_design_content") && statement.includes("WHERE type = 'portfolio'")) {
+        return [
+          database.content
+            .filter((item) => item.type === "portfolio" && item.publication_status === "published" && !item.is_deleted)
+            .map((item) => ({ ...item })),
+          [],
+        ];
+      }
+      if (statement.includes("JOIN graphic_design_content c ON c.asset_id = a.id")) {
+        const asset = database.assets.find((item) => String(item.id) === String(parameters[0]));
+        const publishedReference = database.content.some(
+          (item) => String(item.asset_id) === String(parameters[0]) && item.publication_status === "published" && !item.is_deleted,
+        );
+        return [asset && publishedReference ? [{ storage_name: asset.storage_name, media_type: asset.media_type }] : [], []];
+      }
+      if (statement.includes("FROM graphic_design_content") && statement.includes("WHERE is_deleted = 0 AND publication_status = 'published'")) {
+        return [
+          database.content
+            .filter((item) => item.publication_status === "published" && !item.is_deleted)
+            .map((item) => ({ ...item })),
+          [],
+        ];
       }
       if (statement.startsWith("UPDATE graphic_design_content SET is_deleted = 1")) {
         const item = database.content.find(
@@ -216,7 +260,7 @@ function createPool() {
         if (!item) return [{ affectedRows: 0 }, []];
         columns.forEach((column, index) => {
           const property = column === "asset_id" ? "asset_id" : column;
-          item[property] = parameters[index];
+          item[property] = property === "tags" ? JSON.parse(parameters[index]) : parameters[index];
         });
         return [{ affectedRows: 1 }, []];
       }
@@ -264,6 +308,12 @@ function createPool() {
               description: item.description,
               alt_text: item.alt_text,
               asset_id: item.asset_id,
+              category: item.category,
+              tags: item.tags,
+              display_order: item.display_order,
+              publication_status: item.publication_status,
+              source_key: item.source_key,
+              legacy_image_url: item.legacy_image_url,
               is_deleted: item.is_deleted,
             },
           ],
@@ -661,7 +711,9 @@ describe("Graphic Design workspace", () => {
       { title: "Updated campaign title" },
     );
     assert.equal(updateResponse.status, 200);
-    assert.equal((await updateResponse.json()).content.title, "Updated campaign title");
+    const updatedContent = (await updateResponse.json()).content;
+    assert.equal(updatedContent.title, "Updated campaign title");
+    assert.equal(updatedContent.asset_id, String(asset.id));
 
     const noConfirmation = await jsonRequest(
       csrf.cookie,
@@ -695,5 +747,78 @@ describe("Graphic Design workspace", () => {
       { headers: { Cookie: cookie } },
     );
     assert.equal(deletedPreview.status, 404);
+  });
+
+  it("keeps drafts private and publishes or unpublishes only authorized content", async () => {
+    const { cookie } = await signIn("designer@example.test");
+    const csrf = await createCsrfToken(cookie);
+    const createResponse = await jsonRequest(
+      csrf.cookie,
+      csrf.token,
+      "/api/graphic-design/content",
+      "POST",
+      {
+        type: "portfolio",
+        title: "Test campaign",
+        description: "A test portfolio project.",
+        altText: "Campaign artwork",
+        assetId: String(database.assets[0].id),
+        category: "branding",
+        tags: ["campaign", "test"],
+        displayOrder: 25,
+      },
+    );
+    assert.equal(createResponse.status, 201);
+    const created = (await createResponse.json()).content;
+
+    const beforePublish = await fetch(`${baseUrl}/api/public/design-portfolio`);
+    assert.equal(beforePublish.status, 200);
+    assert.deepEqual((await beforePublish.json()).projects, []);
+
+    const otherDesigner = await signIn("other@example.test");
+    const forbiddenPublish = await jsonRequest(
+      otherDesigner.cookie,
+      (await createCsrfToken(otherDesigner.cookie)).token,
+      `/api/graphic-design/content/${created.id}/publish`,
+      "POST",
+    );
+    assert.equal(forbiddenPublish.status, 404);
+
+    const published = await jsonRequest(
+      csrf.cookie,
+      csrf.token,
+      `/api/graphic-design/content/${created.id}/publish`,
+      "POST",
+    );
+    assert.equal(published.status, 200);
+    assert.equal((await published.json()).content.publication_status, "published");
+    const publicProjects = await (await fetch(`${baseUrl}/api/public/design-portfolio`)).json();
+    assert.equal(publicProjects.projects.length, 1);
+    assert.equal(publicProjects.projects[0].title, "Test campaign");
+    assert.equal(publicProjects.projects[0].category, "branding");
+    assert.deepEqual(publicProjects.projects[0].tags, ["campaign", "test"]);
+    const publicDesignContent = await (await fetch(`${baseUrl}/api/public/design-content`)).json();
+    assert.equal(publicDesignContent.content.length, 1);
+    const publicImage = await fetch(`${baseUrl}/api/public/design-assets/${database.assets[0].id}`);
+    assert.equal(publicImage.status, 200);
+    assert.equal(publicImage.headers.get("content-type"), "image/webp");
+
+    const unpublished = await jsonRequest(
+      csrf.cookie,
+      csrf.token,
+      `/api/graphic-design/content/${created.id}/unpublish`,
+      "POST",
+    );
+    assert.equal(unpublished.status, 200);
+    assert.equal((await unpublished.json()).content.publication_status, "draft");
+    assert.deepEqual(
+      (await (await fetch(`${baseUrl}/api/public/design-portfolio`)).json()).projects,
+      [],
+    );
+    assert.equal(
+      (await fetch(`${baseUrl}/api/public/design-assets/${database.assets[0].id}`)).status,
+      404,
+    );
+    assert.equal(database.content.find((item) => item.id === created.id).is_deleted, false);
   });
 });

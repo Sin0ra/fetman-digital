@@ -49,6 +49,9 @@ const contentSchema = z
     description: z.string().trim().max(5000).default(""),
     altText: z.string().trim().max(250).default(""),
     assetId: z.union([z.string().regex(/^\d+$/), z.null()]).default(null),
+    category: z.string().trim().max(80).default(""),
+    tags: z.array(z.string().trim().min(1).max(40)).max(12).default([]),
+    displayOrder: z.number().int().min(0).max(100000).default(0),
   })
   .strict();
 const contentPatchSchema = z
@@ -58,6 +61,9 @@ const contentPatchSchema = z
     description: z.string().trim().max(5000).optional(),
     altText: z.string().trim().max(250).optional(),
     assetId: z.union([z.string().regex(/^\d+$/), z.null()]).optional(),
+    category: z.string().trim().max(80).optional(),
+    tags: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
+    displayOrder: z.number().int().min(0).max(100000).optional(),
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0);
@@ -349,10 +355,12 @@ function createGraphicDesignRouter({
 
   router.get("/content", async (request, response) => {
     const [rows] = await pool.execute(
-      `SELECT id, type, title, description, alt_text, asset_id, created_at, updated_at
+      `SELECT id, type, title, description, alt_text, asset_id, category, tags,
+              display_order, publication_status, source_key, legacy_image_url,
+              created_at, updated_at
        FROM graphic_design_content
        WHERE owner_user_id = ? AND is_deleted = 0
-       ORDER BY updated_at DESC, id DESC`,
+       ORDER BY publication_status = 'published' DESC, updated_at DESC, id DESC`,
       [request.managementUser.id],
     );
     return response.status(200).json({ content: rows });
@@ -370,27 +378,40 @@ function createGraphicDesignRouter({
       return response.status(404).json({ error: "Asset not found." });
     }
 
-    const [result] = await pool.execute(
-      `INSERT INTO graphic_design_content
-       (owner_user_id, type, title, description, alt_text, asset_id)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [
+    const content = await withTransaction(pool, async (connection) => {
+      const [result] = await connection.execute(
+        `INSERT INTO graphic_design_content
+         (owner_user_id, type, title, description, alt_text, asset_id, category,
+          tags, display_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          request.managementUser.id,
+          parsed.data.type,
+          parsed.data.title,
+          parsed.data.description,
+          parsed.data.altText,
+          parsed.data.assetId,
+          parsed.data.category,
+          JSON.stringify(parsed.data.tags),
+          parsed.data.displayOrder,
+        ],
+      );
+      const [rows] = await connection.execute(
+        `SELECT id, type, title, description, alt_text, asset_id, category, tags,
+                display_order, publication_status, source_key, created_at, updated_at
+         FROM graphic_design_content
+         WHERE id = ? AND owner_user_id = ?`,
+        [result.insertId, request.managementUser.id],
+      );
+      const createdContent = rows[0];
+      await saveContentRevision(
+        connection,
+        createdContent,
         request.managementUser.id,
-        parsed.data.type,
-        parsed.data.title,
-        parsed.data.description,
-        parsed.data.altText,
-        parsed.data.assetId,
-      ],
-    );
-    const [rows] = await pool.execute(
-      `SELECT id, type, title, description, alt_text, asset_id, created_at, updated_at
-       FROM graphic_design_content
-       WHERE id = ? AND owner_user_id = ?`,
-      [result.insertId, request.managementUser.id],
-    );
-    const content = rows[0];
-    await saveContentRevision(pool, content, request.managementUser.id, "created");
+        "created",
+      );
+      return createdContent;
+    });
     return response.status(201).json({ content });
   });
 
@@ -400,7 +421,7 @@ function createGraphicDesignRouter({
       return response.status(400).json({ error: "Invalid content id." });
     }
     const [rows] = await pool.execute(
-      `SELECT id, type, title, description, alt_text, asset_id
+      `SELECT id, type, title, description, alt_text, asset_id, legacy_image_url
        FROM graphic_design_content
        WHERE id = ? AND owner_user_id = ? AND is_deleted = 0
        LIMIT 1`,
@@ -421,9 +442,21 @@ function createGraphicDesignRouter({
       if (assets[0]) {
         image = `<img src="/api/graphic-design/assets/${escapeHtml(assets[0].id)}/preview" alt="${escapeHtml(content.alt_text)}">`;
       }
+    } else if (content.legacy_image_url) {
+      const legacyImageUrl = new URL(
+        content.legacy_image_url,
+        "https://fetmandigital.com/",
+      );
+      if (legacyImageUrl.origin === "https://fetmandigital.com") {
+        image = `<img src="${escapeHtml(legacyImageUrl.href)}" alt="${escapeHtml(content.alt_text)}">`;
+      }
     }
     response.type("html");
     response.set("Cache-Control", "private, no-store");
+    response.set(
+      "Content-Security-Policy",
+      "default-src 'none'; img-src 'self' https://fetmandigital.com; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    );
     return response.send(
       `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(content.title)} — Draft preview</title><style>body{font:16px/1.6 system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#18251f}aside{padding:1rem;background:#fff4d6;border:1px solid #e4ca78;border-radius:.5rem}img{display:block;max-width:100%;height:auto;margin:1.5rem auto}h1{text-align:center}</style><aside><strong>Private draft preview</strong><br>This is not published and does not change the public website.</aside><main><h1>${escapeHtml(content.title)}</h1>${image}<p>${escapeHtml(content.description)}</p></main></html>`,
     );
@@ -461,14 +494,6 @@ function createGraphicDesignRouter({
     if (!contentId) {
       return response.status(400).json({ error: "Invalid content id." });
     }
-    const [existingRows] = await pool.execute(
-      `SELECT id FROM graphic_design_content
-       WHERE id = ? AND owner_user_id = ? AND is_deleted = 0 LIMIT 1`,
-      [contentId, request.managementUser.id],
-    );
-    if (!existingRows[0]) {
-      return response.status(404).json({ error: "Draft not found." });
-    }
     if (
       parsed.data.assetId &&
       !(await ownsAsset(pool, parsed.data.assetId, request.managementUser.id))
@@ -476,35 +501,79 @@ function createGraphicDesignRouter({
       return response.status(404).json({ error: "Asset not found." });
     }
 
-    const columns = {
-      type: "type",
-      title: "title",
-      description: "description",
-      altText: "alt_text",
-      assetId: "asset_id",
-    };
-    const assignments = [];
-    const values = [];
-    for (const [key, value] of Object.entries(parsed.data)) {
-      assignments.push(`${columns[key]} = ?`);
-      values.push(value);
+    const content = await withTransaction(pool, async (connection) => {
+      const [existingRows] = await connection.execute(
+        `SELECT id FROM graphic_design_content
+         WHERE id = ? AND owner_user_id = ? AND is_deleted = 0
+         LIMIT 1 FOR UPDATE`,
+        [contentId, request.managementUser.id],
+      );
+      if (!existingRows[0]) return null;
+
+      const columns = {
+        type: "type",
+        title: "title",
+        description: "description",
+        altText: "alt_text",
+        assetId: "asset_id",
+        category: "category",
+        tags: "tags",
+        displayOrder: "display_order",
+      };
+      const assignments = [];
+      const values = [];
+      for (const [key, value] of Object.entries(parsed.data)) {
+        assignments.push(`${columns[key]} = ?`);
+        values.push(key === "tags" ? JSON.stringify(value) : value);
+      }
+      if (parsed.data.assetId !== undefined) {
+        assignments.push("legacy_image_url = NULL");
+      }
+      values.push(contentId, request.managementUser.id);
+      await connection.execute(
+        `UPDATE graphic_design_content
+         SET ${assignments.join(", ")}
+         WHERE id = ? AND owner_user_id = ? AND is_deleted = 0`,
+        values,
+      );
+      const [updatedRows] = await connection.execute(
+        `SELECT id, type, title, description, alt_text, asset_id, category, tags,
+                display_order, publication_status, source_key, created_at, updated_at
+         FROM graphic_design_content
+         WHERE id = ? AND owner_user_id = ?`,
+        [contentId, request.managementUser.id],
+      );
+      const updatedContent = updatedRows[0];
+      await saveContentRevision(
+        connection,
+        updatedContent,
+        request.managementUser.id,
+        "updated",
+      );
+      return updatedContent;
+    });
+    if (!content) {
+      return response.status(404).json({ error: "Draft not found." });
     }
-    values.push(contentId, request.managementUser.id);
-    await pool.execute(
-      `UPDATE graphic_design_content
-       SET ${assignments.join(", ")}
-       WHERE id = ? AND owner_user_id = ? AND is_deleted = 0`,
-      values,
-    );
-    const [updatedRows] = await pool.execute(
-      `SELECT id, type, title, description, alt_text, asset_id, created_at, updated_at
-       FROM graphic_design_content
-       WHERE id = ? AND owner_user_id = ?`,
-      [contentId, request.managementUser.id],
-    );
-    const content = updatedRows[0];
-    await saveContentRevision(pool, content, request.managementUser.id, "updated");
     return response.status(200).json({ content });
+  });
+
+  router.post("/content/:contentId/publish", requireCsrf, async (request, response) => {
+    return setPublicationStatus(
+      pool,
+      request,
+      response,
+      "published",
+    );
+  });
+
+  router.post("/content/:contentId/unpublish", requireCsrf, async (request, response) => {
+    return setPublicationStatus(
+      pool,
+      request,
+      response,
+      "draft",
+    );
   });
 
   router.delete("/content/:contentId", requireCsrf, async (request, response) => {
@@ -517,28 +586,34 @@ function createGraphicDesignRouter({
     if (!contentId) {
       return response.status(400).json({ error: "Invalid content id." });
     }
-    const [rows] = await pool.execute(
-      `SELECT id, type, title, description, alt_text, asset_id
-       FROM graphic_design_content
-       WHERE id = ? AND owner_user_id = ? AND is_deleted = 0 LIMIT 1`,
-      [contentId, request.managementUser.id],
-    );
-    const content = rows[0];
-    if (!content) {
+    const removed = await withTransaction(pool, async (connection) => {
+      const [rows] = await connection.execute(
+        `SELECT id, type, title, description, alt_text, asset_id, category, tags,
+                display_order, publication_status, source_key
+         FROM graphic_design_content
+         WHERE id = ? AND owner_user_id = ? AND is_deleted = 0
+         LIMIT 1 FOR UPDATE`,
+        [contentId, request.managementUser.id],
+      );
+      const content = rows[0];
+      if (!content) return false;
+      await connection.execute(
+        `UPDATE graphic_design_content
+         SET is_deleted = 1
+         WHERE id = ? AND owner_user_id = ?`,
+        [contentId, request.managementUser.id],
+      );
+      await saveContentRevision(
+        connection,
+        { ...content, is_deleted: true },
+        request.managementUser.id,
+        "deleted",
+      );
+      return true;
+    });
+    if (!removed) {
       return response.status(404).json({ error: "Draft not found." });
     }
-    await pool.execute(
-      `UPDATE graphic_design_content
-       SET is_deleted = 1
-       WHERE id = ? AND owner_user_id = ?`,
-      [contentId, request.managementUser.id],
-    );
-    await saveContentRevision(
-      pool,
-      { ...content, is_deleted: true },
-      request.managementUser.id,
-      "deleted",
-    );
     return response.status(204).end();
   });
 
@@ -577,6 +652,11 @@ async function saveContentRevision(pool, content, userId, action) {
     description: content.description,
     alt_text: content.alt_text,
     asset_id: content.asset_id,
+    category: content.category ?? "",
+    tags: Array.isArray(content.tags) ? content.tags : [],
+    display_order: content.display_order ?? 0,
+    publication_status: content.publication_status ?? "draft",
+    source_key: content.source_key ?? null,
     is_deleted: Boolean(content.is_deleted),
   };
   await pool.execute(
@@ -585,6 +665,62 @@ async function saveContentRevision(pool, content, userId, action) {
      VALUES (?, ?, ?, ?)`,
     [content.id, userId, action, JSON.stringify(snapshot)],
   );
+}
+
+async function setPublicationStatus(pool, request, response, publicationStatus) {
+  const contentId = parseId(request.params.contentId);
+  if (!contentId) {
+    return response.status(400).json({ error: "Invalid content id." });
+  }
+
+  const content = await withTransaction(pool, async (connection) => {
+    const [rows] = await connection.execute(
+      `SELECT id, type, title, description, alt_text, asset_id, category, tags,
+              display_order, publication_status, source_key
+       FROM graphic_design_content
+       WHERE id = ? AND owner_user_id = ? AND is_deleted = 0
+       LIMIT 1
+       FOR UPDATE`,
+      [contentId, request.managementUser.id],
+    );
+    const content = rows[0];
+    if (!content) return null;
+    if (content.publication_status === publicationStatus) return content;
+
+    await connection.execute(
+      `UPDATE graphic_design_content
+       SET publication_status = ?
+       WHERE id = ? AND owner_user_id = ? AND is_deleted = 0`,
+      [publicationStatus, contentId, request.managementUser.id],
+    );
+    const updatedContent = { ...content, publication_status: publicationStatus };
+    await saveContentRevision(
+      connection,
+      updatedContent,
+      request.managementUser.id,
+      "updated",
+    );
+    return updatedContent;
+  });
+  if (!content) {
+    return response.status(404).json({ error: "Content not found." });
+  }
+  return response.status(200).json({ content });
+}
+
+async function withTransaction(pool, operation) {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    const result = await operation(connection);
+    await connection.commit();
+    return result;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 }
 
 function safeOriginalFilename(value) {

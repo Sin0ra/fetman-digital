@@ -10,6 +10,16 @@ Store schema changes here as ordered, versioned SQL files.
 private asset metadata, draft content, and content revision history. It
 does not change the public website or create another user/session table.
 
+`004_graphic_design_publishing.sql` incrementally adds publication status,
+portfolio ordering, category, tags, and stable source keys to Graphic Design
+content. It adopts the eleven existing static portfolio cards as published
+records for the first active Graphic Design account, preserving their current
+titles, descriptions, categories, and image paths. It is safe to re-run: added
+columns are conditional and seeded rows use unique source keys. Create an
+active Graphic Design account before applying it; if no such account exists,
+the legacy portfolio rows are not seeded. Existing content rows are not
+deleted or replaced.
+
 `003_password_change_required.sql` adds
 `management_users.password_change_required` with a default of `0`, so
 existing accounts continue to work unchanged. New accounts created by the
@@ -34,6 +44,10 @@ approved, inspect that the column is absent before applying it once. The
 runtime account will need the existing `SELECT`, `INSERT`, and `UPDATE`
 privileges on `management_users`; no new privilege type or wider grant is
 needed.
+
+Apply migration 004 only after reviewing the existing schema and applying
+002. The runtime account needs `SELECT`, `INSERT`, and `UPDATE` on the
+existing Graphic Design tables; no new table or broader privilege is needed.
 
 Grant the runtime account only the required `SELECT`, `INSERT`, `UPDATE`,
 and `DELETE` privileges on the Graphic Design tables, if it does not

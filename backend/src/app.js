@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const session = require("express-session");
 const { createAuthRouter } = require("./routes/auth");
 const { createGraphicDesignRouter } = require("./routes/graphic-design");
+const { createPublicDesignRouter } = require("./routes/public-design");
 const { createHealthRouter } = require("./routes/health");
 const { createDeveloperUsersRouter } = require("./routes/developer-users");
 const {
@@ -70,6 +71,13 @@ function createApp(
   );
 
   app.use("/api/health", createHealthRouter(pool));
+  app.use(
+    "/api/public",
+    createPublicDesignRouter({
+      pool,
+      assetDirectory: designAssetDirectory,
+    }),
+  );
   app.use(
     "/api/auth",
     createAuthRouter({ pool, sessionStore, loginLimit, passwordChangeLimit }),
