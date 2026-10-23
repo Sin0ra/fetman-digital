@@ -7,11 +7,10 @@ const { createAuthRouter } = require("./routes/auth");
 const { createGraphicDesignRouter } = require("./routes/graphic-design");
 const { createPublicDesignRouter } = require("./routes/public-design");
 const { createHealthRouter } = require("./routes/health");
+const { createDeveloperRouter } = require("./routes/developer");
 const { createDeveloperUsersRouter } = require("./routes/developer-users");
-const {
-  getAuthenticatedUser,
-  requirePasswordChangeComplete,
-} = require("./middleware/auth");
+const { requirePasswordChangeComplete } = require("./middleware/auth");
+const { readMaintenanceMode, safeErrorCode } = require("./maintenance-mode");
 
 function createApp(
   config,
@@ -71,6 +70,26 @@ function createApp(
   );
 
   app.use("/api/health", createHealthRouter(pool));
+  app.use("/api/public", async (_request, response, next) => {
+    try {
+      const setting = await readMaintenanceMode(pool);
+      if (setting.maintenanceMode) {
+        response.set("Cache-Control", "no-store");
+        return response.status(503).json({
+          error: "The public website is temporarily unavailable.",
+        });
+      }
+      return next();
+    } catch (error) {
+      console.error("Public API maintenance state is unavailable", {
+        errorCode: safeErrorCode(error),
+      });
+      response.set("Cache-Control", "no-store");
+      return response.status(503).json({
+        error: "The public website is temporarily unavailable.",
+      });
+    }
+  });
   app.use(
     "/api/public",
     createPublicDesignRouter({
@@ -88,27 +107,16 @@ function createApp(
     createDeveloperUsersRouter({ pool, sessionStore, passwordResetLimit }),
   );
   app.use(
+    "/api/developer",
+    createDeveloperRouter({ pool, environment: config.environment }),
+  );
+  app.use(
     "/api/graphic-design",
     createGraphicDesignRouter({
       pool,
       assetDirectory: designAssetDirectory,
     }),
   );
-  app.get("/api/developer/dashboard", async (request, response) => {
-    const user = await getAuthenticatedUser(pool, request, response);
-
-    if (!user) {
-      return;
-    }
-    if (user.role !== "Developer") {
-      return response.status(403).json({ error: "Forbidden" });
-    }
-
-    return response.status(200).json({
-      user: { email: user.email, role: user.role },
-      status: "authenticated",
-    });
-  });
   app.use((_request, response) => {
     response.status(404).json({ error: "Not found" });
   });
@@ -126,6 +134,11 @@ function createApp(
       console.error("Unhandled request error", {
         method: request.method,
         path: request.path,
+        errorCode:
+          typeof error.code === "string" && /^[A-Z0-9_]{1,64}$/.test(error.code)
+            ? error.code
+            : "INTERNAL_ERROR",
+        errorType: error instanceof Error ? error.name : "UnknownError",
       });
     }
 

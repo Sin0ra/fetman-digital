@@ -27,6 +27,8 @@ const database = {
   failAssetInsert: false,
   nextContentId: 1,
   nextRevisionId: 1,
+  maintenanceMode: 0,
+  maintenanceVersion: 0,
 };
 let server;
 let baseUrl;
@@ -46,6 +48,13 @@ function createPool() {
     async execute(sql, parameters = []) {
       const statement = sql.replace(/\s+/g, " ").trim();
 
+      if (statement.includes("SELECT maintenance_mode")) {
+        return [[{
+          maintenance_mode: database.maintenanceMode,
+          version: database.maintenanceVersion,
+          updated_at: "2026-10-23T07:00:00.000Z",
+        }], []];
+      }
       if (statement.includes("FROM management_users WHERE email = ?")) {
         return [
           database.users.filter((user) => user.email === parameters[0]),
@@ -215,6 +224,18 @@ function createPool() {
         ];
       }
       if (statement.includes("FROM graphic_design_content") && statement.includes("WHERE type = 'portfolio'")) {
+        if (statement.startsWith("SELECT source_key")) {
+          return [
+            database.content
+              .filter((item) => item.type === "portfolio" && item.source_key?.startsWith("legacy-"))
+              .map((item) => ({
+                source_key: item.source_key,
+                publication_status: item.publication_status,
+                is_deleted: item.is_deleted,
+              })),
+            [],
+          ];
+        }
         return [
           database.content
             .filter((item) => item.type === "portfolio" && item.publication_status === "published" && !item.is_deleted)
@@ -259,8 +280,7 @@ function createPool() {
         );
         if (!item) return [{ affectedRows: 0 }, []];
         columns.forEach((column, index) => {
-          const property = column === "asset_id" ? "asset_id" : column;
-          item[property] = property === "tags" ? JSON.parse(parameters[index]) : parameters[index];
+          item[column] = column === "tags" ? JSON.parse(parameters[index]) : parameters[index];
         });
         return [{ affectedRows: 1 }, []];
       }
@@ -794,14 +814,55 @@ describe("Graphic Design workspace", () => {
     assert.equal((await published.json()).content.publication_status, "published");
     const publicProjects = await (await fetch(`${baseUrl}/api/public/design-portfolio`)).json();
     assert.equal(publicProjects.projects.length, 1);
+    assert.equal(publicProjects.complete, true);
+    assert.deepEqual(publicProjects.managedLegacyKeys, []);
+    assert.deepEqual(publicProjects.retiredLegacyKeys, []);
     assert.equal(publicProjects.projects[0].title, "Test campaign");
     assert.equal(publicProjects.projects[0].category, "branding");
     assert.deepEqual(publicProjects.projects[0].tags, ["campaign", "test"]);
+    assert.deepEqual(Object.keys(publicProjects.projects[0]).sort(), [
+      "alt_text",
+      "asset_id",
+      "category",
+      "description",
+      "display_order",
+      "id",
+      "legacy_image_url",
+      "source_key",
+      "tags",
+      "title",
+      "type",
+    ]);
+    assert.equal("owner_user_id" in publicProjects.projects[0], false);
+    assert.equal("publication_status" in publicProjects.projects[0], false);
+    assert.equal("password_hash" in publicProjects.projects[0], false);
     const publicDesignContent = await (await fetch(`${baseUrl}/api/public/design-content`)).json();
     assert.equal(publicDesignContent.content.length, 1);
     const publicImage = await fetch(`${baseUrl}/api/public/design-assets/${database.assets[0].id}`);
     assert.equal(publicImage.status, 200);
     assert.equal(publicImage.headers.get("content-type"), "image/webp");
+    assert.equal(publicImage.headers.get("cross-origin-resource-policy"), "cross-origin");
+
+    const editResponse = await jsonRequest(
+      csrf.cookie,
+      csrf.token,
+      `/api/graphic-design/content/${created.id}`,
+      "PATCH",
+      { title: "Updated campaign title" },
+    );
+    assert.equal(editResponse.status, 200);
+    assert.equal((await editResponse.json()).content.title, "Updated campaign title");
+    assert.equal((await (await fetch(`${baseUrl}/api/public/design-portfolio`)).json()).projects[0].title, "Updated campaign title");
+
+    const deletePublished = await jsonRequest(
+      csrf.cookie,
+      csrf.token,
+      `/api/graphic-design/content/${created.id}`,
+      "DELETE",
+      { confirm: true },
+    );
+    assert.equal(deletePublished.status, 409);
+    assert.equal(database.content.find((item) => item.id === created.id).is_deleted, false);
 
     const unpublished = await jsonRequest(
       csrf.cookie,
@@ -820,5 +881,6 @@ describe("Graphic Design workspace", () => {
       404,
     );
     assert.equal(database.content.find((item) => item.id === created.id).is_deleted, false);
+
   });
 });

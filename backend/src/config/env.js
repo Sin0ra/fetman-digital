@@ -26,6 +26,7 @@ const corsOriginsSchema = z
 const configSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+  PUBLIC_SITE_PORT: z.coerce.number().int().min(1).max(65535).default(8080),
   CORS_ORIGINS: corsOriginsSchema,
   DB_HOST: z.string().trim().min(1),
   DB_PORT: z.coerce.number().int().min(1).max(65535).default(3306),
@@ -57,10 +58,14 @@ function parseConfig(environment) {
         "Review backend/.env.example.",
     );
   }
+  if (result.data.PORT === result.data.PUBLIC_SITE_PORT) {
+    throw new Error("Invalid environment configuration for: PORT, PUBLIC_SITE_PORT.");
+  }
 
   return {
     environment: result.data.NODE_ENV,
     port: result.data.PORT,
+    publicSitePort: result.data.PUBLIC_SITE_PORT,
     corsOrigins: result.data.CORS_ORIGINS,
     database: {
       host: result.data.DB_HOST,

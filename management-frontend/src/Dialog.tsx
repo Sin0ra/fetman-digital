@@ -11,6 +11,8 @@ type DialogProps = {
   confirmForm?: string
   cancelLabel?: string
   busy?: boolean
+  className?: string
+  closeOnBackdropClick?: boolean
   children?: ReactNode
   onConfirm?: () => void | Promise<void>
   onCancel: () => void
@@ -33,6 +35,8 @@ function Dialog({
   confirmForm,
   cancelLabel = 'Cancel',
   busy = false,
+  className,
+  closeOnBackdropClick = false,
   children,
   onConfirm,
   onCancel,
@@ -58,7 +62,12 @@ function Dialog({
     }
   }, [open, title])
 
-  function trapTabKey(event: KeyboardEvent<HTMLDialogElement>) {
+  function handleDialogKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      if (!busy) onCancel()
+      return
+    }
     if (event.key !== 'Tab') return
     const dialog = dialogRef.current
     if (!dialog) return
@@ -87,14 +96,18 @@ function Dialog({
   return (
     <dialog
       ref={dialogRef}
-      className={`fd-dialog fd-dialog-${variant}`}
+      className={`fd-dialog fd-dialog-${variant}${className ? ` ${className}` : ''}`}
       aria-labelledby={`${dialogId}-title`}
       aria-describedby={`${dialogId}-description`}
+      aria-busy={busy}
+      onClick={(event) => {
+        if (closeOnBackdropClick && !busy && event.target === event.currentTarget) onCancel()
+      }}
       onCancel={(event) => {
         event.preventDefault()
         if (!busy) onCancel()
       }}
-      onKeyDown={trapTabKey}
+      onKeyDown={handleDialogKeyDown}
     >
       <div className="fd-dialog-panel">
         <span className="fd-dialog-indicator" aria-hidden="true">{indicators[variant]}</span>

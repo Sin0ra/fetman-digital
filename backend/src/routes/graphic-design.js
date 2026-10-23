@@ -559,21 +559,11 @@ function createGraphicDesignRouter({
   });
 
   router.post("/content/:contentId/publish", requireCsrf, async (request, response) => {
-    return setPublicationStatus(
-      pool,
-      request,
-      response,
-      "published",
-    );
+    return setPublicationStatus(pool, request, response, "published");
   });
 
   router.post("/content/:contentId/unpublish", requireCsrf, async (request, response) => {
-    return setPublicationStatus(
-      pool,
-      request,
-      response,
-      "draft",
-    );
+    return setPublicationStatus(pool, request, response, "draft");
   });
 
   router.delete("/content/:contentId", requireCsrf, async (request, response) => {
@@ -597,6 +587,7 @@ function createGraphicDesignRouter({
       );
       const content = rows[0];
       if (!content) return false;
+      if (content.publication_status === "published") return { conflict: true };
       await connection.execute(
         `UPDATE graphic_design_content
          SET is_deleted = 1
@@ -611,6 +602,11 @@ function createGraphicDesignRouter({
       );
       return true;
     });
+    if (removed?.conflict) {
+      return response.status(409).json({
+        error: "Unpublish this content before removing it.",
+      });
+    }
     if (!removed) {
       return response.status(404).json({ error: "Draft not found." });
     }

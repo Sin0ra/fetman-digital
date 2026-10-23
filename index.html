@@ -524,12 +524,6 @@
 </head>
 
 <body>
-    <script>
-        if (localStorage.getItem("maintenanceMode") === "true") {
-            window.location.replace("maintenance.html");
-        }
-    </script>
-
     <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
@@ -604,7 +598,7 @@
                      </p>
                  </div>
                  <div class="about-actions">
-                     <button id="read-more-btn" class="btn btn-primary" onclick="toggleText()">Read More</button>
+                     <button id="read-more-btn" class="btn btn-primary" type="button" aria-expanded="false" aria-controls="more-text" onclick="toggleText()">Read More</button>
                      <a class="inline-link" href="#contact">Book a consultation</a>
                  </div>
              </div>
@@ -623,9 +617,11 @@
          var btn = document.getElementById("read-more-btn");
          if (moreText.style.display === "none") {
              moreText.style.display = "block";
+             btn.setAttribute("aria-expanded", "true");
              btn.innerHTML = "Read Less";
          } else {
              moreText.style.display = "none";
+             btn.setAttribute("aria-expanded", "false");
              btn.innerHTML = "Read More";
          }
      }
@@ -706,7 +702,12 @@
 <!-- Portfolio Section -->
 <section id="portfolio" class="portfolio py-5">
     <div class="container">
-        <h2 class="text-center mb-4 animate__animated animate__fadeInUp">Our Work</h2>
+        <p class="section-kicker">Selected work</p>
+        <h2 class="text-center mb-4">Our Work</h2>
+        <p class="portfolio-intro">A selection of thoughtful identities, campaigns and design work made to help brands stand out.</p>
+        <p id="portfolio-source-status" class="portfolio-source-status" data-source="loading" role="status" aria-live="polite">
+            Loading published portfolio from the management API…
+        </p>
 
         <div class="portfolio-controls">
             <div class="portfolio-search">
@@ -714,7 +715,7 @@
                 <input type="text" id="search-bar" class="form-control" placeholder="Search portfolio items...">
             </div>
             <div class="portfolio-filters" role="group" aria-label="Filter portfolio projects">
-                <button class="btn btn-primary filter-btn" data-filter="all">All</button>
+                <button class="btn btn-primary filter-btn" data-filter="all" aria-pressed="true">All projects</button>
                 <button class="btn btn-outline-primary filter-btn" data-filter="logo">Logo Design</button>
                 <button class="btn btn-outline-primary filter-btn" data-filter="branding">Branding</button>
                 <button class="btn btn-outline-primary filter-btn" data-filter="print">Print</button>
@@ -726,7 +727,7 @@
             <!-- Portfolio Item 1 (Logo Design) -->
             <div class="col-md-4 portfolio-item logo" data-cms-key="legacy-logo-sino-sma">
                 <div class="card">
-                    <img src="logo%20img/Sino-and-Sma-Trading-1200.jpg" srcset="logo%20img/Sino-and-Sma-Trading-480.jpg 480w, logo%20img/Sino-and-Sma-Trading-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1024" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
+                    <img src="logo%20img/Sino-and-Sma-Trading-1200.jpg" srcset="logo%20img/Sino-and-Sma-Trading-480.jpg 480w, logo%20img/Sino-and-Sma-Trading-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1024" class="card-img-top" alt="Sino and Sma Trading logo" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Sino and Sma Trading</h5>
                         <p class="card-text">Logo design and brand identity.</p>
@@ -736,7 +737,7 @@
 
             <div class="col-md-4 portfolio-item logo" data-cms-key="legacy-logo-totana">
                 <div class="card">
-                    <img src="logo img/Totana white logo.png" width="483" height="268" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
+                    <img src="logo img/Totana white logo.png" width="483" height="268" class="card-img-top" alt="Totana Attorneys logo" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Totana</h5>
                         <p class="card-text">Distinctive identity design.</p>
@@ -746,7 +747,7 @@
 
             <div class="col-md-4 portfolio-item logo" data-cms-key="legacy-logo-fetman-digital">
                 <div class="card">
-                    <img src="logo img/fetman digital 2023 black.png" width="1500" height="1500" class="card-img-top" alt="Logo Design" loading="lazy" decoding="async">
+                    <img src="logo img/fetman digital 2023 black.png" width="1500" height="1500" class="card-img-top" alt="Fetman Digital logo" loading="lazy" decoding="async">
                     <div class="card-body">
                         <h5 class="card-title">Fetman Digital</h5>
                         <p class="card-text">The studio's own visual identity.</p>
@@ -922,140 +923,7 @@
     </div>
 </section>
 
-<!-- JavaScript for Search Functionality -->
-<script>
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const searchBar = document.getElementById("search-bar");
-    const portfolioGrid = document.querySelector("#portfolio .row");
-    let activeFilter = "all";
-
-    function updatePortfolio() {
-        const query = searchBar.value.trim().toLowerCase();
-
-        portfolioGrid.querySelectorAll(".portfolio-item").forEach(item => {
-            const matchesCategory = activeFilter === "all" || item.classList.contains(activeFilter);
-            const matchesSearch = item.textContent.toLowerCase().includes(query);
-            item.hidden = !matchesCategory || !matchesSearch;
-        });
-    }
-
-    searchBar.addEventListener("input", updatePortfolio);
-    filterButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            activeFilter = button.dataset.filter;
-            filterButtons.forEach(filterButton => {
-                const isActive = filterButton === button;
-                filterButton.classList.toggle("btn-primary", isActive);
-                filterButton.classList.toggle("btn-outline-primary", !isActive);
-                filterButton.setAttribute("aria-pressed", String(isActive));
-            });
-            updatePortfolio();
-        });
-        button.setAttribute("aria-pressed", String(button.dataset.filter === activeFilter));
-    });
-
-    updatePortfolio();
-
-    function renderPortfolioTags(cardBody, tags) {
-        cardBody.querySelector(".portfolio-tags")?.remove();
-        if (!Array.isArray(tags) || tags.length === 0) return;
-        const tagList = document.createElement("p");
-        tagList.className = "portfolio-tags";
-        tagList.textContent = tags.join(" · ");
-        cardBody.append(tagList);
-    }
-
-    function updatePortfolioCard(element, project, portfolioUrl) {
-        const category = ["logo", "branding", "print"].includes(project.category)
-            ? project.category
-            : "branding";
-        element.classList.remove("logo", "branding", "print");
-        element.classList.add(category);
-        if (project.source_key) element.dataset.cmsKey = project.source_key;
-
-        const title = element.querySelector(".card-title");
-        const description = element.querySelector(".card-text");
-        const image = element.querySelector("img");
-        title.textContent = project.title;
-        description.textContent = project.description;
-        image.alt = project.alt_text || project.title;
-        let imageUrl = "";
-        if (project.asset_id) {
-            imageUrl = new URL(`/api/public/design-assets/${encodeURIComponent(project.asset_id)}`, portfolioUrl).href;
-        } else if (project.legacy_image_url) {
-            imageUrl = new URL(project.legacy_image_url, window.location.href).href;
-        }
-        if (imageUrl && image.src !== imageUrl) {
-            image.src = imageUrl;
-            image.removeAttribute("srcset");
-            image.removeAttribute("sizes");
-        } else if (!imageUrl) {
-            image.removeAttribute("src");
-            image.removeAttribute("srcset");
-            image.removeAttribute("sizes");
-        }
-        renderPortfolioTags(element.querySelector(".card-body"), project.tags);
-        return element;
-    }
-
-    function createPortfolioCard(project, portfolioUrl) {
-        const element = document.createElement("div");
-        element.className = "col-md-4 portfolio-item";
-        const card = document.createElement("div");
-        card.className = "card";
-        const image = document.createElement("img");
-        image.className = "card-img-top";
-        image.width = 1200;
-        image.height = 900;
-        image.loading = "lazy";
-        image.decoding = "async";
-        const body = document.createElement("div");
-        body.className = "card-body";
-        const title = document.createElement("h5");
-        title.className = "card-title";
-        const description = document.createElement("p");
-        description.className = "card-text";
-        body.append(title, description);
-        card.append(image, body);
-        element.append(card);
-        return updatePortfolioCard(element, project, portfolioUrl);
-    }
-
-    async function loadPublishedPortfolio() {
-        const configuredBase = document.querySelector('meta[name="design-api-base"]').content.trim().replace(/\/+$/, "");
-        const portfolioUrl = new URL(`${configuredBase}/api/public/design-portfolio`, window.location.href);
-        try {
-            const response = await fetch(portfolioUrl, {
-                headers: { Accept: "application/json" },
-                credentials: "omit",
-                cache: "no-store",
-            });
-            if (!response.ok) throw new Error(`Portfolio request failed with ${response.status}`);
-            const result = await response.json();
-            if (!Array.isArray(result.projects)) throw new Error("Portfolio response was invalid");
-
-            const existingCards = new Map(
-                [...portfolioGrid.querySelectorAll("[data-cms-key]")].map(card => [card.dataset.cmsKey, card]),
-            );
-            const publishedKeys = new Set(result.projects.map(project => project.source_key).filter(Boolean));
-            for (const project of result.projects) {
-                const card = existingCards.get(project.source_key) || createPortfolioCard(project, portfolioUrl);
-                updatePortfolioCard(card, project, portfolioUrl);
-                portfolioGrid.append(card);
-            }
-            if (result.legacyPortfolioManaged) {
-                for (const [key, card] of existingCards) {
-                    if (!publishedKeys.has(key)) card.remove();
-                }
-            }
-            updatePortfolio();
-        } catch (error) {
-            console.warn("Published portfolio is unavailable; showing the saved website portfolio.", error);
-        }
-    }
-
-    void loadPublishedPortfolio();
-</script>
+<script src="public-portfolio.js?v=portfolio-editorial-20261023-2" defer></script>
 
 <section class="why-choose">
     <div class="container">
@@ -1308,19 +1176,21 @@
             });
         });
 
-        const revealObserver = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("is-visible");
-                    revealObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.12 });
+        if ("IntersectionObserver" in window) {
+            const revealObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
 
-        document.querySelectorAll(".about .row, #services .accordion-item, .portfolio-item, .contact-links").forEach(element => {
-            element.classList.add("reveal");
-            revealObserver.observe(element);
-        });
+            document.querySelectorAll(".about .row, #services .accordion-item, .portfolio-item, .contact-links").forEach(element => {
+                element.classList.add("reveal");
+                revealObserver.observe(element);
+            });
+        }
 
         const projectEnquiryForm = document.getElementById("projectEnquiryForm");
         if (projectEnquiryForm) {
@@ -2079,130 +1949,245 @@
         }
 
         .portfolio {
+            position: relative;
             background: var(--paper);
         }
 
         .portfolio h2 {
+            margin-bottom: 16px !important;
             text-align: left !important;
+            font-size: clamp(3rem, 7vw, 5.6rem);
+            font-weight: 600;
+            letter-spacing: -.065em;
+            line-height: .98;
+        }
+
+        .portfolio .section-kicker {
+            margin-bottom: 18px;
+            color: var(--teal);
+            font-size: .72rem;
+            letter-spacing: .18em;
+        }
+
+        .portfolio .container > h2,
+        .portfolio .container > .portfolio-intro {
+            max-width: 760px;
+        }
+
+        .portfolio-intro {
+            margin: 0 0 38px;
+            color: var(--muted);
+            font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+            line-height: 1.75;
         }
 
         .portfolio-controls {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px 28px;
+            margin-bottom: 46px;
+            padding: 18px 0;
+            border-top: 1px solid rgba(24, 52, 58, .13);
+            border-bottom: 1px solid rgba(24, 52, 58, .13);
+        }
+
+        .portfolio-source-status {
+            min-height: 1.5em;
+            margin: 0 0 24px;
+            color: var(--neutral-dark);
+            font-size: .78rem;
+            line-height: 1.5;
+        }
+
+        .portfolio-source-status[data-source="fallback"] {
+            color: #765814;
         }
 
         .portfolio-search {
-            width: min(100%, 430px);
+            width: min(100%, 280px);
         }
 
         #search-bar {
             width: 100% !important;
-            min-height: 48px;
+            min-height: 42px;
             margin: 0 !important;
-            border: 1px solid #d6dfdc;
-            border-radius: 3px;
+            padding: 8px 2px;
+            border: 0;
+            border-bottom: 1px solid rgba(24, 52, 58, .24);
+            border-radius: 0;
+            background: transparent;
             box-shadow: none;
+            transition: border-color .2s ease;
         }
 
         .portfolio-filters {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 8px;
+            gap: 8px 24px;
         }
 
         #search-bar:focus {
-            border-color: var(--neutral-dark);
-            box-shadow: 0 0 0 3px rgba(104, 116, 125, .24);
+            border-bottom-color: var(--teal);
+            background: transparent;
+            box-shadow: none;
+            outline: 0;
         }
 
         .filter-btn {
             margin: 0;
-            padding: 8px 14px;
-            border: 1px solid var(--neutral-medium);
-            border-radius: 3px;
+            padding: 8px 0;
+            border: 0;
+            border-bottom: 1px solid transparent;
+            border-radius: 0;
             background: transparent;
-            color: var(--ink);
-            font-size: .9rem;
-            transition: color .2s ease, background .2s ease, border-color .2s ease;
+            color: var(--muted);
+            font-size: .88rem;
+            font-weight: 500;
+            transition: color .2s ease, border-color .2s ease;
         }
 
-        .filter-btn.btn-outline-primary:hover,
-        .filter-btn.btn-outline-primary:focus,
-        .filter-btn.btn-outline-primary:active,
+        .filter-btn:hover {
+            border-color: rgba(15, 175, 169, .55);
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .filter-btn:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: 5px;
+        }
+
         .filter-btn.btn-primary,
         .filter-btn.btn-primary:hover,
         .filter-btn.btn-primary:focus,
         .filter-btn.btn-primary:active {
-            border-color: var(--neutral-medium);
-            background: var(--neutral-light);
-            color: var(--ink);
+            border-color: var(--teal);
+            background: transparent;
+            color: var(--deep);
+            box-shadow: none;
+        }
+
+        .filter-btn.btn-outline-primary {
+            border-color: transparent;
+            background: transparent;
+            color: var(--muted);
+        }
+
+        .filter-btn.btn-outline-primary:focus {
+            color: var(--deep);
             box-shadow: none;
         }
 
         .portfolio .row {
-            row-gap: 24px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 64px 36px;
+            margin-inline: 0;
         }
 
         .portfolio-item {
             min-width: 0;
+            width: auto;
+            padding: 0;
             transition: opacity .35s ease, transform .35s ease;
         }
 
-        .portfolio .card {
-            min-width: 0;
-            height: 100%;
-            overflow: hidden;
-            border: 1px solid rgba(16, 47, 53, .08);
-            border-radius: 4px;
-            background: #fff;
-            box-shadow: none;
-            transition: transform .3s ease, box-shadow .3s ease;
+        .portfolio-item[hidden] {
+            display: none !important;
         }
 
-        .portfolio .card:hover {
-            box-shadow: 0 14px 30px rgba(8, 42, 51, .12);
-            transform: translateY(-5px);
+        .portfolio-item.is-featured {
+            grid-column: span 2;
+        }
+
+        .portfolio-item.reveal {
+            transition-delay: 0ms;
+        }
+
+        .portfolio .card {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+            overflow: visible;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
         }
 
         .portfolio img {
             display: block;
             width: 100%;
             height: auto;
-            aspect-ratio: 4 / 3;
+            aspect-ratio: 3 / 2;
             border-radius: 0;
-            background: #e9eeeb;
-            object-fit: cover;
+            background: #edf0ed;
+            object-fit: contain;
+            transition: transform .5s cubic-bezier(.2, .7, .2, 1), background-color .3s ease;
+        }
+
+        .portfolio-item.is-featured img {
+            aspect-ratio: 2 / 1;
         }
 
         .portfolio .card-body {
             display: flex;
             flex: 1;
             flex-direction: column;
-            padding: 20px;
+            align-items: flex-start;
+            padding: 20px 0 0;
+        }
+
+        .portfolio-category {
+            display: inline-flex;
+            align-items: center;
+            min-height: 18px;
+            margin: 0 0 8px;
+            color: #657875;
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: .14em;
+            line-height: 1.2;
+            text-transform: uppercase;
         }
 
         .portfolio .card-title {
-            min-height: 2.7em;
+            min-height: 0;
+            margin-bottom: 7px;
             color: var(--ink);
-            font-size: 18px;
-            font-weight: 700;
+            font-size: clamp(1.35rem, 2vw, 1.75rem);
+            font-weight: 600;
+            letter-spacing: -.035em;
+            line-height: 1.25;
+            transition: color .25s ease, transform .25s ease;
         }
 
         .portfolio .card-text {
+            max-width: 52ch;
             margin-bottom: 0;
             color: var(--muted);
-            font-size: 14px;
+            font-size: .92rem;
+            line-height: 1.65;
         }
 
         .portfolio .portfolio-tags {
-            margin: 10px 0 0;
-            color: var(--neutral-dark);
-            font-size: 12px;
-            letter-spacing: .02em;
+            display: none;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .portfolio-item:hover img {
+                transform: scale(1.015);
+                background-color: #e5ebe7;
+            }
+
+            .portfolio-item:hover .card-title {
+                color: var(--teal);
+                transform: translateX(3px);
+            }
         }
 
         .contact {
@@ -2284,9 +2269,19 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            .portfolio .row { gap: 52px 28px; }
+        }
+
         @media (max-width: 991.98px) {
             .services-grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .portfolio .row { gap: 48px 24px; }
+
+            .portfolio-item.is-featured {
+                grid-column: span 2;
             }
 
             .feature-grid,
@@ -2484,17 +2479,32 @@
             }
 
             .portfolio .row {
-                margin-left: 0;
-                margin-right: 0;
-                row-gap: 18px;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 42px;
             }
 
             .portfolio-controls {
+                align-items: stretch;
+                gap: 18px;
                 width: 100%;
+                margin-bottom: 34px;
             }
 
             .portfolio-search {
                 max-width: none;
+            }
+
+            .portfolio-filters {
+                gap: 6px 22px;
+            }
+
+            .filter-btn {
+                padding: 7px 0;
+                font-size: .82rem;
+            }
+
+            .portfolio .card-body {
+                padding-top: 16px;
             }
 
             .two-up {
@@ -2513,6 +2523,23 @@
         }
 
         @media (max-width: 767px) {
+            .portfolio .row {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 38px;
+            }
+
+            .portfolio-item.is-featured {
+                grid-column: auto;
+            }
+
+            .portfolio img {
+                aspect-ratio: 4 / 3;
+            }
+
+            .portfolio .card-body {
+                padding-top: 15px;
+            }
+
             #devPortfolioGrid {
                 display: grid;
                 grid-template-columns: minmax(0, 1fr);
@@ -2593,6 +2620,20 @@
                 width: auto;
             }
 
+        }
+
+        @media (max-width: 420px) {
+            .portfolio-filters {
+                gap: 5px 18px;
+            }
+
+            .filter-btn {
+                width: auto;
+            }
+
+            .portfolio-controls {
+                margin-bottom: 28px;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {

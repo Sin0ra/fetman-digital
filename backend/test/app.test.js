@@ -20,7 +20,11 @@ const config = {
   sessionSecret: "test-only-session-secret-with-more-than-32-characters",
   corsOrigins: ["http://localhost:5173"],
 };
-const state = { databaseAvailable: true };
+const state = {
+  databaseAvailable: true,
+  maintenanceMode: 0,
+  maintenanceVersion: 0,
+};
 let users;
 let pool;
 let server;
@@ -35,11 +39,52 @@ function createPool() {
       return [[{ result: 1 }], []];
     },
     async execute(sql, parameters) {
+      if (sql.includes("SELECT maintenance_mode")) {
+        if (!state.databaseAvailable) {
+          throw new Error("database unavailable");
+        }
+        return [[{
+          maintenance_mode: state.maintenanceMode,
+          version: state.maintenanceVersion,
+          updated_at: "2026-10-23T07:00:00.000Z",
+        }], []];
+      }
+      if (sql.startsWith("UPDATE site_maintenance_settings")) {
+        if (!state.databaseAvailable) {
+          throw new Error("database unavailable");
+        }
+        if (parameters[1] !== state.maintenanceVersion) {
+          return [{ affectedRows: 0 }, []];
+        }
+        state.maintenanceMode = parameters[0];
+        state.maintenanceVersion += 1;
+        return [{ affectedRows: 1 }, []];
+      }
       if (sql.includes("WHERE email = ?")) {
         return [users.filter((user) => user.email === parameters[0]), []];
       }
       if (sql.includes("WHERE id = ?")) {
         return [users.filter((user) => user.id === parameters[0]), []];
+      }
+      if (sql.includes("AS total_portfolio_projects")) {
+        return [[{
+          total_portfolio_projects: 7,
+          published_projects: 3,
+          draft_projects: 4,
+        }], []];
+      }
+      if (sql.includes("AS design_assets")) {
+        return [[{ design_assets: 6 }], []];
+      }
+      if (sql.includes("AS pending_tasks")) {
+        return [[{ pending_tasks: 2 }], []];
+      }
+      if (sql.includes("FROM graphic_design_content_revisions")) {
+        return [[{
+          action: "updated",
+          title: "Studio portfolio",
+          created_at: "2026-10-23T07:00:00.000Z",
+        }], []];
       }
       if (sql.includes("FROM graphic_design_tasks")) {
         return [[], []];
@@ -175,6 +220,8 @@ before(async () => {
       password_change_required: 0,
     },
   ];
+  state.maintenanceMode = 0;
+  state.maintenanceVersion = 0;
   pool = createPool();
   const testApp = await startTestServer();
   server = testApp.server;
@@ -227,6 +274,49 @@ describe("management API and Developer authentication", () => {
 
     assert.equal(response.status, 404);
     assert.deepEqual(await response.json(), { error: "Not found" });
+  });
+
+  it("keeps internal database failures out of public API responses", async () => {
+    const response = await fetch(`${baseUrl}/api/public/design-portfolio`);
+    const body = await response.text();
+
+    assert.equal(response.status, 500);
+    assert.deepEqual(JSON.parse(body), { error: "Internal server error" });
+    assert.equal(body.includes("Unexpected SQL in test pool"), false);
+  });
+
+  it("reports a missing public publishing schema as unavailable", async () => {
+    const missingSchemaPool = {
+      ...pool,
+      async execute(sql) {
+        if (sql.includes("SELECT maintenance_mode")) {
+          return [[{
+            maintenance_mode: state.maintenanceMode,
+            version: state.maintenanceVersion,
+            updated_at: "2026-10-23T07:00:00.000Z",
+          }], []];
+        }
+        throw Object.assign(new Error("private database details"), {
+          code: "ER_NO_SUCH_TABLE",
+        });
+      },
+    };
+    const testApp = await startTestServer(missingSchemaPool);
+    const originalConsoleError = console.error;
+    console.error = () => {};
+
+    try {
+      const response = await fetch(`${testApp.url}/api/public/design-portfolio`);
+
+      assert.equal(response.status, 503);
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.deepEqual(await response.json(), {
+        error: "Published design content is temporarily unavailable.",
+      });
+    } finally {
+      console.error = originalConsoleError;
+      await closeServer(testApp.server);
+    }
   });
 
   it("rejects invalid configuration without exposing environment values", () => {
@@ -282,9 +372,214 @@ describe("management API and Developer authentication", () => {
 
   it("rejects unauthenticated access to protected routes", async () => {
     const response = await fetch(`${baseUrl}/api/developer/dashboard`);
+    const diagnosticsResponse = await fetch(`${baseUrl}/api/developer/diagnostics`);
+    const overviewResponse = await fetch(`${baseUrl}/api/developer/overview`);
+    const maintenanceResponse = await fetch(`${baseUrl}/api/developer/maintenance-mode`);
+    const unauthenticatedUpdate = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ maintenanceMode: true, version: 0 }),
+    });
 
     assert.equal(response.status, 401);
     assert.deepEqual(await response.json(), { error: "Authentication required" });
+    assert.equal(diagnosticsResponse.status, 401);
+    assert.equal(overviewResponse.status, 401);
+    assert.equal(maintenanceResponse.status, 401);
+    assert.equal(unauthenticatedUpdate.status, 401);
+  });
+
+  it("persists maintenance mode through a Developer-only CSRF-protected versioned update", async () => {
+    state.maintenanceMode = 0;
+    state.maintenanceVersion = 0;
+    const csrf = await createCsrfToken(baseUrl);
+    const loginResponse = await login(baseUrl, csrf.cookie, csrf.csrfToken, {
+      email: INITIAL_DEVELOPER_EMAIL,
+      password: testPassword,
+    });
+    const cookie = getCookie(loginResponse);
+    const stateResponse = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      headers: { Cookie: cookie },
+    });
+    const initial = await stateResponse.json();
+    assert.equal(stateResponse.status, 200);
+    assert.equal(initial.maintenanceMode, false);
+    assert.equal(initial.version, 0);
+
+    const missingCsrf = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      method: "PUT",
+      headers: { Cookie: cookie, "Content-Type": "application/json" },
+      body: JSON.stringify({ maintenanceMode: true, version: 0 }),
+    });
+    assert.equal(missingCsrf.status, 403);
+
+    const updateCsrf = await createCsrfToken(baseUrl, cookie);
+    const enabled = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      method: "PUT",
+      headers: {
+        Cookie: updateCsrf.cookie,
+        "Content-Type": "application/json",
+        "X-CSRF-Token": updateCsrf.csrfToken,
+      },
+      body: JSON.stringify({ maintenanceMode: true, version: 0 }),
+    });
+    const saved = await enabled.json();
+    assert.equal(enabled.status, 200);
+    assert.equal(saved.maintenanceMode, true);
+    assert.equal(saved.version, 1);
+
+    const refreshed = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      headers: { Cookie: cookie },
+    });
+    assert.deepEqual(await refreshed.json(), saved);
+    const publicPortfolio = await fetch(`${baseUrl}/api/public/design-portfolio`);
+    const publicAsset = await fetch(`${baseUrl}/api/public/design-assets/1`);
+    const developerDashboard = await fetch(`${baseUrl}/api/developer/dashboard`, {
+      headers: { Cookie: cookie },
+    });
+    assert.equal(publicPortfolio.status, 503);
+    assert.equal(publicAsset.status, 503);
+    assert.equal(developerDashboard.status, 200);
+    assert.equal((await fetch(`${baseUrl}/api/health`)).status, 200);
+
+    const restartedApp = await startTestServer(pool);
+    try {
+      const restartCsrf = await createCsrfToken(restartedApp.url);
+      const restartedLogin = await login(restartedApp.url, restartCsrf.cookie, restartCsrf.csrfToken, {
+        email: INITIAL_DEVELOPER_EMAIL,
+        password: testPassword,
+      });
+      const restartedState = await fetch(`${restartedApp.url}/api/developer/maintenance-mode`, {
+        headers: { Cookie: getCookie(restartedLogin) },
+      });
+      assert.equal((await restartedState.json()).maintenanceMode, true);
+    } finally {
+      await closeServer(restartedApp.server);
+    }
+
+    const designerCsrf = await createCsrfToken(baseUrl);
+    const designerLogin = await login(baseUrl, designerCsrf.cookie, designerCsrf.csrfToken, {
+      email: "designer@example.test",
+      password: testPassword,
+    });
+    const designerCookie = getCookie(designerLogin);
+    const designerToken = await createCsrfToken(baseUrl, designerCookie);
+    const forbidden = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      method: "PUT",
+      headers: {
+        Cookie: designerToken.cookie,
+        "Content-Type": "application/json",
+        "X-CSRF-Token": designerToken.csrfToken,
+      },
+      body: JSON.stringify({ maintenanceMode: false, version: 1 }),
+    });
+    assert.equal(forbidden.status, 403);
+    assert.equal(state.maintenanceMode, 1);
+  });
+
+  it("rejects invalid maintenance updates and detects stale concurrent versions", async () => {
+    state.maintenanceMode = 0;
+    state.maintenanceVersion = 2;
+    const csrf = await createCsrfToken(baseUrl);
+    const loginResponse = await login(baseUrl, csrf.cookie, csrf.csrfToken, {
+      email: INITIAL_DEVELOPER_EMAIL,
+      password: testPassword,
+    });
+    const cookie = getCookie(loginResponse);
+    const token = await createCsrfToken(baseUrl, cookie);
+    const invalid = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      method: "PUT",
+      headers: {
+        Cookie: token.cookie,
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token.csrfToken,
+      },
+      body: JSON.stringify({ maintenanceMode: "true", version: 2 }),
+    });
+    const conflict = await fetch(`${baseUrl}/api/developer/maintenance-mode`, {
+      method: "PUT",
+      headers: {
+        Cookie: token.cookie,
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token.csrfToken,
+      },
+      body: JSON.stringify({ maintenanceMode: true, version: 1 }),
+    });
+    assert.equal(invalid.status, 400);
+    assert.equal(conflict.status, 409);
+    assert.equal((await conflict.json()).version, 2);
+    assert.equal(state.maintenanceMode, 0);
+  });
+
+  it("serves real, read-only Developer overview data", async () => {
+    const csrf = await createCsrfToken(baseUrl);
+    const loginResponse = await login(baseUrl, csrf.cookie, csrf.csrfToken, {
+      email: INITIAL_DEVELOPER_EMAIL,
+      password: testPassword,
+    });
+    const cookie = getCookie(loginResponse);
+    const response = await fetch(`${baseUrl}/api/developer/overview`, {
+      headers: { Cookie: cookie },
+    });
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.deepEqual(await response.json(), {
+      metrics: {
+        totalPortfolioProjects: 7,
+        publishedProjects: 3,
+        draftProjects: 4,
+        designAssets: 6,
+        pendingTasks: 2,
+      },
+      recentChanges: [{
+        action: "updated",
+        title: "Studio portfolio",
+        createdAt: "2026-10-23T07:00:00.000Z",
+      }],
+    });
+  });
+
+  it("restricts Developer diagnostics to Developer accounts", async () => {
+    const csrf = await createCsrfToken(baseUrl);
+    const loginResponse = await login(baseUrl, csrf.cookie, csrf.csrfToken, {
+      email: "designer@example.test",
+      password: testPassword,
+    });
+    const response = await fetch(`${baseUrl}/api/developer/diagnostics`, {
+      headers: { Cookie: getCookie(loginResponse) },
+    });
+
+    assert.equal(response.status, 403);
+    assert.deepEqual(await response.json(), { error: "Forbidden" });
+  });
+
+  it("reports authenticated database diagnostic failures without exposing details", async () => {
+    const csrf = await createCsrfToken(baseUrl);
+    const loginResponse = await login(baseUrl, csrf.cookie, csrf.csrfToken, {
+      email: INITIAL_DEVELOPER_EMAIL,
+      password: testPassword,
+    });
+    state.databaseAvailable = false;
+    let response;
+    try {
+      response = await fetch(`${baseUrl}/api/developer/diagnostics`, {
+        headers: { Cookie: getCookie(loginResponse) },
+      });
+    } finally {
+      state.databaseAvailable = true;
+    }
+    const responseText = await response.text();
+    const result = JSON.parse(responseText);
+
+    assert.equal(response.status, 200);
+    assert.equal(result.status, "degraded");
+    assert.equal(result.backend, "healthy");
+    assert.equal(result.database, "unavailable");
+    assert.equal(result.environment, "test");
+    assert.equal(Number.isSafeInteger(result.uptimeSeconds), true);
+    assert.equal(Number.isNaN(Date.parse(result.checkedAt)), false);
+    assert.equal(responseText.includes("database unavailable"), false);
   });
 
   it("requires a CSRF token before login", async () => {

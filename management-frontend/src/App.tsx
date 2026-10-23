@@ -1,9 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import './App.css'
-import PasswordChange from './PasswordChange'
 import MandatoryPasswordChange from './MandatoryPasswordChange'
 import GraphicDesignDashboard from './GraphicDesignDashboard'
-import UserManagement from './UserManagement'
+import DeveloperPortal from './DeveloperPortal'
 import fetmanLogo from '../../fetman digital 2023 black.png'
 
 type User = {
@@ -13,16 +12,7 @@ type User = {
   passwordChangeRequired: boolean
 }
 
-type Health = {
-  status: string
-  database: string
-}
-
-const futureModules = [
-  'IT Department',
-  'Finance',
-  'System Settings',
-]
+const developerPaths = ['/developer', '/developer/users', '/developer/maintenance']
 
 async function requestJson(path: string, init?: RequestInit) {
   return fetch(path, {
@@ -39,7 +29,6 @@ function App() {
   const [path, setPath] = useState(window.location.pathname)
   const [checkingSession, setCheckingSession] = useState(true)
   const [user, setUser] = useState<User | null>(null)
-  const [health, setHealth] = useState<Health | null>(null)
   const [pageError, setPageError] = useState('')
   const [loginError, setLoginError] = useState('')
   const [logoutError, setLogoutError] = useState('')
@@ -100,7 +89,7 @@ function App() {
           return
         }
 
-        if (path !== '/developer' && path !== '/developer/users') {
+        if (!developerPaths.includes(path)) {
           navigate('/developer', true)
           return
         }
@@ -109,18 +98,12 @@ function App() {
           return
         }
 
-        const [dashboardResponse, healthResponse] = await Promise.all([
-          requestJson('/api/developer/dashboard'),
-          requestJson('/api/health'),
-        ])
+        const dashboardResponse = await requestJson('/api/developer/dashboard')
         if (dashboardResponse.status === 403) {
           setPageError('Your account does not have Developer dashboard access.')
           return
         }
         if (!dashboardResponse.ok) throw new Error('Dashboard verification failed')
-
-        const healthResult = (await healthResponse.json()) as Health
-        if (!cancelled) setHealth(healthResult)
       } catch {
         if (!cancelled) {
           setPageError('The management service is unavailable. Please try again shortly.')
@@ -231,116 +214,31 @@ function App() {
       <GraphicDesignDashboard
         email={user.email}
         onLogout={handleLogout}
+        onSessionExpired={() => {
+          setUser(null)
+          navigate('/login', true)
+        }}
         loggingOut={loggingOut}
         logoutError={logoutError}
       />
     )
   }
 
-  if ((path === '/developer' || path === '/developer/users') && user?.role === 'Developer') {
+  if (developerPaths.includes(path) && user?.role === 'Developer') {
     return (
-      <main className="dashboard-shell">
-        <header className="topbar">
-          <a
-            className="brand"
-            href="/developer"
-            onClick={(event) => {
-              event.preventDefault()
-              navigate('/developer')
-            }}
-            aria-label="Fetman Digital Developer dashboard"
-          >
-            <img className="brand-logo" src={fetmanLogo} alt="" />
-            <span>
-              <strong>Fetman Digital</strong>
-              <span className="brand-caption">Management platform</span>
-            </span>
-          </a>
-          <div className="dashboard-actions">
-            <PasswordChange />
-            <button className="button button-secondary logout-button" onClick={handleLogout} disabled={loggingOut}>
-              {loggingOut ? 'Signing out…' : 'Log out'}
-            </button>
-          </div>
-        </header>
-        <nav className="portal-nav" aria-label="Developer portal">
-          <a
-            href="/developer"
-            aria-current={path === '/developer' ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault()
-              navigate('/developer')
-            }}
-          >
-            Overview
-          </a>
-          <a
-            className="user-management-link"
-            href="/developer/users"
-            aria-current={path === '/developer/users' ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault()
-              navigate('/developer/users')
-            }}
-          >
-            USER MANAGEMENT
-          </a>
-        </nav>
-
-        {path === '/developer/users' ? (
-          <UserManagement currentUserId={user.id} />
-        ) : (
-        <section className="dashboard-content" aria-labelledby="dashboard-title">
-          <p className="eyebrow">Developer workspace</p>
-          <h1 id="dashboard-title">Good to have you back.</h1>
-          <p className="dashboard-intro">Your authenticated Fetman Digital workspace.</p>
-
-          {pageError && <p className="form-error" role="alert">{pageError}</p>}
-          {logoutError && <p className="form-error" role="alert">{logoutError}</p>}
-
-          <section className="status-grid" aria-label="Account and service status">
-            <article className="status-card">
-              <span className="status-label">Signed in as</span>
-              <strong>{user.email}</strong>
-              <span className="status-detail">Role: {user.role}</span>
-            </article>
-            <article className="status-card">
-              <span className="status-label">Session</span>
-              <strong className="status-value"><span className="status-dot" />Authenticated</strong>
-              <span className="status-detail">Verified by the management API</span>
-            </article>
-            <article className="status-card">
-              <span className="status-label">Backend</span>
-              <strong>{health?.status === 'ok' ? 'Available' : 'Unavailable'}</strong>
-              <span className="status-detail">Management API health check</span>
-            </article>
-            <article className="status-card">
-              <span className="status-label">Database</span>
-              <strong>{health?.database === 'connected' ? 'Connected' : 'Unavailable'}</strong>
-              <span className="status-detail">Connection status only; no database details exposed</span>
-            </article>
-          </section>
-
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Coming later</p>
-              <h2>Department modules</h2>
-            </div>
-            <span className="stage">Not yet available</span>
-          </div>
-          <div className="module-grid">
-            {futureModules.map((module) => (
-              <article className="module-card" key={module}>
-                <span className="module-icon" aria-hidden="true">{module.slice(0, 1)}</span>
-                <h3>{module}</h3>
-                <p>This module has not been implemented.</p>
-              </article>
-            ))}
-          </div>
-        </section>
-        )}
-        <footer>Fetman Digital <span aria-hidden="true">·</span> Internal tools</footer>
-      </main>
+      <DeveloperPortal
+        path={path as '/developer' | '/developer/users' | '/developer/maintenance'}
+        email={user.email}
+        currentUserId={user.id}
+        onNavigate={(nextPath) => navigate(nextPath)}
+        onLogout={handleLogout}
+        onSessionExpired={() => {
+          setUser(null)
+          navigate('/login', true)
+        }}
+        loggingOut={loggingOut}
+        logoutError={logoutError}
+      />
     )
   }
 

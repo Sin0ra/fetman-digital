@@ -20,6 +20,21 @@ active Graphic Design account before applying it; if no such account exists,
 the legacy portfolio rows are not seeded. Existing content rows are not
 deleted or replaced.
 
+`005_site_maintenance.sql` creates one persistent maintenance-mode row,
+initialized to OFF. Review the database first and apply this migration once
+with an authorized schema account. The runtime account must be able to
+`SELECT` and `UPDATE` this row. The currently configured account already has
+database-level `SELECT`, `INSERT`, `UPDATE`, and `DELETE` privileges, so no
+additional runtime grant is required for this table. Do not alter those
+pre-existing grants as part of this migration.
+
+Migration 004 requires an authorized schema administrator with the necessary
+`ALTER`, `CREATE ROUTINE`, `INSERT`, and `SELECT` privileges. It creates a
+temporary stored procedure to conditionally add columns, then drops that
+procedure. Check that no procedure with its helper name already exists before
+running it. The runtime `fetman_app` account is intentionally limited to data
+operations and cannot apply this migration.
+
 `003_password_change_required.sql` adds
 `management_users.password_change_required` with a default of `0`, so
 existing accounts continue to work unchanged. New accounts created by the
@@ -53,3 +68,8 @@ Grant the runtime account only the required `SELECT`, `INSERT`, `UPDATE`,
 and `DELETE` privileges on the Graphic Design tables, if it does not
 already have them. Preserve its existing host restriction and all other
 privileges; never grant database-wide or global access for this feature.
+
+Apply migration 005 manually after reviewing the existing schema. In another
+environment where the runtime account does not already have these rights,
+grant only `SELECT` and `UPDATE` on `site_maintenance_settings`, preserving
+the account's existing host restriction and unrelated privileges.

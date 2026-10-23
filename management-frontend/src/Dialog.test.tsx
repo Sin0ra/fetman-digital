@@ -70,7 +70,7 @@ describe('Fetman branded dialog', () => {
     expect(document.activeElement).toBe(cancel)
     fireEvent.keyDown(cancel, { key: 'Tab', shiftKey: true })
     expect(document.activeElement).toBe(confirm)
-    fireEvent(dialog, new Event('cancel', { bubbles: true, cancelable: true }))
+    fireEvent.keyDown(dialog, { key: 'Escape' })
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 

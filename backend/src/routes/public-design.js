@@ -37,14 +37,18 @@ function createPublicDesignRouter({
        ORDER BY display_order, id`,
     );
     const [managedRows] = await pool.execute(
-      `SELECT COUNT(*) AS total
+      `SELECT source_key, publication_status, is_deleted
        FROM graphic_design_content
-       WHERE type = 'portfolio' AND source_key IS NOT NULL`,
+       WHERE type = 'portfolio' AND source_key LIKE 'legacy-%'`,
     );
     response.set("Cache-Control", "no-store");
     return response.status(200).json({
       projects: rows.map(publicContent),
-      legacyPortfolioManaged: Number(managedRows[0]?.total ?? 0) > 0,
+      managedLegacyKeys: managedRows.map((row) => row.source_key),
+      retiredLegacyKeys: managedRows
+        .filter((row) => row.is_deleted || row.publication_status !== "published")
+        .map((row) => row.source_key),
+      complete: true,
     });
   });
 
@@ -82,9 +86,29 @@ function createPublicDesignRouter({
       "Content-Type": asset.media_type,
       "Content-Disposition": `inline; filename="design-${assetId}.webp"`,
       "X-Content-Type-Options": "nosniff",
+      "Cross-Origin-Resource-Policy": "cross-origin",
       "Cache-Control": "no-store",
     });
     return response.sendFile(filePath);
+  });
+
+  router.use((error, request, response, next) => {
+    if (
+      error.code === "ER_NO_SUCH_TABLE" ||
+      error.code === "ER_BAD_FIELD_ERROR"
+    ) {
+      console.error("Public design schema is unavailable", {
+        method: request.method,
+        path: request.path,
+        errorCode: error.code,
+      });
+      response.set("Cache-Control", "no-store");
+      return response.status(503).json({
+        error: "Published design content is temporarily unavailable.",
+      });
+    }
+
+    return next(error);
   });
 
   return router;

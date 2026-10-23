@@ -15,13 +15,26 @@ This repository contains the public-facing Fetman Digital website.
 
 ## Running locally
 
-Open `index.html` in a web browser.
-
-For more reliable local testing, serve the project directory using a static HTTP server or a development server that does not require a backend.
+The public site is served at `http://localhost:8080/` by the backend process.
+From the repository root, start the backend with
+`npm --prefix .\backend start`. It serves both the API (`http://127.0.0.1:3000/`)
+and public site (`http://localhost:8080/`) only after verifying the persistent
+maintenance setting and its read/update access. Start the management frontend
+separately with
+`npm --prefix .\management-frontend run dev -- --host 127.0.0.1`
+(`http://localhost:5173/`). Do not use a standalone static server on port
+8080 when testing Maintenance Mode because a static server cannot enforce the
+saved setting.
 
 ## Deployment
 
-Deploy the website files and their required assets to a static hosting provider.
+The current website files can be hosted statically, but static hosting alone
+cannot enforce a database-backed maintenance setting. Production traffic must
+pass through the backend public-site server or an edge/reverse-proxy rule that
+reads the authoritative setting and serves `maintenance.html` before exposing
+the site or its public assets. Keep the management portal and API routes
+reachable to authorized Developers so they can disable maintenance. Do not
+deploy with a client-side-only gate.
 
 Ensure that the HTML, images, CSS, JavaScript, and other referenced assets are uploaded with their original relative paths.
 
@@ -164,8 +177,30 @@ return `401`:
 Invoke-WebRequest http://localhost:3000/api/developer/dashboard
 ```
 
-The Developer dashboard shows live API/database health state. The local
-system is not production ready.
+The Developer portal provides live content metrics and a dedicated
+Maintenance page at `http://localhost:5173/developer/maintenance`. It reads
+and updates the saved public-site mode through Developer-only endpoints,
+requiring the existing session and CSRF controls. Updates use a version check
+to detect concurrent changes. Its diagnostic checks validate the authenticated
+backend/database status and public portfolio/image endpoints.
+
+`GET /api/developer/overview`, `GET /api/developer/diagnostics`, and
+`GET`/`PUT /api/developer/maintenance-mode` require an active Developer
+session. Maintenance updates also require a valid CSRF token. The public-site
+server on port 8080 checks the saved state before serving every file; while ON
+it returns the branded maintenance page and blocks public portfolio API
+responses. The separate management API and portal remain available.
+
+The local `fetman_management` database has already had
+`backend/migrations/005_site_maintenance.sql` applied; a read-only check on
+2026-10-23 confirmed the singleton setting is OFF (version 8). In another
+environment, inspect the schema and apply this migration manually if it is
+absent. The live runtime account already has database-level `SELECT` and
+`UPDATE` privileges; do not change its existing grants. The backend requires
+distinct `PORT` and `PUBLIC_SITE_PORT` values; the latter defaults to 8080.
+It will refuse to bind either service unless the singleton setting can be
+read and an update privilege check succeeds. Restart the backend after
+applying the migration.
 
 ### Developer user management
 
@@ -199,12 +234,12 @@ requires the reviewed migration
 [`backend/migrations/003_password_change_required.sql`](./backend/migrations/003_password_change_required.sql).
 It adds a `TINYINT(1)` flag with a default of `0` (existing accounts are
 unchanged); account-creation and reset flows explicitly set it to `1`.
-**The migration has not been applied. Do not apply it without explicit
-approval and inspection of the existing schema.** Until it is approved and
-applied, the updated backend's login, account creation, reset, and password
-change queries require this column and will not work against the old schema.
-The runtime uses its existing table DML privileges; no additional privilege
-type or wider grant is requested.
+**The migration is present in the local `fetman_management` schema**, verified
+read-only on 2026-10-23. This local status does not imply that it has been
+applied to another environment. Before deploying there, inspect the schema and
+apply it only if the column is absent; do not apply it twice. The runtime uses
+its existing table DML privileges; no additional privilege type or wider
+grant is requested.
 
 Reset audit events are written to the backend log without credentials or
 session data and are not retained in a dedicated audit table.
@@ -212,8 +247,8 @@ session data and are not retained in a dedicated audit table.
 ### Graphic Design content publishing
 
 The public site at the repository root remains a separately deployed static
-site. The Graphic Design Portal now stores draft and published portfolio
-content in the existing MySQL content table. The public site requests
+site. The Graphic Design Portal stores draft and published portfolio content
+in the existing MySQL content table. The public site requests
 `/api/public/design-portfolio`, updates matching legacy cards by stable key,
 adds newly published cards, and removes unpublished managed cards. Its
 original hardcoded cards remain intact as a fallback if the API is unavailable.
@@ -292,12 +327,33 @@ npm --prefix .\management-frontend run lint
 Publishing endpoints require the manual migrations and corresponding
 least-privilege grants before they can be used with MySQL.
 
+An inspection on 2026-10-22 found the six migration 004 publishing columns
+missing from the local database. A read-only schema check on 2026-10-23
+confirmed all six (`publication_status`, `display_order`, `category`, `tags`,
+`source_key`, and `legacy_image_url`) are now present, and the live public API
+returned 12 published projects. Do not rerun migrations 002 or 004 on this
+database. For another environment, inspect the schema and have an authorized
+administrator apply any missing migration; the application does not run
+migrations automatically.
+
 For public publishing, deploy the backend behind a secure, public HTTPS
 reverse proxy or another approved API host; the current server listens on
 `127.0.0.1` and is not directly reachable from the static Netlify website.
-The public site defaults to a same-origin `/api` path. If the API is hosted on
-a different origin, set the `design-api-base` meta tag in `index.html` to that
-HTTPS API origin and add the exact public-site origin to backend
-`CORS_ORIGINS`. The unauthenticated public routes expose only published
-content and assets referenced by that content. Do not put credentials or
-deployment tokens in the static site. No production deployment was performed.
+The production API URL is not known or configured in this repository. Provide
+the HTTPS API origin and set it in the existing `design-api-base` meta tag in
+`index.html`. Add the exact public-site and management-frontend origins to
+backend `CORS_ORIGINS`. The public site does not send credentials, and private
+management routes remain authenticated. Do not put credentials or deployment
+tokens in the static site. No production deployment was performed.
+
+For local testing, serve the static site over HTTP on `localhost`, set
+`design-api-base` to `http://127.0.0.1:3000`, and include the exact local site
+origin in backend `CORS_ORIGINS`. If the meta value is empty on an HTTP
+localhost website, `public-portfolio.js` defaults to that local API origin.
+The portfolio section visibly reports whether it loaded live CMS projects,
+uses a static fallback, or is showing a mix of published and unmanaged legacy
+cards. An HTTPS Netlify preview cannot call an HTTP localhost API because
+browsers block mixed content. To test from Netlify, first provide a reachable
+HTTPS development API endpoint, set that origin in `design-api-base`, and
+allow the exact Netlify preview origin in backend `CORS_ORIGINS`; do not
+expose database credentials or use a guessed hostname.
