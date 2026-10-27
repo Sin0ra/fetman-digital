@@ -2,37 +2,43 @@ const { createApp } = require("./app");
 const { loadConfig } = require("./config/env");
 const { createPool } = require("./db/pool");
 const { MySQLSessionStore } = require("./db/session-store");
+const fs = require("node:fs");
+const path = require("node:path");
 const {
   safeErrorCode,
   verifyMaintenanceModeStorage,
 } = require("./maintenance-mode");
-const { createPublicSiteApp } = require("./public-site");
 
 async function startServer() {
   const config = loadConfig();
   const pool = createPool(config);
+  const managementFrontendDirectory = path.resolve(__dirname, "../../management-frontend/dist");
   let sessionStore;
   let app;
-  let publicSiteApp;
   let server;
-  let publicSiteServer;
   try {
     sessionStore = new MySQLSessionStore(pool);
+    if (!fs.existsSync(path.join(managementFrontendDirectory, "index.html"))) {
+      throw new Error("The management frontend build is missing. Run the production build before starting the server.");
+    }
+    app = createApp(config, {
+      pool,
+      sessionStore,
+      publicSiteDirectory: path.resolve(__dirname, "../.."),
+      managementFrontendDirectory,
+      startupReady: false,
+    });
+    server = app.listen(config.port, config.host);
+    await waitForListening(server);
+
     await pool.query("SELECT 1");
     await pool.query("SELECT id FROM management_users LIMIT 0");
     await pool.query("SELECT session_id FROM management_sessions LIMIT 0");
     await verifyMaintenanceModeStorage(pool);
-    app = createApp(config, { pool, sessionStore });
-    publicSiteApp = createPublicSiteApp({ pool });
-    server = app.listen(config.port, "127.0.0.1");
-    publicSiteServer = publicSiteApp.listen(config.publicSitePort, "127.0.0.1");
-    await Promise.all([
-      waitForListening(server),
-      waitForListening(publicSiteServer),
-    ]);
+    app.locals.startupReady = true;
   } catch (error) {
     await Promise.all(
-      [server, publicSiteServer].filter(Boolean).map(closeIfListening),
+      [server].filter(Boolean).map(closeIfListening),
     );
     if (typeof sessionStore?.close === "function") {
       await sessionStore.close();
@@ -45,8 +51,7 @@ async function startServer() {
     throw error;
   }
 
-  console.log(`Fetman management API listening at http://localhost:${config.port}`);
-  console.log(`Fetman public website listening at http://localhost:${config.publicSitePort}`);
+  console.log(`Fetman application listening at http://${config.host}:${config.port}`);
   let isShuttingDown = false;
 
   function shutdown(signal) {
@@ -55,11 +60,10 @@ async function startServer() {
     }
 
     isShuttingDown = true;
-    console.log(`Received ${signal}; closing the management API and public website.`);
+    console.log(`Received ${signal}; closing the Fetman application.`);
 
     Promise.all([
       closeIfListening(server),
-      closeIfListening(publicSiteServer),
     ]).then(async () => {
       try {
         if (typeof sessionStore.close === "function") {

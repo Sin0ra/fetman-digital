@@ -1,4 +1,15 @@
 {
+  "private": true,
+  "main": "backend/src/server.js",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "build": "npm --prefix management-frontend run build",
+    "start": "npm --prefix backend start",
+    "test": "npm --prefix backend test && npm --prefix management-frontend test",
+    "lint": "npm --prefix management-frontend run lint"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",

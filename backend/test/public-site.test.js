@@ -1,15 +1,14 @@
 const assert = require("node:assert/strict");
 const http = require("node:http");
 const fs = require("node:fs/promises");
+const os = require("node:os");
 const path = require("node:path");
 const { after, before, describe, it } = require("node:test");
 const { createPublicSiteApp } = require("../src/public-site");
 
 const state = { maintenanceMode: 0, unavailable: false };
-const privateUploadDirectory = path.resolve(
-  __dirname,
-  "../secure-uploads/design",
-);
+let siteDirectory;
+let privateUploadDirectory;
 const pool = {
   async execute() {
     if (state.unavailable) {
@@ -27,7 +26,25 @@ let server;
 let baseUrl;
 
 before(async () => {
-  server = createPublicSiteApp({ pool }).listen(0, "127.0.0.1");
+  siteDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "fetman-public-site-test-"));
+  await fs.copyFile(
+    path.resolve(__dirname, "../../index.html"),
+    path.join(siteDirectory, "index.html"),
+  );
+  await fs.copyFile(
+    path.resolve(__dirname, "../../maintenance.html"),
+    path.join(siteDirectory, "maintenance.html"),
+  );
+  privateUploadDirectory = path.join(
+    siteDirectory,
+    "backend",
+    "secure-uploads",
+    "design",
+  );
+  await fs.mkdir(privateUploadDirectory, { recursive: true });
+  await fs.writeFile(path.join(privateUploadDirectory, "test-upload.txt"), "test-only upload");
+
+  server = createPublicSiteApp({ pool, siteDirectory }).listen(0, "127.0.0.1");
   await new Promise((resolve, reject) => {
     server.once("listening", resolve);
     server.once("error", reject);
@@ -36,9 +53,17 @@ before(async () => {
 });
 
 after(async () => {
-  await new Promise((resolve, reject) => {
-    server.close((error) => (error ? reject(error) : resolve()));
-  });
+  try {
+    if (server) {
+      await new Promise((resolve, reject) => {
+        server.close((error) => (error ? reject(error) : resolve()));
+      });
+    }
+  } finally {
+    if (siteDirectory) {
+      await fs.rm(siteDirectory, { recursive: true, force: true });
+    }
+  }
 });
 
 describe("public site maintenance enforcement", () => {

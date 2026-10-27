@@ -370,6 +370,55 @@ describe("management API and Developer authentication", () => {
     );
   });
 
+  it("rejects loopback plaintext mode for a remote database host", () => {
+    assert.throws(
+      () =>
+        parseConfig({
+          NODE_ENV: "test",
+          CORS_ORIGINS: "http://localhost:5173",
+          DB_HOST: "mysql.hostinger.example",
+          DB_NAME: "fetman_management",
+          DB_USER: "fetman_app",
+          DB_PASSWORD: testPassword,
+          DB_TLS_MODE: "loopback-plaintext",
+          SESSION_SECRET: "test-only-session-secret-with-more-than-32-characters",
+        }),
+      /DB_TLS_MODE, DB_HOST/,
+    );
+  });
+
+  it("allows plaintext mode only when it is explicitly configured for loopback", () => {
+    const config = parseConfig({
+      NODE_ENV: "test",
+      CORS_ORIGINS: "http://localhost:5173",
+      DB_HOST: "127.0.0.1",
+      DB_NAME: "fetman_management",
+      DB_USER: "fetman_app",
+      DB_PASSWORD: testPassword,
+      DB_TLS_MODE: "loopback-plaintext",
+      SESSION_SECRET: "test-only-session-secret-with-more-than-32-characters",
+    });
+
+    assert.equal(config.database.tlsMode, "loopback-plaintext");
+    assert.equal(config.database.tlsCaPath, undefined);
+  });
+
+  it("treats an empty CA path as absent only for explicit loopback plaintext mode", () => {
+    const config = parseConfig({
+      NODE_ENV: "test",
+      CORS_ORIGINS: "http://localhost:5173",
+      DB_HOST: "127.0.0.1",
+      DB_NAME: "fetman_management",
+      DB_USER: "fetman_app",
+      DB_PASSWORD: testPassword,
+      DB_TLS_MODE: "loopback-plaintext",
+      DB_TLS_CA_PATH: "",
+      SESSION_SECRET: "test-only-session-secret-with-more-than-32-characters",
+    });
+
+    assert.equal(config.database.tlsCaPath, undefined);
+  });
+
   it("rejects unauthenticated access to protected routes", async () => {
     const response = await fetch(`${baseUrl}/api/developer/dashboard`);
     const diagnosticsResponse = await fetch(`${baseUrl}/api/developer/diagnostics`);

@@ -408,7 +408,7 @@ function DeveloperPortal({
         </nav>
         <p className="sidebar-label sidebar-label-admin">QUICK LINKS</p>
         <nav className="sidebar-nav" aria-label="Related resources">
-          <a className="sidebar-link" href="http://localhost:8080/" target="_blank" rel="noreferrer">
+          <a className="sidebar-link" href="/" target="_blank" rel="noreferrer">
             <span className="sidebar-icon" aria-hidden="true">W</span>Public website
           </a>
         </nav>
@@ -524,7 +524,7 @@ function OverviewPage({
             </>
           ) : <p className="status-detail">System checks have not completed yet.</p>}
           <button className="button button-secondary" type="button" onClick={() => onNavigate('/developer/users')}>Manage portal users</button>
-          <a className="button button-secondary" href="http://localhost:8080/" target="_blank" rel="noreferrer">Open public website</a>
+          <a className="button button-secondary" href="/" target="_blank" rel="noreferrer">Open public website</a>
         </section>
 
         <section className="overview-panel" aria-labelledby="recent-changes-heading">
@@ -775,8 +775,8 @@ function MaintenancePage({
           <div><p className="eyebrow">Safe actions</p><h2 id="links-heading">Open related sites</h2></div>
         </div>
         <div className="maintenance-actions">
-          <a className="button button-secondary" href="http://localhost:8080/" target="_blank" rel="noreferrer">Open public website</a>
-          <a className="button button-secondary" href="http://localhost:5173/" target="_blank" rel="noreferrer">Open management dashboard</a>
+          <a className="button button-secondary" href="/" target="_blank" rel="noreferrer">Open public website</a>
+          <a className="button button-secondary" href="/login" target="_blank" rel="noreferrer">Open management dashboard</a>
         </div>
         <p className="settings-description">The portal cannot clear browser, proxy, or static-server caches. After a website deployment, use a hard refresh in the browser if updated static files do not appear. Published portfolio data is fetched without browser caching.</p>
       </section>

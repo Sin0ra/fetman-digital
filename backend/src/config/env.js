@@ -1,4 +1,5 @@
 const path = require("node:path");
+const net = require("node:net");
 const dotenv = require("dotenv");
 const { z } = require("zod");
 
@@ -26,18 +27,23 @@ const corsOriginsSchema = z
 const configSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  PUBLIC_SITE_PORT: z.coerce.number().int().min(1).max(65535).default(8080),
+  HOST: z.string().trim().min(1).default("0.0.0.0"),
   CORS_ORIGINS: corsOriginsSchema,
   DB_HOST: z.string().trim().min(1),
   DB_PORT: z.coerce.number().int().min(1).max(65535).default(3306),
+  DB_TLS_MODE: z.enum(["required", "loopback-plaintext"]).default("required"),
   DB_NAME: z.string().trim().min(1),
   DB_USER: z.string().trim().min(1),
   DB_PASSWORD: z.string().min(1),
-  DB_TLS_CA_PATH: z
-    .string()
-    .trim()
-    .min(1)
-    .refine((value) => path.isAbsolute(value)),
+  DB_TLS_CA_PATH: z.preprocess(
+    (value) => typeof value === "string" && value.trim() === "" ? undefined : value,
+    z
+      .string()
+      .trim()
+      .min(1)
+      .refine((value) => path.isAbsolute(value))
+      .optional(),
+  ),
   SESSION_SECRET: z.string().min(32),
 });
 
@@ -58,14 +64,19 @@ function parseConfig(environment) {
         "Review backend/.env.example.",
     );
   }
-  if (result.data.PORT === result.data.PUBLIC_SITE_PORT) {
-    throw new Error("Invalid environment configuration for: PORT, PUBLIC_SITE_PORT.");
+
+  const isLoopbackPlaintext = result.data.DB_TLS_MODE === "loopback-plaintext";
+  if (isLoopbackPlaintext && !isLoopbackHost(result.data.DB_HOST)) {
+    throw new Error("Invalid environment configuration for: DB_TLS_MODE, DB_HOST.");
+  }
+  if (!isLoopbackPlaintext && !result.data.DB_TLS_CA_PATH) {
+    throw new Error("Invalid environment configuration for: DB_TLS_CA_PATH.");
   }
 
   return {
     environment: result.data.NODE_ENV,
     port: result.data.PORT,
-    publicSitePort: result.data.PUBLIC_SITE_PORT,
+    host: result.data.HOST,
     corsOrigins: result.data.CORS_ORIGINS,
     database: {
       host: result.data.DB_HOST,
@@ -74,9 +85,16 @@ function parseConfig(environment) {
       user: result.data.DB_USER,
       password: result.data.DB_PASSWORD,
       tlsCaPath: result.data.DB_TLS_CA_PATH,
+      tlsMode: result.data.DB_TLS_MODE,
     },
     sessionSecret: result.data.SESSION_SECRET,
   };
+}
+
+function isLoopbackHost(host) {
+  const normalizedHost = host.trim().toLowerCase();
+  return normalizedHost === "::1" ||
+    (net.isIP(normalizedHost) === 4 && normalizedHost.startsWith("127."));
 }
 
 function loadConfig() {
@@ -84,4 +102,4 @@ function loadConfig() {
   return parseConfig(process.env);
 }
 
-module.exports = { loadConfig, parseConfig };
+module.exports = { isLoopbackHost, loadConfig, parseConfig };

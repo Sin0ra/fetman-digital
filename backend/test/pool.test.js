@@ -19,6 +19,7 @@ it("configures MySQL TLS with the supplied CA and identity verification", async 
       user: "fetman_app",
       password: "test-only-password",
       tlsCaPath: caPath,
+      tlsMode: "required",
     },
   });
 
@@ -31,4 +32,37 @@ it("configures MySQL TLS with the supplied CA and identity verification", async 
   assert.deepEqual(ssl.ca, caCertificate);
   assert.equal(ssl.rejectUnauthorized, true);
   assert.equal(ssl.verifyIdentity, true);
+});
+
+it("rejects a plaintext pool when the host is not loopback", () => {
+  assert.throws(
+    () => createPool({
+      database: {
+        host: "db.example.test",
+        port: 3306,
+        name: "fetman_management",
+        user: "fetman_app",
+        password: "test-only-password",
+        tlsMode: "loopback-plaintext",
+      },
+    }),
+    /loopback host/,
+  );
+});
+
+it("creates an explicitly loopback-only plaintext pool without TLS options", async (context) => {
+  const pool = createPool({
+    database: {
+      host: "127.0.0.1",
+      port: 3306,
+      name: "fetman_management",
+      user: "fetman_app",
+      password: "test-only-password",
+      tlsMode: "loopback-plaintext",
+    },
+  });
+
+  context.after(() => pool.end());
+  // mysql2 normalizes an omitted ssl option to false internally.
+  assert.equal(pool.pool.config.connectionConfig.ssl, false);
 });
