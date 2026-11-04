@@ -5,7 +5,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "npm ci --prefix backend && npm ci --prefix management-frontend && npm --prefix management-frontend run build",
+    "build": "npm ci --prefix backend --include=dev && npm ci --prefix management-frontend --include=dev && npm --prefix management-frontend run build",
     "start": "npm --prefix backend start",
     "test": "npm --prefix backend test && npm --prefix management-frontend test",
     "lint": "npm --prefix management-frontend run lint"
