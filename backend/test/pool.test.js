@@ -13,7 +13,7 @@ it("configures MySQL TLS with the supplied CA and identity verification", async 
 
   const pool = createPool({
     database: {
-      host: "localhost",
+      host: "db.example.test",
       port: 3306,
       name: "fetman_management",
       user: "fetman_app",

@@ -1,4 +1,3 @@
-const fs = require("node:fs");
 const mysql = require("mysql2/promise");
 const { isLoopbackHost } = require("../config/env");
 
@@ -22,11 +21,10 @@ function createPool(config) {
     return mysql.createPool(connectionConfig);
   }
 
-  connectionConfig.ssl = {
-    ca: fs.readFileSync(config.database.tlsCaPath),
-    rejectUnauthorized: true,
-    verifyIdentity: true,
-  };
+  connectionConfig.ssl = { rejectUnauthorized: true, verifyIdentity: true };
+  if (config.database.tlsCaPath) {
+    connectionConfig.ssl.ca = require("node:fs").readFileSync(config.database.tlsCaPath);
+  }
   return mysql.createPool(connectionConfig);
 }
 

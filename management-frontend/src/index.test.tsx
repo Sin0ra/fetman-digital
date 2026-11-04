@@ -14,7 +14,7 @@ describe('homepage Read More disclosure', () => {
 
     expect(button?.getAttribute('aria-expanded')).toBe('false')
     expect(button?.getAttribute('aria-controls')).toBe('more-text')
-    expect(content?.style.display).toBe('none')
+    expect(content?.classList.contains('is-hidden')).toBe(true)
     expect(toggleScript).toBeDefined()
     if (!button || !content || !toggleScript) throw new Error('Read More disclosure markup or script is missing.')
 
@@ -23,11 +23,11 @@ describe('homepage Read More disclosure', () => {
     toggleText()
     expect(button.getAttribute('aria-expanded')).toBe('true')
     expect(button.textContent).toBe('Read Less')
-    expect(content.style.display).toBe('block')
+    expect(content.classList.contains('is-hidden')).toBe(false)
 
     toggleText()
     expect(button.getAttribute('aria-expanded')).toBe('false')
     expect(button.textContent).toBe('Read More')
-    expect(content.style.display).toBe('none')
+    expect(content.classList.contains('is-hidden')).toBe(true)
   })
 })

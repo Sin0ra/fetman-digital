@@ -3,163 +3,50 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
-afterEach(() => {
-  cleanup()
-  vi.unstubAllGlobals()
-})
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); window.history.replaceState({}, '', '/') })
 
-describe('restricted authenticated routing', () => {
-  it('returns an expired Graphic Design session to the login screen', async () => {
-    window.history.replaceState({}, '', '/graphic-design')
-    let sessionChecks = 0
-    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input)
-      if (url === '/api/auth/me') {
-        sessionChecks += 1
-        if (sessionChecks === 1) {
-          return {
-            status: 200,
-            ok: true,
-            json: async () => ({
-              user: {
-                id: '42',
-                email: 'designer@example.test',
-                role: 'Graphic Design',
-                passwordChangeRequired: false,
-              },
-            }),
-          } as Response
-        }
-        return { status: 401, ok: false, json: async () => ({}) } as Response
-      }
-      if (url.startsWith('/api/graphic-design/')) {
-        return { status: 401, ok: false, json: async () => ({ error: 'Session expired' }) } as Response
-      }
-      throw new Error(`Unexpected request: ${url}`)
-    })
-    vi.stubGlobal('fetch', fetchMock)
+function response(body: unknown, status = 200) {
+  return { ok: status >= 200 && status < 300, status, json: async () => body } as Response
+}
 
+describe('single-owner developer portal', () => {
+  it('shows login when the server reports no authenticated owner session', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => String(input) === '/api/auth/me' ? response({}, 401) : response({ error: 'Unexpected request' }, 500)))
     render(<App />)
-
-    expect(await screen.findByRole('heading', { name: 'Welcome back.' })).not.toBeNull()
-    expect(window.location.pathname).toBe('/login')
-    expect(fetchMock.mock.calls.some(([input]) => String(input) === '/api/graphic-design/tasks')).toBe(true)
+    expect(await screen.findByRole('heading', { name: 'Welcome back.' })).toBeTruthy()
   })
 
-  it('redirects a direct dashboard URL to the password-change screen without loading workspace data', async () => {
-    window.history.replaceState({}, '', '/developer/users')
-    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      if (String(input) === '/api/auth/me') {
-        return {
-          status: 200,
-          ok: true,
-          json: async () => ({
-            user: {
-              id: '27',
-              email: 'staff@example.test',
-              role: 'Developer',
-              passwordChangeRequired: true,
-            },
-          }),
-        } as Response
-      }
-      throw new Error(`Unexpected request: ${String(input)}`)
-    })
-    vi.stubGlobal('fetch', fetchMock)
-
-    render(<App />)
-
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { name: 'Secure your account' })).not.toBeNull()
-    })
-    expect(window.location.pathname).toBe('/set-password')
-    expect(screen.queryByRole('navigation')).toBeNull()
-    expect(fetchMock.mock.calls.some(([input]) =>
-      String(input).includes('/api/developer/dashboard') ||
-      String(input).includes('/api/developer/users') ||
-      String(input).includes('/api/graphic-design/'),
-    )).toBe(false)
-  })
-
-  it('restores the authenticated Maintenance page on a direct route load', async () => {
-    const user = userEvent.setup()
+  it('loads the owner portal section from a direct URL and navigates with same-origin requests', async () => {
     window.history.replaceState({}, '', '/developer/maintenance')
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input)
-      if (url === '/api/auth/me') {
-        return {
-          status: 200,
-          ok: true,
-          json: async () => ({
-            user: {
-              id: '1',
-              email: 'developer@example.test',
-              role: 'Developer',
-              passwordChangeRequired: false,
-            },
-          }),
-        } as Response
-      }
-      if (url === '/api/developer/dashboard') {
-        return { status: 200, ok: true, json: async () => ({ status: 'authenticated' }) } as Response
-      }
-      if (url === '/api/developer/diagnostics') {
-        return {
-          status: 200,
-          ok: true,
-          json: async () => ({
-            status: 'healthy',
-            backend: 'healthy',
-            database: 'healthy',
-            environment: 'test',
-            uptimeSeconds: 60,
-            checkedAt: '2026-10-23T07:00:00.000Z',
-          }),
-        } as Response
-      }
-      if (url === '/api/developer/maintenance-mode') {
-        return {
-          status: 200,
-          ok: true,
-          json: async () => ({
-            maintenanceMode: false,
-            version: 0,
-            updatedAt: '2026-10-23T07:00:00.000Z',
-          }),
-        } as Response
-      }
-      if (url === '/api/developer/overview') {
-        return {
-          status: 200,
-          ok: true,
-          json: async () => ({
-            metrics: {
-              totalPortfolioProjects: 12,
-              publishedProjects: 12,
-              draftProjects: 0,
-              designAssets: 1,
-              pendingTasks: 0,
-            },
-            recentChanges: [],
-          }),
-        } as Response
-      }
-      if (url === '/api/public/design-portfolio') {
-        return { status: 200, ok: true, json: async () => ({ complete: true, projects: [] }) } as Response
-      }
-      throw new Error(`Unexpected request: ${url}`)
+      const path = String(input)
+      if (path === '/api/auth/me') return response({ user: { email: 'sinoworkguma@gmail.com' } })
+      if (path === '/api/developer/maintenance') return response({ maintenanceMode: false })
+      return response({}, 200)
     })
     vi.stubGlobal('fetch', fetchMock)
-
     render(<App />)
-
-    expect(await screen.findByRole('heading', { name: 'Maintenance' })).not.toBeNull()
-    expect(await screen.findByRole('heading', { name: 'Healthy' })).not.toBeNull()
+    expect(await screen.findByRole('heading', { name: 'Maintenance' })).toBeTruthy()
     expect(window.location.pathname).toBe('/developer/maintenance')
-    expect(screen.getByRole('button', { name: 'Maintenance' }).getAttribute('aria-current')).toBe('page')
+    const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: 'Overview' }))
-    expect(await screen.findByRole('heading', { name: 'System overview' })).not.toBeNull()
     expect(window.location.pathname).toBe('/developer')
     expect(screen.getByRole('button', { name: 'Overview' }).getAttribute('aria-current')).toBe('page')
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/developer/overview', expect.anything()))
+  })
+
+  it('logs out by calling the server before returning to login', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input)
+      if (path === '/api/auth/me') return response({ user: { email: 'sinoworkguma@gmail.com' } })
+      if (path === '/api/auth/csrf') return response({ csrfToken: 'test-token' })
+      if (path === '/api/auth/logout') return response({ ok: true })
+      return response({ projects: 0, published: 0, media: 0 })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<App />)
+    await userEvent.setup().click(await screen.findByRole('button', { name: 'Log out' }))
+    expect(await screen.findByRole('heading', { name: 'Welcome back.' })).toBeTruthy()
+    expect(fetchMock.mock.calls.some(([input]) => String(input) === '/api/auth/logout')).toBe(true)
   })
 })

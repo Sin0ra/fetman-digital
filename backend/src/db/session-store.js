@@ -21,7 +21,7 @@ class MySQLSessionStore extends session.Store {
   get(sessionId, callback) {
     this.pool
       .execute(
-        "SELECT data FROM management_sessions WHERE session_id = ? AND expires > ? LIMIT 1",
+        "SELECT data FROM sessions WHERE session_id = ? AND expires > ? LIMIT 1",
         [sessionId, Math.floor(Date.now() / 1000)],
       )
       .then(([rows]) => {
@@ -53,7 +53,7 @@ class MySQLSessionStore extends session.Store {
 
     this.pool
       .execute(
-        "INSERT INTO management_sessions (session_id, expires, data) VALUES (?, ?, ?) " +
+        "INSERT INTO sessions (session_id, expires, data) VALUES (?, ?, ?) " +
           "ON DUPLICATE KEY UPDATE expires = VALUES(expires), data = VALUES(data)",
         [sessionId, expires, serialized],
       )
@@ -72,7 +72,7 @@ class MySQLSessionStore extends session.Store {
 
     this.pool
       .execute(
-        "UPDATE management_sessions SET expires = ? WHERE session_id = ?",
+        "UPDATE sessions SET expires = ? WHERE session_id = ?",
         [expires, sessionId],
       )
       .then(() => complete(callback))
@@ -81,23 +81,14 @@ class MySQLSessionStore extends session.Store {
 
   destroy(sessionId, callback) {
     this.pool
-      .execute("DELETE FROM management_sessions WHERE session_id = ?", [sessionId])
+      .execute("DELETE FROM sessions WHERE session_id = ?", [sessionId])
       .then(() => complete(callback))
       .catch((error) => complete(callback, error));
   }
 
-  deleteUserSessions(userId, executor = this.pool) {
-    return executor.execute(
-      `DELETE FROM management_sessions
-       WHERE JSON_VALID(data)
-         AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.userId')) = ?`,
-      [String(userId)],
-    );
-  }
-
   clearExpired(callback) {
     this.pool
-      .execute("DELETE FROM management_sessions WHERE expires <= ?", [
+      .execute("DELETE FROM sessions WHERE expires <= ?", [
         Math.floor(Date.now() / 1000),
       ])
       .then(() => complete(callback))

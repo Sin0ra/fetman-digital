@@ -5,24 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="design-api-base" content="">
-    <title>Fetman Digital | Graphic Design & Branding in Durban, South Africa</title>
-<meta name="description" content="Fetman Digital is a graphic design agency in Durban offering logo design, branding, web design, illustration, and creative solutions to grow your business.">
-<meta name="keywords" content="graphic design Durban, logo design, branding, web design, illustration, South Africa creative agency">
+    <title>Fetman Digital | Design, Websites & Digital Solutions in Durban</title>
+<meta name="description" content="Fetman Digital is a Durban-based creative studio offering brand design, business websites, e-commerce development and practical digital solutions for growing businesses.">
+<meta name="keywords" content="graphic design Durban, website development, branding, e-commerce development, South Africa creative agency">
 <meta name="author" content="Fetman Digital">
 <meta name="robots" content="index, follow">
 
 <!-- Open Graph (Facebook & LinkedIn) -->
-<meta property="og:title" content="Fetman Digital | Graphic Design & Branding in Durban, South Africa">
-<meta property="og:description" content="Creative graphic design, branding, and web solutions for businesses in South Africa.">
-<meta property="og:image" content="https://fetmandigital.com/logo%20img/fetman%20digital%202023%20black.png">
-<meta property="og:url" content="https://fetmandigital.com">
+<meta property="og:title" content="Fetman Digital | Design, Websites & Digital Solutions">
+<meta property="og:description" content="Creative design, business websites and practical digital solutions for growing businesses in South Africa.">
 <meta property="og:type" content="website">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Fetman Digital | Graphic Design & Branding in Durban">
-<meta name="twitter:description" content="Creative graphic design, branding, and web solutions for businesses in South Africa.">
-<meta name="twitter:image" content="https://fetmandigital.com/logo%20img/fetman%20digital%202023%20black.png">
+<meta name="twitter:title" content="Fetman Digital | Design, Websites & Digital Solutions">
+<meta name="twitter:description" content="Creative design, business websites and practical digital solutions for growing businesses in South Africa.">
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -34,20 +31,18 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
     <!-- Google Fonts -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"></noscript>
     <!-- Animate.css is used below the hero, so load it without blocking the first render. -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></noscript>
 
     <!-- Custom CSS -->
     <style>
+        .is-hidden { display: none; }
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -541,7 +536,7 @@
                     <a class="nav-link" href="#services">Services</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#it-division">IT Solutions</a>
+                    <a class="nav-link" href="#it-division">Web & IT</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#contact">Contact</a>
@@ -557,11 +552,11 @@
     <section class="hero" id="top">
         <div class="container hero-content">
             <p class="eyebrow">Independent creative studio · Durban, South Africa</p>
-            <h1>Make your brand<br><span>impossible to ignore.</span></h1>
-            <p class="hero-copy">Thoughtful design for businesses ready to make their next move.</p>
+            <h1 id="hero-title">Make your brand<br><span>impossible to ignore.</span></h1>
+            <p class="hero-copy" id="hero-description">Thoughtful design for businesses ready to make their next move.</p>
             <div class="hero-actions">
-                <a class="btn btn-primary" href="#portfolio">Explore our work</a>
-                <a class="hero-link" href="#contact">Start a project <span aria-hidden="true">↗</span></a>
+                <a class="btn btn-primary" id="hero-primary-cta" href="#portfolio">Explore our work</a>
+                <a class="hero-link" id="hero-secondary-cta" href="#contact">Start a project <span aria-hidden="true">↗</span></a>
             </div>
         </div>
         <a class="hero-scroll" href="#about" aria-label="Scroll to about section">Scroll to discover <span aria-hidden="true">↓</span></a>
@@ -585,14 +580,14 @@
          <div class="row align-items-center g-5">
              <div class="col-lg-6">
                  <span class="section-kicker">About the studio</span>
-                 <h2 class="animate__animated animate__fadeInUp">Creative design that helps businesses speak clearly.</h2>
-                 <p class="animate__animated animate__fadeInUp">
+                 <h2 id="about-title" class="animate__animated animate__fadeInUp">Creative design that helps businesses speak clearly.</h2>
+                 <p id="about-description" class="animate__animated animate__fadeInUp">
                      Fetman Digital (PTY) LTD is a Durban-based graphic design studio helping businesses turn ideas into confident visual identities. We create branding, promotional design, corporate materials and digital visuals that communicate clearly and stand out in a crowded market.
                  </p>
-                 <p class="animate__animated animate__fadeInUp">
+                 <p id="about-description-secondary" class="animate__animated animate__fadeInUp">
                      From logo concepts and full brand systems to flyers, posters, company profiles and digital marketing assets, our work is shaped to help each client present themselves professionally and with purpose.
                  </p>
-                 <div id="more-text" style="display:none;" class="animate__animated animate__fadeInUp">
+                 <div id="more-text" class="animate__animated animate__fadeInUp is-hidden">
                      <p>
                          We work with business owners, SMEs and growing brands that want thoughtful, effective design without unnecessary complexity. Whether the need is a single flyer or a broader visual identity, the goal is always the same: make the brand easier to understand and harder to ignore.
                      </p>
@@ -615,12 +610,13 @@
      function toggleText() {
          var moreText = document.getElementById("more-text");
          var btn = document.getElementById("read-more-btn");
-         if (moreText.style.display === "none") {
-             moreText.style.display = "block";
+         var isExpanded = btn.getAttribute("aria-expanded") === "true";
+         if (!isExpanded) {
+             moreText.classList.remove("is-hidden");
              btn.setAttribute("aria-expanded", "true");
              btn.innerHTML = "Read Less";
          } else {
-             moreText.style.display = "none";
+             moreText.classList.add("is-hidden");
              btn.setAttribute("aria-expanded", "false");
              btn.innerHTML = "Read More";
          }
@@ -639,7 +635,7 @@
              <article class="service-card">
                  <div class="service-icon"><i class="bi bi-brush-fill"></i></div>
                  <h3>Logo & Brand Identity</h3>
-                 <p>Custom logo design, visual direction, colour systems and brand foundations for businesses wanting a stronger identity.</p>
+                 <p id="service-description-1">Custom logo design, visual direction, colour systems and brand foundations for businesses wanting a stronger identity.</p>
                  <ul>
                      <li>Logo concepts</li>
                      <li>Brand visuals</li>
@@ -651,7 +647,7 @@
              <article class="service-card">
                  <div class="service-icon"><i class="bi bi-megaphone-fill"></i></div>
                  <h3>Marketing Design</h3>
-                 <p>Promotional graphics, social content and campaign artwork designed to help businesses get attention and communicate offers clearly.</p>
+                 <p id="service-description-2">Promotional graphics, social content and campaign artwork designed to help businesses get attention and communicate offers clearly.</p>
                  <ul>
                      <li>Posters & flyers</li>
                      <li>Event artwork</li>
@@ -663,7 +659,7 @@
              <article class="service-card">
                  <div class="service-icon"><i class="bi bi-file-earmark-richtext-fill"></i></div>
                  <h3>Corporate Design</h3>
-                 <p>Company profiles, presentations, stationery and professional documents that help teams present themselves consistently.</p>
+                 <p id="service-description-3">Company profiles, presentations, stationery and professional documents that help teams present themselves consistently.</p>
                  <ul>
                      <li>Business cards</li>
                      <li>Profiles & stationery</li>
@@ -675,7 +671,7 @@
              <article class="service-card">
                  <div class="service-icon"><i class="bi bi-box-seam-fill"></i></div>
                  <h3>Print & Packaging</h3>
-                 <p>Print-ready layouts and packaging artwork for products, promotions and brand collateral that need a polished production finish.</p>
+                 <p id="service-description-4">Print-ready layouts and packaging artwork for products, promotions and brand collateral that need a polished production finish.</p>
                  <ul>
                      <li>Packaging art</li>
                      <li>Brochures & labels</li>
@@ -687,7 +683,7 @@
              <article class="service-card">
                  <div class="service-icon"><i class="bi bi-laptop-fill"></i></div>
                  <h3>Digital Design</h3>
-                 <p>Visual assets for online promotion, brand communication and digital campaigns that keep digital presence aligned with the brand.</p>
+                 <p id="service-description-5">Visual assets for online promotion, brand communication and digital campaigns that keep digital presence aligned with the brand.</p>
                  <ul>
                      <li>Website graphics</li>
                      <li>Online ads</li>
@@ -702,141 +698,87 @@
 <!-- Portfolio Section -->
 <section id="portfolio" class="portfolio py-5">
     <div class="container">
-        <p class="section-kicker">Selected work</p>
-        <h2 class="text-center mb-4">Our Work</h2>
-        <p class="portfolio-intro">A selection of thoughtful identities, campaigns and design work made to help brands stand out.</p>
-        <p id="portfolio-source-status" class="portfolio-source-status" data-source="loading" role="status" aria-live="polite">
-            Loading published portfolio from the management API…
-        </p>
-
+        <p class="section-kicker">Digital portfolio</p>
+        <h2 class="text-center mb-4">Websites with a clear point of view.</h2>
+        <p class="portfolio-intro">A focused look at the live client work and presentation concepts shaping our digital practice.</p>
         <div class="portfolio-controls">
             <div class="portfolio-search">
-                <label class="visually-hidden" for="search-bar">Search portfolio items</label>
-                <input type="text" id="search-bar" class="form-control" placeholder="Search portfolio items...">
+                <label class="visually-hidden" for="search-bar">Search website projects</label>
+                <input type="text" id="search-bar" class="form-control" placeholder="Search website projects...">
             </div>
             <div class="portfolio-filters" role="group" aria-label="Filter portfolio projects">
                 <button class="btn btn-primary filter-btn" data-filter="all" aria-pressed="true">All projects</button>
-                <button class="btn btn-outline-primary filter-btn" data-filter="logo">Logo Design</button>
-                <button class="btn btn-outline-primary filter-btn" data-filter="branding">Branding</button>
-                <button class="btn btn-outline-primary filter-btn" data-filter="print">Print</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="client-work">Client work</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="concept">Concepts</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="branding">Graphic design</button>
             </div>
         </div>
 
-        <!-- Portfolio Items -->
-        <div class="row">
-            <!-- Portfolio Item 1 (Logo Design) -->
-            <div class="col-md-4 portfolio-item logo" data-cms-key="legacy-logo-sino-sma">
-                <div class="card">
-                    <img src="logo%20img/Sino-and-Sma-Trading-1200.jpg" srcset="logo%20img/Sino-and-Sma-Trading-480.jpg 480w, logo%20img/Sino-and-Sma-Trading-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1024" class="card-img-top" alt="Sino and Sma Trading logo" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Sino and Sma Trading</h5>
-                        <p class="card-text">Logo design and brand identity.</p>
-                    </div>
+        <div class="portfolio-collection">
+            <div class="collection-heading">
+                <div>
+                    <span class="collection-label">01 · Selected client work</span>
+                    <h3>Built for a real business.</h3>
                 </div>
+                <p>Live website work presented with permission and linked to the published experience.</p>
             </div>
-
-            <div class="col-md-4 portfolio-item logo" data-cms-key="legacy-logo-totana">
-                <div class="card">
-                    <img src="logo img/Totana white logo.png" width="483" height="268" class="card-img-top" alt="Totana Attorneys logo" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Totana</h5>
-                        <p class="card-text">Distinctive identity design.</p>
+            <div class="row">
+                <article class="col-md-4 portfolio-item client-work website-project is-featured" data-project-type="client-work">
+                    <div class="card">
+                        <a class="portfolio-image-link" href="https://nakobaservices.netlify.app/" target="_blank" rel="noopener noreferrer" aria-label="View the Nakoba Services live website">
+                            <img src="portfolio-nakoba.jpg" width="1440" height="900" class="card-img-top" alt="Screenshot of the Nakoba Services business website" loading="lazy" decoding="async">
+                            <span class="portfolio-image-cta">View live website <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="card-body">
+                            <p class="portfolio-category">Business website</p>
+                            <h4 class="card-title">Nakoba Services</h4>
+                            <p class="card-text">A clear, responsive business website for a South African general supplies and toilet-paper manufacturing business.</p>
+                            <p class="portfolio-deliverable"><strong>Delivered:</strong> Website development and a structured online presentation of the business, product and contact information.</p>
+                            <a class="portfolio-link" href="https://nakobaservices.netlify.app/" target="_blank" rel="noopener noreferrer">Visit live website <span aria-hidden="true">↗</span></a>
+                        </div>
                     </div>
-                </div>
+                </article>
             </div>
+        </div>
 
-            <div class="col-md-4 portfolio-item logo" data-cms-key="legacy-logo-fetman-digital">
-                <div class="card">
-                    <img src="logo img/fetman digital 2023 black.png" width="1500" height="1500" class="card-img-top" alt="Fetman Digital logo" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Fetman Digital</h5>
-                        <p class="card-text">The studio's own visual identity.</p>
-                    </div>
+        <div class="portfolio-collection concept-collection">
+            <div class="collection-heading">
+                <div>
+                    <span class="collection-label">02 · Website concepts</span>
+                    <h3>Exploring what the web can become.</h3>
                 </div>
+                <p>Demonstration work showing how we approach tone, structure and digital storytelling for different industries.</p>
             </div>
-
-            <!-- Portfolio Item 2 (Branding) -->
-            <div class="col-md-4 portfolio-item branding" data-cms-key="legacy-branding-deals-on-wheels">
-                <div class="card">
-                    <img src="Branding%20img/deals-on-wheels-1200.jpg" srcset="Branding%20img/deals-on-wheels-480.jpg 480w, Branding%20img/deals-on-wheels-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1200" class="card-img-top" alt="Deals on Wheels promotional poster" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Deals on Wheels</h5>
-                        <p class="card-text">Promotional poster design.</p>
+            <div class="row">
+                <article class="col-md-6 portfolio-item concept website-project" data-project-type="concept">
+                    <div class="card">
+                        <a class="portfolio-image-link" href="https://drvvdentacentre.netlify.app/" target="_blank" rel="noopener noreferrer" aria-label="View the Dr. Vineeth Varghese Dental Centre concept">
+                            <img src="portfolio-dental.jpg" width="1440" height="900" class="card-img-top" alt="Screenshot of the Dr. Vineeth Varghese Dental Centre website concept" loading="lazy" decoding="async">
+                            <span class="portfolio-image-cta">View concept <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="card-body">
+                            <p class="portfolio-category">Healthcare website</p>
+                            <h4 class="card-title">Dr. Vineeth Varghese Dental Centre</h4>
+                            <p class="card-text">A calm, editorial healthcare direction that demonstrates how a dental practice could introduce its care, team and location.</p>
+                            <a class="portfolio-link" href="https://drvvdentacentre.netlify.app/" target="_blank" rel="noopener noreferrer">View concept <span aria-hidden="true">↗</span></a>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </article>
 
-            <div class="col-md-4 portfolio-item branding" data-cms-key="legacy-branding-dj-olga">
-                <div class="card">
-                    <img src="Branding%20img/dj-olga-bookings-1200.jpg" srcset="Branding%20img/dj-olga-bookings-480.jpg 480w, Branding%20img/dj-olga-bookings-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1200" class="card-img-top" alt="DJ Olga bookings promotional artwork" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">DJ Olga Bookings</h5>
-                        <p class="card-text">Event and booking artwork.</p>
+                <article class="col-md-6 portfolio-item concept website-project" data-project-type="concept">
+                    <div class="card">
+                        <a class="portfolio-image-link" href="https://spiffy-nougat-fbd93f.netlify.app/" target="_blank" rel="noopener noreferrer" aria-label="View the Candyflossist Services concept">
+                            <img src="portfolio-candyflossist.jpg" width="1440" height="900" class="card-img-top" alt="Screenshot of the Candyflossist Services website concept" loading="lazy" decoding="async">
+                            <span class="portfolio-image-cta">View concept <span aria-hidden="true">↗</span></span>
+                        </a>
+                        <div class="card-body">
+                            <p class="portfolio-category">Creative website</p>
+                            <h4 class="card-title">Candyflossist Services</h4>
+                            <p class="card-text">A soft, expressive creative direction for a floral services brand, built around mood, detail and considered presentation.</p>
+                            <a class="portfolio-link" href="https://spiffy-nougat-fbd93f.netlify.app/" target="_blank" rel="noopener noreferrer">View concept <span aria-hidden="true">↗</span></a>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 portfolio-item branding" data-cms-key="legacy-branding-pub-on-frere">
-                <div class="card">
-                    <img src="Branding%20img/pub-on-frere-1200.jpg" srcset="Branding%20img/pub-on-frere-480.jpg 480w, Branding%20img/pub-on-frere-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1683" class="card-img-top" alt="Pub on Frere anniversary artwork" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Pub on Frere</h5>
-                        <p class="card-text">Anniversary campaign design.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 portfolio-item branding" data-cms-key="legacy-branding-thursday-braaiday">
-                <div class="card">
-                    <img src="Branding%20img/thursday-braaiday-1200.jpg" srcset="Branding%20img/thursday-braaiday-480.jpg 480w, Branding%20img/thursday-braaiday-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Thursday Braaiday promotional artwork" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Thursday Braaiday</h5>
-                        <p class="card-text">Promotional campaign artwork.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Portfolio Item 3 (Web Design) -->
-            <div class="col-md-4 portfolio-item branding" data-cms-key="legacy-branding-company-profile">
-                <div class="card">
-                    <img src="Branding%20img/fetman-company-profile-1200.jpg" srcset="Branding%20img/fetman-company-profile-480.jpg 480w, Branding%20img/fetman-company-profile-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1544" class="card-img-top" alt="Fetman Digital company profile design" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Company Profile</h5>
-                        <p class="card-text">Editorial layout and brand presentation.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 portfolio-item print" data-cms-key="legacy-print-company-profile-design">
-                <div class="card">
-                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital company profile spread" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Company Profile Design</h5>
-                        <p class="card-text">A multi-page print identity piece.</p>
-                    </div>
-                </div>
-            </div>
-
-               <!-- Portfolio Item 6 (Applications) -->
-               <div class="col-md-4 portfolio-item print" data-cms-key="legacy-print-editorial">
-                <div class="card">
-                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Printed brand profile design" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Print & Editorial</h5>
-                        <p class="card-text">Information design for a growing brand.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Portfolio Item 4 (Illustration) -->
-            <div class="col-md-4 portfolio-item print" data-cms-key="legacy-brand-collateral">
-                <div class="card">
-                    <img src="Branding%20img/company-profile-spread-1200.jpg" srcset="Branding%20img/company-profile-spread-480.jpg 480w, Branding%20img/company-profile-spread-1200.jpg 1200w" sizes="(max-width: 767px) calc(100vw - 60px), (max-width: 991px) 216px, (max-width: 1199px) 296px, (max-width: 1399px) 356px, 416px" width="1200" height="1543" class="card-img-top" alt="Fetman Digital print portfolio" loading="lazy" decoding="async">
-                    <div class="card-body">
-                        <h5 class="card-title">Brand Collateral</h5>
-                        <p class="card-text">Print-ready collateral and layout.</p>
-                    </div>
-                </div>
+                </article>
             </div>
         </div>
     </div>
@@ -873,13 +815,6 @@
             </article>
 
             <article class="it-card">
-                <div class="it-icon"><i class="bi bi-phone"></i></div>
-                <h3>Mobile Application Development</h3>
-                <p>Android and iOS app concepts and builds where the required capabilities, technical scope and project requirements are supported.</p>
-                <span class="chip">Scope to confirm</span>
-            </article>
-
-            <article class="it-card">
                 <div class="it-icon"><i class="bi bi-tools"></i></div>
                 <h3>Website Maintenance & Technical Support</h3>
                 <p>Website updates, troubleshooting and ongoing technical support for existing online presences and digital assets.</p>
@@ -891,33 +826,6 @@
                 <h3>Domain & Business Email Services</h3>
                 <p>Domain registration assistance and professional business email setup to support a more established online presence.</p>
                 <span class="chip">Scope to confirm</span>
-            </article>
-        </div>
-    </div>
-</section>
-
-<section class="dev-portfolio">
-    <div class="container">
-        <div class="section-heading">
-            <span class="section-kicker">Development portfolio</span>
-            <h2>Project-ready space for future technical work.</h2>
-        </div>
-        <p class="dev-portfolio-note">This area is ready to be populated with verified website, app and digital solutions projects as real work is completed.</p>
-        <div class="dev-portfolio-grid" id="devPortfolioGrid">
-            <article class="dev-placeholder">
-                <span class="placeholder-tag">Website project</span>
-                <h3>Project placeholder</h3>
-                <p>Add a live website case study once a client project is confirmed and approved for publication.</p>
-            </article>
-            <article class="dev-placeholder">
-                <span class="placeholder-tag">Application project</span>
-                <h3>Project placeholder</h3>
-                <p>Add an application or business-system case study once the final work and scope have been verified.</p>
-            </article>
-            <article class="dev-placeholder">
-                <span class="placeholder-tag">Digital solution</span>
-                <h3>Project placeholder</h3>
-                <p>Add a digital solution case study once a completed, verified implementation is available for display.</p>
             </article>
         </div>
     </div>
@@ -1094,8 +1002,8 @@
                     <h2 class="animate__animated animate__fadeInUp">Let's create something remarkable.</h2>
                     <p class="animate__animated animate__fadeInUp">Tell us about your business and the design you need. We’ll discuss your requirements and help you plan the next step.</p>
                     <div class="contact-details">
-                        <p><strong>Email:</strong> <a href="mailto:info@fetmandigital.com">info@fetmandigital.com</a></p>
-                        <p><strong>WhatsApp:</strong> <a href="https://wa.me/27712345678" target="_blank" rel="noopener noreferrer">+27 71 234 5678</a></p>
+                        <p><strong>Email:</strong> <a id="contact-email" href="mailto:info@fetmandigital.com">info@fetmandigital.com</a></p>
+                        <p><strong>WhatsApp:</strong> <a id="contact-whatsapp" href="https://wa.me/27712345678" target="_blank" rel="noopener noreferrer">+27 71 234 5678</a></p>
                     </div>
                     <div class="contact-links">
                         <a href="mailto:info@fetmandigital.com" title="Email Us" aria-label="Email Us">✉</a>
@@ -1106,6 +1014,10 @@
 
                 <div class="col-lg-6">
                     <form class="contact-form" id="projectEnquiryForm">
+                        <div class="form-row website-trap" aria-hidden="true">
+                            <label for="website">Website</label>
+                            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+                        </div>
                         <div class="form-row">
                             <label for="name">Name</label>
                             <input id="name" name="name" type="text" required>
@@ -1129,7 +1041,6 @@
                                 <option value="Website Development">Website Development</option>
                                 <option value="E-commerce Development">E-commerce Development</option>
                                 <option value="Web Application">Web Application</option>
-                                <option value="Mobile Application">Mobile Application</option>
                                 <option value="Website Maintenance">Website Maintenance</option>
                                 <option value="Domain & Business Email">Domain & Business Email</option>
                                 <option value="Other">Other</option>
@@ -1193,8 +1104,32 @@
         }
 
         const projectEnquiryForm = document.getElementById("projectEnquiryForm");
+        async function loadEditableSiteContent() {
+            try {
+                const response = await fetch('/api/public/site-content', { headers: { Accept: 'application/json' }, cache: 'no-store' });
+                if (!response.ok) return;
+                const { content } = await response.json();
+                if (content.heroTitle) document.getElementById('hero-title').textContent = content.heroTitle;
+                if (content.heroDescription) document.getElementById('hero-description').textContent = content.heroDescription;
+                if (content.aboutTitle) document.getElementById('about-title').textContent = content.aboutTitle;
+                if (content.aboutDescription) document.getElementById('about-description').textContent = content.aboutDescription;
+                if (Array.isArray(content.services)) content.services.forEach((description, index) => {
+                    const element = document.getElementById(`service-description-${index + 1}`);
+                    if (element && description) element.textContent = description;
+                });
+                if (content.primaryCta) document.getElementById('hero-primary-cta').textContent = content.primaryCta;
+                if (content.secondaryCta) document.getElementById('hero-secondary-cta').firstChild.textContent = `${content.secondaryCta} `;
+                if (content.contactEmail) { const email = document.getElementById('contact-email'); if (email) { email.textContent = content.contactEmail; email.href = `mailto:${content.contactEmail}`; } }
+                if (content.contactWhatsapp) { const whatsapp = document.getElementById('contact-whatsapp'); if (whatsapp) { whatsapp.textContent = content.contactWhatsapp; whatsapp.href = `https://wa.me/${content.contactWhatsapp.replace(/\D/g, '')}`; } }
+            } catch (error) {
+                console.warn('Editable website content is unavailable; showing the saved public copy.', error);
+            }
+        }
+
+        void loadEditableSiteContent();
+
         if (projectEnquiryForm) {
-            projectEnquiryForm.addEventListener("submit", function (event) {
+            projectEnquiryForm.addEventListener("submit", async function (event) {
                 event.preventDefault();
                 const formData = new FormData(projectEnquiryForm);
                 const name = (formData.get("name") || "").toString().trim();
@@ -1202,14 +1137,23 @@
                 const business = (formData.get("business") || "").toString().trim();
                 const service = (formData.get("service") || "").toString().trim();
                 const project = (formData.get("project") || "").toString().trim();
-                const budget = (formData.get("budget") || "").toString().trim();
-
-                const subject = encodeURIComponent(`Project enquiry: ${service}`);
-                const body = encodeURIComponent(
-                    `Name: ${name}\nEmail: ${email}\nBusiness: ${business || "Not provided"}\nService: ${service}\nBudget: ${budget}\n\nProject details:\n${project}`
-                );
-
-                window.location.href = `mailto:info@fetmandigital.com?subject=${subject}&body=${body}`;
+                const website = (formData.get("website") || "").toString().trim();
+                const submitButton = projectEnquiryForm.querySelector(".submit-btn");
+                if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Sending…"; }
+                try {
+                    const response = await fetch('/api/public/enquiries', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                        body: JSON.stringify({ fullName: name, email, service, message: `${business ? `Business: ${business}\n\n` : ''}${project}`, website }),
+                    });
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok) throw new Error(result.error || 'Unable to send your enquiry.');
+                    projectEnquiryForm.reset();
+                    window.alert(result.message || 'Your enquiry was sent successfully.');
+                } catch (error) {
+                    window.alert(error instanceof Error ? error.message : 'Unable to send your enquiry.');
+                } finally {
+                    if (submitButton) { submitButton.disabled = false; submitButton.textContent = "Send enquiry"; }
+                }
             });
         }
     </script>
@@ -1871,6 +1815,14 @@
             border: 1px solid rgba(255,255,255,.08);
         }
 
+        .website-trap {
+            position: absolute;
+            left: -10000px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
         .form-row {
             display: flex;
             flex-direction: column;
@@ -1979,6 +1931,123 @@
             color: var(--muted);
             font-size: clamp(1.05rem, 1.5vw, 1.25rem);
             line-height: 1.75;
+        }
+
+        .portfolio-collection {
+            margin-top: 30px;
+        }
+
+        .collection-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(24, 52, 58, .13);
+        }
+
+        .collection-heading h3 {
+            margin: 8px 0 0;
+            color: var(--ink);
+            font-size: clamp(1.7rem, 3vw, 2.6rem);
+            letter-spacing: -.04em;
+        }
+
+        .collection-heading p {
+            max-width: 34ch;
+            margin: 0;
+            color: var(--muted);
+            font-size: .92rem;
+            line-height: 1.6;
+        }
+
+        .collection-label {
+            color: var(--teal);
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+
+        .portfolio-image-link {
+            position: relative;
+            display: block;
+            overflow: hidden;
+            background: #dfe9e5;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .portfolio-image-link::after {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 45%, rgba(6, 43, 51, .58));
+            content: "";
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+
+        .portfolio-image-cta {
+            position: absolute;
+            z-index: 1;
+            right: 18px;
+            bottom: 16px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, .5);
+            border-radius: 999px;
+            background: rgba(6, 43, 51, .74);
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity .3s ease, transform .3s ease;
+        }
+
+        .portfolio-deliverable,
+        .portfolio-disclaimer {
+            max-width: 62ch;
+            margin: 16px 0 0;
+            color: var(--muted);
+            font-size: .86rem;
+            line-height: 1.65;
+        }
+
+        .portfolio-disclaimer {
+            color: #6b5a37;
+        }
+
+        .portfolio-link {
+            display: inline-flex;
+            gap: 8px;
+            margin-top: 18px;
+            color: var(--deep);
+            font-size: .9rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .portfolio-link:hover,
+        .portfolio-link:focus-visible {
+            color: var(--teal);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .portfolio-image-link:hover::after,
+            .portfolio-image-link:focus-visible::after {
+                opacity: 1;
+            }
+
+            .portfolio-image-link:hover .portfolio-image-cta,
+            .portfolio-image-link:focus-visible .portfolio-image-cta {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .portfolio-collection + .portfolio-collection {
+            margin-top: 72px;
         }
 
         .portfolio-controls {
@@ -2326,6 +2395,14 @@
         @media (max-width: 767px) {
             * {
                 box-sizing: border-box;
+            }
+
+            .collection-heading {
+                display: block;
+            }
+
+            .collection-heading p {
+                margin-top: 14px;
             }
 
             .about-image img.animate__fadeInRight {

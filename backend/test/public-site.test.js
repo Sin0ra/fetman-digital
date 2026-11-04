@@ -14,11 +14,7 @@ const pool = {
     if (state.unavailable) {
       throw new Error("database unavailable");
     }
-    return [[{
-      maintenance_mode: state.maintenanceMode,
-      version: 0,
-      updated_at: "2026-10-23T07:00:00.000Z",
-    }], []];
+    return [[{ setting_value: String(state.maintenanceMode), updated_at: "2026-10-23T07:00:00.000Z" }], []];
   },
 };
 
@@ -74,7 +70,8 @@ describe("public site maintenance enforcement", () => {
 
     assert.equal(response.status, 200);
     assert.match(html, /Fetman Digital/);
-    assert.match(html, /Our Work/);
+    assert.match(html, /<section id="portfolio"/);
+    assert.ok(html.includes("Websites with a clear point of view."));
   });
 
   it("serves only the branded maintenance page for every public path while ON", async () => {

@@ -1,237 +1,90 @@
-const { randomBytes } = require("node:crypto");
+const { randomBytes, timingSafeEqual } = require("node:crypto");
 const argon2 = require("argon2");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { z } = require("zod");
-const { getAuthenticatedUser } = require("../middleware/auth");
 const { requireCsrf } = require("../middleware/csrf");
-const { validate } = require("../middleware/validate");
 
-const loginSchema = z
-  .object({
-    email: z.string().trim().email().max(254).transform((email) => email.toLowerCase()),
-    password: z.string().min(1).max(128),
-  })
-  .strict();
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1).max(128).optional(),
-    newPassword: z.string().min(15).max(128),
-    passwordConfirmation: z.string().min(15).max(128),
-  })
-  .strict()
-  .refine((values) => values.newPassword === values.passwordConfirmation, {
-    path: ["passwordConfirmation"],
-    message: "The new passwords do not match.",
-  });
+const OWNER_EMAIL = "sinoworkguma@gmail.com";
+const loginSchema = z.object({ email: z.string().trim().email().max(254).transform((value) => value.toLowerCase()), password: z.string().min(1) }).strict();
+const passwordSchema = z.object({ currentPassword: z.string().min(1), newPassword: z.string().min(8), passwordConfirmation: z.string().min(8) }).strict().refine((value) => value.newPassword === value.passwordConfirmation, { path: ["passwordConfirmation"], message: "Passwords do not match." });
 
-function createAuthRouter({
-  pool,
-  sessionStore,
-  loginLimit,
-  passwordChangeLimit = 5,
-}) {
+function createAuthRouter({ pool, sessionStore, loginLimit = 8 }) {
   const router = express.Router();
-  const loginRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: loginLimit,
-    standardHeaders: "draft-8",
-    legacyHeaders: false,
-    message: { error: "Too many login attempts. Try again later." },
-  });
-  const passwordChangeRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: passwordChangeLimit,
-    standardHeaders: "draft-8",
-    legacyHeaders: false,
-    message: { error: "Too many password change attempts. Try again later." },
+  const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: loginLimit, standardHeaders: "draft-8", legacyHeaders: false, message: { error: "Too many login attempts. Try again later." } });
+
+  router.get("/setup-status", async (_request, response, next) => {
+    try {
+      const [rows] = await pool.execute("SELECT id FROM developer_account WHERE email = ? LIMIT 1", [OWNER_EMAIL]);
+      return response.json({ setupRequired: rows.length === 0, email: OWNER_EMAIL });
+    } catch (error) { return next(error); }
   });
 
   router.get("/csrf", (request, response, next) => {
-    if (!request.session.csrfToken) {
-      request.session.csrfToken = randomBytes(32).toString("hex");
-    }
-
-    request.session.save((error) => {
-      if (error) {
-        return next(error);
-      }
-
-      return response.status(200).json({ csrfToken: request.session.csrfToken });
-    });
+    if (!request.session.csrfToken) request.session.csrfToken = randomBytes(32).toString("hex");
+    request.session.save((error) => error ? next(error) : response.json({ csrfToken: request.session.csrfToken }));
   });
 
-  router.post(
-    "/login",
-    loginRateLimiter,
-    requireCsrf,
-    validate(loginSchema),
-    async (request, response) => {
-      const [rows] = await pool.execute(
-        `SELECT id, email, password_hash, role, is_active, password_change_required
-         FROM management_users WHERE email = ? LIMIT 1`,
-        [request.body.email],
-      );
-      const user = rows[0];
-      const passwordMatches =
-        user && (await argon2.verify(user.password_hash, request.body.password));
-
-      if (!passwordMatches || !user.is_active) {
-        return response.status(401).json({ error: "Invalid email or password." });
-      }
-
+  router.post("/login", loginLimiter, requireCsrf, async (request, response, next) => {
+    const parsed = loginSchema.safeParse(request.body);
+    if (!parsed.success) return response.status(400).json({ error: "Invalid login details." });
+    try {
+      const [rows] = await pool.execute("SELECT id, email, password_hash FROM developer_account WHERE email = ? LIMIT 1", [parsed.data.email]);
+      const account = rows[0];
+      const matches = account ? await argon2.verify(account.password_hash, parsed.data.password) : false;
+      if (!account || account.email !== OWNER_EMAIL || !matches) return response.status(401).json({ error: "Invalid email or password." });
       await regenerateSession(request);
-      request.session.userId = user.id;
+      request.session.userId = String(account.id);
       request.session.csrfToken = randomBytes(32).toString("hex");
       await saveSession(request);
-
-      return response.status(200).json({
-        user: {
-          id: String(user.id),
-          email: user.email,
-          role: user.role,
-          passwordChangeRequired: isPasswordChangeRequired(user.password_change_required),
-        },
-      });
-    },
-  );
-
-  router.get("/me", async (request, response) => {
-    const user = await getAuthenticatedUser(pool, request, response);
-    if (!user) {
-      return;
-    }
-
-    return response.status(200).json({
-      user: {
-        id: String(user.id),
-        email: user.email,
-        role: user.role,
-        passwordChangeRequired: isPasswordChangeRequired(user.password_change_required),
-      },
-    });
+      return response.json({ user: { id: String(account.id), email: account.email } });
+    } catch (error) { return next(error); }
   });
 
-  router.post(
-    "/change-password",
-    passwordChangeRateLimiter,
-    requireCsrf,
-    validate(changePasswordSchema),
-    async (request, response, next) => {
-      const user = await getAuthenticatedUser(pool, request, response);
-      if (!user) {
-        return;
-      }
+  router.get("/me", async (request, response, next) => {
+    try {
+      if (!request.session.userId) return response.status(401).json({ error: "Authentication required." });
+      const [rows] = await pool.execute("SELECT id, email FROM developer_account WHERE id = ? AND email = ? LIMIT 1", [request.session.userId, OWNER_EMAIL]);
+      if (!rows[0]) return response.status(401).json({ error: "Authentication required." });
+      return response.json({ user: { id: String(rows[0].id), email: rows[0].email } });
+    } catch (error) { return next(error); }
+  });
 
-      const connection = await pool.getConnection();
-      let transactionStarted = false;
-      try {
-        await connection.beginTransaction();
-        transactionStarted = true;
-        const [rows] = await connection.execute(
-          `SELECT id, password_hash, password_change_required
-           FROM management_users WHERE id = ? AND is_active = 1 FOR UPDATE`,
-          [user.id],
-        );
-        const currentUser = rows[0];
-        const passwordChangeRequired = isPasswordChangeRequired(
-          currentUser?.password_change_required,
-        );
-        if (!currentUser) {
-          throw new RouteError(401, "Authentication required.");
-        }
-        if (
-          !passwordChangeRequired &&
-          (!request.body.currentPassword ||
-            !(await argon2.verify(currentUser.password_hash, request.body.currentPassword)))
-        ) {
-          throw new RouteError(400, "The current password is incorrect.");
-        }
-        if (await argon2.verify(currentUser.password_hash, request.body.newPassword)) {
-          throw new RouteError(
-            400,
-            passwordChangeRequired
-              ? "Choose a password different from your temporary password."
-              : "Choose a password different from your current password.",
-          );
-        }
+  router.post("/change-password", requireCsrf, async (request, response, next) => {
+    const parsed = passwordSchema.safeParse(request.body);
+    if (!parsed.success) return response.status(400).json({ error: "Choose a password of at least 8 characters and confirm it." });
+    try {
+      const [rows] = await pool.execute("SELECT id, password_hash FROM developer_account WHERE id = ? AND email = ? LIMIT 1", [request.session.userId, OWNER_EMAIL]);
+      if (!rows[0] || !(await argon2.verify(rows[0].password_hash, parsed.data.currentPassword))) return response.status(400).json({ error: "The current password is incorrect." });
+      const hash = await argon2.hash(parsed.data.newPassword, { type: argon2.argon2id });
+      await pool.execute("UPDATE developer_account SET password_hash = ? WHERE id = ?", [hash, rows[0].id]);
+      await regenerateSession(request);
+      request.session.userId = String(rows[0].id);
+      request.session.csrfToken = randomBytes(32).toString("hex");
+      await saveSession(request);
+      return response.json({ message: "Password updated." });
+    } catch (error) { return next(error); }
+  });
 
-        const passwordHash = await argon2.hash(request.body.newPassword, {
-          type: argon2.argon2id,
-        });
-        await sessionStore.deleteUserSessions(user.id, connection);
-        await connection.execute(
-          `UPDATE management_users
-           SET password_hash = ?, password_change_required = 0
-           WHERE id = ?`,
-          [passwordHash, user.id],
-        );
-        await connection.commit();
-        transactionStarted = false;
-
-        await regenerateSession(request);
-        request.session.userId = user.id;
-        request.session.csrfToken = randomBytes(32).toString("hex");
-        await saveSession(request);
-
-        return response.status(200).json({
-          message: "Password changed. Other active sessions have been signed out.",
-        });
-      } catch (error) {
-        if (transactionStarted) {
-          await connection.rollback();
-        }
-        if (error instanceof RouteError) {
-          return response.status(error.status).json({ error: error.message });
-        }
-        return next(error);
-      } finally {
-        connection.release();
-      }
-    },
-  );
-
-  router.post("/logout", requireCsrf, async (request, response, next) => {
-    const secureCookie = request.session.cookie.secure;
+  router.post("/logout", requireCsrf, (request, response, next) => {
     request.session.destroy((error) => {
-      if (error) {
-        return next(error);
-      }
-
-      response.clearCookie("fetman.sid", {
-        httpOnly: true,
-        secure: secureCookie,
-        sameSite: "lax",
-        path: "/",
-      });
+      if (error) return next(error);
+      response.clearCookie("fetman.sid", { httpOnly: true, secure: request.secure, sameSite: "lax", path: "/" });
       return response.status(204).end();
     });
   });
-
   return router;
 }
 
-class RouteError extends Error {
-  constructor(status, message) {
-    super(message);
-    this.status = status;
-  }
-}
-
 function regenerateSession(request) {
-  return new Promise((resolve, reject) => {
-    request.session.regenerate((error) => (error ? reject(error) : resolve()));
-  });
+  return new Promise((resolve, reject) => request.session.regenerate((error) => error ? reject(error) : resolve()));
 }
-
 function saveSession(request) {
-  return new Promise((resolve, reject) => {
-    request.session.save((error) => (error ? reject(error) : resolve()));
-  });
+  return new Promise((resolve, reject) => request.session.save((error) => error ? reject(error) : resolve()));
+}
+function constantTimeStringMatch(left, right) {
+  const a = Buffer.from(left); const b = Buffer.from(right);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
-module.exports = { createAuthRouter };
-
-function isPasswordChangeRequired(value) {
-  return value === true || value === 1 || value === "1";
-}
+module.exports = { OWNER_EMAIL, createAuthRouter, constantTimeStringMatch };

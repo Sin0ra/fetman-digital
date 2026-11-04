@@ -7,7 +7,6 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "bootstrap:developer": "node src/scripts/bootstrap-developer.js",
-    "create:graphic-designer": "node src/scripts/create-graphic-designer.js",
     "test": "node --test"
   },
   "keywords": [],

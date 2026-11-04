@@ -14,11 +14,7 @@ const config = {
 const state = { maintenanceMode: 0 };
 const pool = {
   async execute() {
-    return [[{
-      maintenance_mode: state.maintenanceMode,
-      version: 0,
-      updated_at: "2026-10-23T07:00:00.000Z",
-    }], []];
+    return [[{ setting_value: String(state.maintenanceMode), updated_at: "2026-10-23T07:00:00.000Z" }], []];
   },
 };
 let rootDirectory;
@@ -63,9 +59,7 @@ describe("single-server production routing", () => {
       "/login",
       "/set-password",
       "/developer",
-      "/developer/users",
       "/developer/maintenance",
-      "/graphic-design",
     ]) {
       const response = await fetch(`${baseUrl}${route}`);
       assert.equal(response.status, 200);

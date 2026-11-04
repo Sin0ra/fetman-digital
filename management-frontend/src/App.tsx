@@ -1,335 +1,62 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import './App.css'
-import MandatoryPasswordChange from './MandatoryPasswordChange'
-import GraphicDesignDashboard from './GraphicDesignDashboard'
-import DeveloperPortal from './DeveloperPortal'
-import fetmanLogo from '../../fetman digital 2023 black.png'
+import logo from '../../fetman digital 2023 black.png'
 
-type User = {
-  id: string
-  email: string
-  role: string
-  passwordChangeRequired: boolean
+const OWNER_EMAIL = 'sinoworkguma@gmail.com'
+type Content = { heroTitle: string; heroDescription: string; aboutTitle: string; aboutDescription: string; services: string[]; primaryCta: string; secondaryCta: string; contactEmail: string; contactWhatsapp: string }
+type Project = { id?: string; title: string; description: string; category: string; imageAssetId: string | null; imageUrl: string | null; projectUrl: string; published: boolean; displayOrder: number; imagePreviewUrl?: string }
+type Media = { id: string; originalName: string; byteSize: number; previewUrl: string }
+type ApiError = Error & { status?: number }
+
+async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const response = await fetch(path, { ...init, credentials: 'include', cache: 'no-store', headers: { Accept: 'application/json', ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...init.headers } })
+  const data = await response.json().catch(() => ({})) as T & { error?: string }
+  if (!response.ok) { const error = new Error(data.error || `Request failed (${response.status})`) as ApiError; error.status = response.status; reportPortalError(error); throw error }
+  return data
 }
-
-const developerPaths = ['/developer', '/developer/users', '/developer/maintenance']
-
-async function requestJson(path: string, init?: RequestInit) {
-  return fetch(path, {
-    ...init,
-    credentials: 'include',
-    headers: {
-      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
-      ...init?.headers,
-    },
-  })
-}
+function reportPortalError(reason: unknown) { window.dispatchEvent(new CustomEvent('portal-error', { detail: reason instanceof Error ? reason.message : 'The request could not be completed.' })) }
+async function csrf() { return (await api<{ csrfToken: string }>('/api/auth/csrf')).csrfToken }
+async function mutate<T>(path: string, method: string, body?: unknown) { const token = await csrf(); return api<T>(path, { method, headers: { 'X-CSRF-Token': token }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }) }
 
 function App() {
-  const [path, setPath] = useState(window.location.pathname)
-  const [checkingSession, setCheckingSession] = useState(true)
-  const [user, setUser] = useState<User | null>(null)
-  const [pageError, setPageError] = useState('')
+  const [user, setUser] = useState<{ email: string } | null>(null)
+  const [checking, setChecking] = useState(true)
   const [loginError, setLoginError] = useState('')
-  const [logoutError, setLogoutError] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [loggingOut, setLoggingOut] = useState(false)
-
-  function navigate(nextPath: string, replace = false) {
-    if (replace) {
-      window.history.replaceState({}, '', nextPath)
-    } else {
-      window.history.pushState({}, '', nextPath)
-    }
-    setPath(nextPath)
-  }
-
-  useEffect(() => {
-    const handlePopState = () => setPath(window.location.pathname)
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function verifySession() {
-      setCheckingSession(true)
-      setPageError('')
-
-      try {
-        const response = await requestJson('/api/auth/me')
-        if (response.status === 401) {
-          if (!cancelled) {
-            setUser(null)
-            if (path !== '/login') navigate('/login', true)
-          }
-          return
-        }
-        if (!response.ok) throw new Error('Session verification failed')
-
-        const result = (await response.json()) as { user: User }
-        if (cancelled) return
-        setUser(result.user)
-
-        if (result.user.passwordChangeRequired) {
-          if (path !== '/set-password') navigate('/set-password', true)
-          return
-        }
-        if (result.user.role === 'Graphic Design') {
-          if (path !== '/graphic-design') navigate('/graphic-design', true)
-          return
-        }
-        if (result.user.role !== 'Developer') {
-          setPageError('Your account does not have access to a management workspace.')
-          if (path !== '/login') navigate('/login', true)
-          return
-        }
-
-        if (!developerPaths.includes(path)) {
-          navigate('/developer', true)
-          return
-        }
-        if (result.user.role !== 'Developer') {
-          setPageError('Your account does not have Developer dashboard access.')
-          return
-        }
-
-        const dashboardResponse = await requestJson('/api/developer/dashboard')
-        if (dashboardResponse.status === 403) {
-          setPageError('Your account does not have Developer dashboard access.')
-          return
-        }
-        if (!dashboardResponse.ok) throw new Error('Dashboard verification failed')
-      } catch {
-        if (!cancelled) {
-          setPageError('The management service is unavailable. Please try again shortly.')
-          if (path !== '/login') navigate('/login', true)
-        }
-      } finally {
-        if (!cancelled) setCheckingSession(false)
-      }
-    }
-
-    void verifySession()
-    return () => {
-      cancelled = true
-    }
-  }, [path])
-
-  async function handleLogin(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setLoginError('')
-    setSubmitting(true)
-
-    try {
-      const tokenResponse = await requestJson('/api/auth/csrf')
-      if (!tokenResponse.ok) throw new Error('Token request failed')
-      const { csrfToken } = (await tokenResponse.json()) as { csrfToken: string }
-      const response = await requestJson('/api/auth/login', {
-        method: 'POST',
-        headers: { 'X-CSRF-Token': csrfToken },
-        body: JSON.stringify({ email, password }),
-      })
-
-      if (response.status === 401) {
-        setLoginError('The email or password is incorrect.')
-        return
-      }
-      if (response.status === 429) {
-        setLoginError('Too many attempts. Please wait before trying again.')
-        return
-      }
-      if (!response.ok) throw new Error('Login failed')
-
-      const result = (await response.json()) as { user: User }
-      setUser(result.user)
-      setPassword('')
-      navigate(
-        result.user.passwordChangeRequired
-          ? '/set-password'
-          : result.user.role === 'Graphic Design'
-            ? '/graphic-design'
-            : '/developer',
-      )
-    } catch {
-      setLoginError('Unable to sign in right now. Please try again shortly.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  async function handleLogout() {
-    setLogoutError('')
-    setLoggingOut(true)
-
-    try {
-      const tokenResponse = await requestJson('/api/auth/csrf')
-      if (!tokenResponse.ok) throw new Error('Token request failed')
-      const { csrfToken } = (await tokenResponse.json()) as { csrfToken: string }
-      const response = await requestJson('/api/auth/logout', {
-        method: 'POST',
-        headers: { 'X-CSRF-Token': csrfToken },
-      })
-      if (!response.ok) throw new Error('Logout failed')
-
-      setUser(null)
-      setPassword('')
-      navigate('/login', true)
-    } catch {
-      setLogoutError('Unable to log out right now. Please try again.')
-    } finally {
-      setLoggingOut(false)
-    }
-  }
-
-  if (checkingSession) {
-    return (
-      <main className="loading-screen" role="status">
-        <span className="brand-mark" aria-hidden="true">F</span>
-        <p>Checking your secure session…</p>
-      </main>
-    )
-  }
-
-  if (path === '/set-password' && user?.passwordChangeRequired) {
-    return (
-      <MandatoryPasswordChange
-        email={user.email}
-        onLogout={handleLogout}
-        loggingOut={loggingOut}
-        onChanged={() => {
-          setUser({ ...user, passwordChangeRequired: false })
-          navigate(user.role === 'Graphic Design' ? '/graphic-design' : '/developer', true)
-        }}
-      />
-    )
-  }
-
-  if (path === '/graphic-design' && user?.role === 'Graphic Design') {
-    return (
-      <GraphicDesignDashboard
-        email={user.email}
-        onLogout={handleLogout}
-        onSessionExpired={() => {
-          setUser(null)
-          navigate('/login', true)
-        }}
-        loggingOut={loggingOut}
-        logoutError={logoutError}
-      />
-    )
-  }
-
-  if (developerPaths.includes(path) && user?.role === 'Developer') {
-    return (
-      <DeveloperPortal
-        path={path as '/developer' | '/developer/users' | '/developer/maintenance'}
-        email={user.email}
-        currentUserId={user.id}
-        onNavigate={(nextPath) => navigate(nextPath)}
-        onLogout={handleLogout}
-        onSessionExpired={() => {
-          setUser(null)
-          navigate('/login', true)
-        }}
-        loggingOut={loggingOut}
-        logoutError={logoutError}
-      />
-    )
-  }
-
-  if (path === '/developer' && user && user.role !== 'Developer') {
-    return (
-      <main className="login-layout">
-        <BrandHeader />
-        <section className="login-card" aria-labelledby="denied-title">
-          <p className="eyebrow">Access restricted</p>
-          <h1 id="denied-title">Developer access required</h1>
-          <p className="login-description">{pageError}</p>
-          <button className="button button-primary full-width" onClick={handleLogout} disabled={loggingOut}>
-            {loggingOut ? 'Signing out…' : 'Log out'}
-          </button>
-        </section>
-      </main>
-    )
-  }
-
-  return (
-    <main className="login-layout">
-      <BrandHeader />
-      <section className="login-card" aria-labelledby="login-title">
-        <p className="eyebrow">Private management portal</p>
-        <h1 id="login-title">Welcome back.</h1>
-        <p className="login-description">Sign in to your Fetman Digital workspace.</p>
-
-        <form className="login-form" onSubmit={handleLogin}>
-          <label htmlFor="email">Email address</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="username"
-            required
-            maxLength={254}
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-
-          <label htmlFor="password">Password</label>
-          <div className="password-field">
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              required
-              maxLength={128}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <button
-              className="visibility-button"
-              type="button"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-              aria-pressed={showPassword}
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
-          </div>
-
-          {loginError && <p className="form-error" role="alert">{loginError}</p>}
-          {pageError && <p className="form-error" role="alert">{pageError}</p>}
-          <button className="button button-primary full-width" type="submit" disabled={submitting}>
-            {submitting ? 'Signing in…' : 'Sign in securely'}
-          </button>
-        </form>
-        <p className="security-note">
-          Protected by secure server-side authentication. Your password is never stored in this browser.
-        </p>
-      </section>
-      <footer>Fetman Digital <span aria-hidden="true">·</span> Internal tools</footer>
-    </main>
-  )
+  useEffect(() => { api<{ user: { email: string } }>('/api/auth/me').then((result) => setUser(result.user)).catch(() => setUser(null)).finally(() => setChecking(false)) }, [])
+  if (checking) return <main className="loading">Checking secure session…</main>
+  if (!user) return <Login onLoggedIn={setUser} error={loginError} setError={setLoginError} />
+  return <Portal email={user.email} onLogout={async () => { await mutate('/api/auth/logout', 'POST'); setUser(null) }} />
 }
 
-function BrandHeader() {
-  return (
-    <header className="login-header">
-      <a className="brand" href="/login" aria-label="Fetman Digital management login">
-        <img className="brand-logo" src={fetmanLogo} alt="" />
-        <span>
-          <strong>Fetman Digital</strong>
-          <span className="brand-caption">Management platform</span>
-        </span>
-      </a>
-      <span className="stage">Staff sign in</span>
-    </header>
-  )
+function Login({ onLoggedIn, error, setError }: { onLoggedIn: (user: { email: string }) => void; error: string; setError: (value: string) => void }) {
+  const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [busy, setBusy] = useState(false)
+  async function submit(event: FormEvent) { event.preventDefault(); setBusy(true); setError(''); try { const result = await mutate<{ user: { email: string } }>('/api/auth/login', 'POST', { email, password }); onLoggedIn(result.user) } catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to sign in.') } finally { setBusy(false) } }
+  return <main className="auth-shell"><header className="portal-brand"><img src={logo} alt="" /><span><strong>Fetman Digital</strong><small>Developer Portal</small></span></header><section className="auth-card"><p className="eyebrow">Private workspace</p><h1>Welcome back.</h1><p>Sign in to manage the public website.</p><form onSubmit={submit}><label htmlFor="email">Email address</label><input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required /><label htmlFor="password">Password</label><input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required /><button className="primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in securely'}</button>{error && <p className="error" role="alert">{error}</p>}</form><small className="hint">Owner account: {OWNER_EMAIL}. First-time setup is performed with the protected server command.</small></section></main>
 }
+
+type PortalSection = 'overview' | 'content' | 'portfolio' | 'media' | 'maintenance'
+const sectionPaths: Record<PortalSection, string> = { overview: '/developer', content: '/developer/content', portfolio: '/developer/portfolio', media: '/developer/media', maintenance: '/developer/maintenance' }
+function sectionFromPath(pathname: string): PortalSection { const match = Object.entries(sectionPaths).find(([, path]) => pathname === path); return (match?.[0] as PortalSection | undefined) || 'overview' }
+
+function Portal({ email, onLogout }: { email: string; onLogout: () => Promise<void> }) {
+  const [section, setSection] = useState<PortalSection>(() => sectionFromPath(window.location.pathname))
+  const [notice, setNotice] = useState(''); const [error, setError] = useState('')
+  function message(action: () => Promise<void>) { setNotice(''); setError(''); return action().then(() => setNotice('Saved successfully.')).catch((reason) => setError(reason instanceof Error ? reason.message : 'The request could not be completed.')) }
+  const sections = [['overview', 'Overview'], ['content', 'Website content'], ['portfolio', 'Portfolio'], ['media', 'Media'], ['maintenance', 'Maintenance']] as const
+  function navigate(next: PortalSection) { setSection(next); window.history.pushState({}, '', sectionPaths[next]); setNotice(''); setError('') }
+  useEffect(() => { const onPopState = () => setSection(sectionFromPath(window.location.pathname)); window.addEventListener('popstate', onPopState); return () => window.removeEventListener('popstate', onPopState) }, [])
+  useEffect(() => { const onPortalError = (event: Event) => setError((event as CustomEvent<string>).detail); window.addEventListener('portal-error', onPortalError); return () => window.removeEventListener('portal-error', onPortalError) }, [])
+  return <div className="portal-shell"><header className="portal-top"><a className="portal-brand" href="/developer" onClick={(event) => { event.preventDefault(); navigate('overview') }}><img src={logo} alt="" /><span><strong>Fetman Digital</strong><small>Developer Portal</small></span></a><div className="account"><span>{email}</span><button onClick={onLogout}>Log out</button></div></header><div className="portal-layout"><nav className="portal-nav" aria-label="Portal navigation">{sections.map(([id, label]) => <button key={id} className={section === id ? 'active' : ''} aria-current={section === id ? 'page' : undefined} onClick={() => navigate(id)}>{label}</button>)}</nav><main className="portal-main"><div className="page-heading"><p className="eyebrow">Owner controls</p><h1>{sections.find(([id]) => id === section)?.[1]}</h1><p>Manage the public Fetman Digital experience from one secure workspace.</p></div>{notice && <p className="notice">{notice}</p>}{error && <p className="error" role="alert">{error}</p>}{section === 'overview' && <Overview />}{section === 'content' && <ContentEditor onSaved={() => message(async () => undefined)} />}{section === 'portfolio' && <PortfolioEditor onSaved={() => message(async () => undefined)} />}{section === 'media' && <MediaManager onSaved={() => message(async () => undefined)} />}{section === 'maintenance' && <Maintenance onSaved={() => message(async () => undefined)} />}</main></div></div>
+}
+
+function Overview() { const [stats, setStats] = useState({ projects: 0, published: 0, media: 0 }); useEffect(() => { api<typeof stats>('/api/developer/overview').then(setStats).catch(() => undefined) }, []); return <div className="stats">{[['Projects', stats.projects], ['Published', stats.published], ['Media assets', stats.media]].map(([label, value]) => <article key={label}><span>{label}</span><strong>{value}</strong></article>)}</div> }
+
+function ContentEditor({ onSaved }: { onSaved: () => void }) { const [content, setContent] = useState<Content>({ heroTitle: '', heroDescription: '', aboutTitle: '', aboutDescription: '', services: ['', '', '', '', ''], primaryCta: '', secondaryCta: '', contactEmail: '', contactWhatsapp: '' }); const [loaded, setLoaded] = useState(false); useEffect(() => { api<{ content: Content }>('/api/developer/content').then((result) => { setContent(result.content); setLoaded(true) }).catch(() => undefined) }, []); if (!loaded) return <p>Loading content…</p>; return <form className="editor-form" onSubmit={(event) => { event.preventDefault(); mutate('/api/developer/content', 'PUT', content).then(onSaved).catch(() => undefined) }}><Field label="Hero heading" value={content.heroTitle} onChange={(value) => setContent({ ...content, heroTitle: value })} /><Field label="Hero description" value={content.heroDescription} onChange={(value) => setContent({ ...content, heroDescription: value })} /><Field label="About heading" value={content.aboutTitle} onChange={(value) => setContent({ ...content, aboutTitle: value })} /><Field label="About content" value={content.aboutDescription} onChange={(value) => setContent({ ...content, aboutDescription: value })} area />{content.services.map((value, index) => <Field key={index} label={`Service ${index + 1} description`} value={value} onChange={(next) => setContent({ ...content, services: content.services.map((item, itemIndex) => itemIndex === index ? next : item) })} area />)}<Field label="Primary call to action" value={content.primaryCta} onChange={(value) => setContent({ ...content, primaryCta: value })} /><Field label="Secondary call to action" value={content.secondaryCta} onChange={(value) => setContent({ ...content, secondaryCta: value })} /><Field label="Contact email" value={content.contactEmail} onChange={(value) => setContent({ ...content, contactEmail: value })} type="email" /><Field label="WhatsApp display number" value={content.contactWhatsapp} onChange={(value) => setContent({ ...content, contactWhatsapp: value })} /><button className="primary">Save website content</button></form> }
+function Field({ label, value, onChange, area = false, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; area?: boolean; type?: string }) { return <label className="field">{label}{area ? <textarea value={value} onChange={(event) => onChange(event.target.value)} rows={5} required /> : <input type={type} value={value} onChange={(event) => onChange(event.target.value)} required />}</label> }
+
+function PortfolioEditor({ onSaved }: { onSaved: () => void }) { const [projects, setProjects] = useState<Project[]>([]); const [editing, setEditing] = useState<Project | null>(null); const load = () => api<{ projects: Project[] }>('/api/developer/portfolio').then((result) => setProjects(result.projects)).catch(() => undefined); useEffect(() => { void load() }, []); const blank: Project = { title: '', description: '', category: 'Business Website', imageAssetId: null, imageUrl: null, projectUrl: '', published: false, displayOrder: 0 }; const project = editing || blank; const save = (event: FormEvent) => { event.preventDefault(); const action = project.id ? mutate(`/api/developer/portfolio/${project.id}`, 'PUT', project) : mutate('/api/developer/portfolio', 'POST', project); action.then(() => { setEditing(null); void load(); onSaved() }).catch(() => undefined) }; return <div className="split"><div className="list">{projects.map((item) => <article className="list-item" key={item.id}><div><strong>{item.title}</strong><span>{item.category} · {item.published ? 'Published' : 'Unpublished'}</span></div><button onClick={() => setEditing(item)}>Edit</button></article>)}{!projects.length && <p>No projects yet.</p>}</div><form className="editor-form" onSubmit={save}><h2>{project.id ? 'Edit project' : 'Add project'}</h2><Field label="Title" value={project.title} onChange={(value) => setEditing({ ...project, title: value })} /><Field label="Category" value={project.category} onChange={(value) => setEditing({ ...project, category: value })} /><Field label="Description" value={project.description} onChange={(value) => setEditing({ ...project, description: value })} area /><Field label="Project URL" value={project.projectUrl} onChange={(value) => setEditing({ ...project, projectUrl: value })} type="url" /><Field label="Image URL (optional)" value={project.imageUrl || ''} onChange={(value) => setEditing({ ...project, imageUrl: value || null })} type="url" /><Field label="Uploaded media ID (optional)" value={project.imageAssetId || ''} onChange={(value) => setEditing({ ...project, imageAssetId: value || null })} /><label className="checkbox"><input type="checkbox" checked={project.published} onChange={(event) => setEditing({ ...project, published: event.target.checked })} /> Publish this project</label><button className="primary">Save project</button>{project.id && <button type="button" className="secondary" onClick={() => { mutate(`/api/developer/portfolio/${project.id}`, 'DELETE').then(() => { setEditing(null); void load(); onSaved() }).catch(() => undefined) }}>Delete project</button>}</form></div> }
+
+function MediaManager({ onSaved }: { onSaved: () => void }) { const [media, setMedia] = useState<Media[]>([]); const load = () => api<{ media: Media[] }>('/api/developer/media').then((result) => setMedia(result.media)).catch(() => undefined); useEffect(() => { void load() }, []); return <section><form className="upload" onSubmit={(event) => { event.preventDefault(); const input = event.currentTarget.elements.namedItem('media'); if (!(input instanceof HTMLInputElement) || !input.files?.[0]) return; const file = input.files[0]; csrf().then((token) => fetch('/api/developer/media', { method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': token, 'Content-Type': file.type, 'X-File-Name': file.name }, body: file })).then(async (response) => { if (!response.ok) { const data = await response.json().catch(() => ({})); throw new Error(data.error || `Upload failed (HTTP ${response.status}).`) } void load(); onSaved() }).catch((reason) => reportPortalError(reason)) }}><label className="field">Upload image<input name="media" type="file" accept="image/jpeg,image/png,image/webp" required /></label><button className="primary">Upload secure image</button></form><div className="media-grid">{media.map((item) => <figure key={item.id}><img src={item.previewUrl} alt={item.originalName} /><figcaption>{item.originalName}</figcaption></figure>)}</div></section> }
+function Maintenance({ onSaved }: { onSaved: () => void }) { const [enabled, setEnabled] = useState(false); useEffect(() => { api<{ maintenanceMode: boolean }>('/api/developer/maintenance').then((result) => setEnabled(result.maintenanceMode)).catch(() => undefined) }, []); return <section className="maintenance-card"><p>When enabled, visitors see the maintenance page while this portal and health checks remain available.</p><label className="switch"><input type="checkbox" checked={enabled} onChange={(event) => setEnabled(event.target.checked)} /> Maintenance mode {enabled ? 'ON' : 'OFF'}</label><button className="primary" onClick={() => mutate('/api/developer/maintenance', 'PUT', { enabled }).then(onSaved).catch(() => undefined)}>Save maintenance setting</button></section> }
 
 export default App

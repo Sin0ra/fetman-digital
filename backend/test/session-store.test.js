@@ -33,7 +33,7 @@ describe("MySQL-backed session store", () => {
       };
       await invoke(store, "set", "session-id", session);
 
-      assert.match(query, /INSERT INTO management_sessions/);
+      assert.match(query, /INSERT INTO sessions/);
       assert.match(query, /ON DUPLICATE KEY UPDATE/);
       assert.equal(values[0], "session-id");
       assert.ok(values[1] > Math.floor(Date.now() / 1000));
@@ -101,33 +101,12 @@ describe("MySQL-backed session store", () => {
       await invoke(store, "destroy", "session-id");
       await invoke(store, "clearExpired");
 
-      assert.match(queries[0].statement, /UPDATE management_sessions SET expires/);
-      assert.match(queries[1].statement, /DELETE FROM management_sessions WHERE session_id/);
-      assert.match(queries[2].statement, /DELETE FROM management_sessions WHERE expires/);
+      assert.match(queries[0].statement, /UPDATE sessions SET expires/);
+      assert.match(queries[1].statement, /DELETE FROM sessions WHERE session_id/);
+      assert.match(queries[2].statement, /DELETE FROM sessions WHERE expires/);
     } finally {
       store.close();
     }
   });
 
-  it("deletes only the sessions associated with the specified user", async () => {
-    let query;
-    let parameters;
-    const store = new MySQLSessionStore({
-      async execute(statement, values) {
-        query = statement;
-        parameters = values;
-        return [{ affectedRows: 2 }, []];
-      },
-    });
-
-    try {
-      await store.deleteUserSessions(42);
-
-      assert.match(query, /JSON_VALID\(data\)/);
-      assert.match(query, /JSON_EXTRACT\(data, '\$\.userId'\)/);
-      assert.deepEqual(parameters, ["42"]);
-    } finally {
-      store.close();
-    }
-  });
 });
