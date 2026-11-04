@@ -1,12 +1,13 @@
 (() => {
   const portfolio = document.querySelector('#portfolio');
-  const clientGrid = portfolio?.querySelector('.portfolio-collection .row');
+  const legacyGrid = portfolio?.querySelector('.portfolio-collection .row');
+  const departmentGrids = new Map([...document.querySelectorAll('[data-portfolio-department]')].map((grid) => [grid.dataset.portfolioDepartment, grid]));
   const search = document.getElementById('search-bar');
   const filters = [...document.querySelectorAll('.filter-btn')];
-  if (!portfolio || !clientGrid || !search) return;
+  if (!portfolio || !legacyGrid || !search) return;
   let activeFilter = 'all';
 
-  const cards = () => [...portfolio.querySelectorAll('.portfolio-item')];
+  const cards = () => [...document.querySelectorAll('.portfolio-item')];
   const classify = (card) => card.classList.contains('concept') ? 'concept' : card.classList.contains('client-work') ? 'client-work' : 'branding';
 
   function update() {
@@ -21,7 +22,8 @@
     const card = document.createElement('article');
     card.className = `col-md-6 portfolio-item website-project ${project.category.toLowerCase().includes('concept') ? 'concept' : 'client-work'}`;
     const image = project.imageUrl || '';
-    card.innerHTML = `<div class="card"><a class="portfolio-image-link" href="${escapeAttribute(project.projectUrl)}" target="_blank" rel="noopener noreferrer"><img class="card-img-top" width="1440" height="900" loading="lazy" decoding="async" alt="${escapeAttribute(project.title)} website preview" src="${escapeAttribute(image)}"><span class="portfolio-image-cta">View website <span aria-hidden="true">↗</span></span></a><div class="card-body"><p class="portfolio-category">${escapeHtml(project.category)}</p><h4 class="card-title">${escapeHtml(project.title)}</h4><p class="card-text">${escapeHtml(project.description)}</p><a class="portfolio-link" href="${escapeAttribute(project.projectUrl)}" target="_blank" rel="noopener noreferrer">Explore project <span aria-hidden="true">↗</span></a></div></div>`;
+    const imageMarkup = image ? `<img class="card-img-top" width="1440" height="900" loading="lazy" decoding="async" alt="${escapeAttribute(project.title)} preview" src="${escapeAttribute(image)}">` : '<div class="portfolio-image-placeholder" aria-label="No project image">No image</div>';
+    card.innerHTML = `<div class="card"><a class="portfolio-image-link" href="${escapeAttribute(project.projectUrl)}" target="_blank" rel="noopener noreferrer">${imageMarkup}<span class="portfolio-image-cta">View project <span aria-hidden="true">↗</span></span></a><div class="card-body"><p class="portfolio-category">${escapeHtml(project.category)}</p><h4 class="card-title">${escapeHtml(project.title)}</h4><p class="card-text">${escapeHtml(project.description)}</p><a class="portfolio-link" href="${escapeAttribute(project.projectUrl)}" target="_blank" rel="noopener noreferrer">Explore project <span aria-hidden="true">↗</span></a></div></div>`;
     return card;
   }
 
@@ -32,8 +34,9 @@
       const result = await response.json();
       if (!Array.isArray(result.projects)) return;
       result.projects.forEach((project) => {
-        if (!project || !project.title || !project.projectUrl || !project.imageUrl) return;
-        clientGrid.append(createProjectCard(project));
+        if (!project || !project.title || !project.projectUrl) return;
+        const target = departmentGrids.get(project.department) || legacyGrid;
+        target.append(createProjectCard(project));
       });
       update();
     } catch (error) {
@@ -50,6 +53,6 @@
   update();
   void loadProjects();
 
-  function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character])); }
+  function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&#38;', '<': '&#60;', '>': '&#62;', "'": '&#39;', '"': '&#34;' }[character])); }
   function escapeAttribute(value) { return escapeHtml(value); }
 })();

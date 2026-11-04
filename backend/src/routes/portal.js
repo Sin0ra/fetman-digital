@@ -8,16 +8,31 @@ const { requireDeveloper } = require("../middleware/auth");
 const { requireCsrf } = require("../middleware/csrf");
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const departments = ["Graphic Design", "IT"];
 const httpUrlSchema = z.string().trim().url().max(500).refine((value) => {
   const protocol = new URL(value).protocol;
   return protocol === "http:" || protocol === "https:";
 }, "Only HTTP and HTTPS URLs are allowed.");
+const optionalHttpUrlSchema = z.preprocess(
+  (value) => typeof value === "string" && value.trim() === "" ? null : value,
+  httpUrlSchema.nullable().default(null),
+);
+const optionalMediaIdSchema = z.preprocess(
+  (value) => typeof value === "string" && value.trim() === "" ? null : value,
+  z.union([z.string().regex(/^[1-9]\d{0,19}$/), z.null()]).default(null),
+);
 const projectSchema = z.object({
   title: z.string().trim().min(1).max(160), description: z.string().trim().min(1).max(5000),
-  category: z.string().trim().min(1).max(80), imageAssetId: z.union([z.string().regex(/^\d+$/), z.null()]).default(null),
-  imageUrl: httpUrlSchema.nullable().default(null), projectUrl: httpUrlSchema,
+  department: z.enum(departments), category: z.string().trim().min(1).max(80), imageAssetId: optionalMediaIdSchema,
+  imageUrl: optionalHttpUrlSchema, projectUrl: httpUrlSchema,
   published: z.boolean().default(false), displayOrder: z.number().int().min(0).max(100000).default(0),
 }).strict();
+const projectUpdateSchema = projectSchema.omit({ department: true }).extend({
+  department: z.enum(departments),
+  id: z.string().regex(/^[1-9]\d{0,19}$/).optional(),
+  imagePreviewUrl: z.string().max(500).optional(),
+}).strict();
+const departmentSchema = z.object({ department: z.enum(departments) }).strict();
 const contentSchema = z.object({
   heroTitle: z.string().trim().min(1).max(220), heroDescription: z.string().trim().max(1000),
   aboutTitle: z.string().trim().min(1).max(220), aboutDescription: z.string().trim().max(5000),
@@ -59,15 +74,27 @@ function createPortalRouter({ pool, mediaDirectory }) {
 
   router.get("/portfolio", async (_request, response, next) => {
     try {
-      const [rows] = await pool.execute(`SELECT p.id, p.title, p.description, p.category, p.image_asset_id AS imageAssetId,
+      const requestedDepartment = typeof _request.query.department === "string" ? _request.query.department : null;
+      const department = departments.includes(requestedDepartment) ? requestedDepartment : requestedDepartment === "unclassified" ? "unclassified" : null;
+      const filter = department === "unclassified" ? "WHERE p.department IS NULL" : department ? "WHERE p.department = ?" : "";
+      const [rows] = await pool.execute(`SELECT p.id, p.title, p.description, p.department, p.category, p.image_asset_id AS imageAssetId,
         p.image_url AS imageUrl, p.project_url AS projectUrl, p.published, p.display_order AS displayOrder,
         m.storage_name AS storageName FROM portfolio_projects p LEFT JOIN media_assets m ON m.id = p.image_asset_id
-        ORDER BY p.display_order, p.id`);
-      return response.json({ projects: rows.map((row) => ({ id: String(row.id), title: row.title, description: row.description, category: row.category, imageAssetId: row.imageAssetId ? String(row.imageAssetId) : null, published: Boolean(row.published), imageUrl: row.imageUrl || null, projectUrl: row.projectUrl, displayOrder: row.displayOrder, imagePreviewUrl: row.imageAssetId ? `/api/developer/media/${row.imageAssetId}` : row.imageUrl })) });
+        ${filter} ORDER BY p.display_order, p.id`, department && department !== "unclassified" ? [department] : []);
+      return response.json({ projects: rows.map((row) => ({ id: String(row.id), title: row.title, description: row.description, department: row.department, category: row.category, imageAssetId: row.imageAssetId ? String(row.imageAssetId) : null, published: Boolean(row.published), imageUrl: row.imageUrl || null, projectUrl: row.projectUrl, displayOrder: row.displayOrder, imagePreviewUrl: row.imageAssetId ? `/api/developer/media/${row.imageAssetId}` : row.imageUrl })) });
     } catch (error) { return next(error); }
   });
   router.post("/portfolio", requireCsrf, async (request, response, next) => saveProject(pool, request, response, next, null));
   router.put("/portfolio/:id", requireCsrf, async (request, response, next) => saveProject(pool, request, response, next, request.params.id));
+  router.patch("/portfolio/:id/department", requireCsrf, async (request, response, next) => {
+    const parsed = departmentSchema.safeParse(request.body);
+    if (!parsed.success) return response.status(400).json({ error: "Choose a valid department." });
+    if (!/^[1-9]\d{0,19}$/.test(request.params.id)) return response.status(400).json({ error: "Invalid project id." });
+    try {
+      const [result] = await pool.execute("UPDATE portfolio_projects SET department = ? WHERE id = ? AND department IS NULL", [parsed.data.department, request.params.id]);
+      return result.affectedRows ? response.json({ id: request.params.id, department: parsed.data.department }) : response.status(404).json({ error: "Only an unclassified project can be classified." });
+    } catch (error) { return next(error); }
+  });
   router.delete("/portfolio/:id", requireCsrf, async (request, response, next) => {
     if (!/^[1-9]\d{0,19}$/.test(request.params.id)) return response.status(400).json({ error: "Invalid project id." });
     try { const [result] = await pool.execute("DELETE FROM portfolio_projects WHERE id = ?", [request.params.id]); return result.affectedRows ? response.status(204).end() : response.status(404).json({ error: "Project not found." }); } catch (error) { return next(error); }
@@ -110,20 +137,23 @@ function createPortalRouter({ pool, mediaDirectory }) {
 }
 
 async function saveProject(pool, request, response, next, id) {
-  const parsed = projectSchema.safeParse(request.body);
+  const parsed = (id === null ? projectSchema : projectUpdateSchema).safeParse(request.body);
   if (!parsed.success) return response.status(400).json({ error: "Invalid portfolio project." });
   try {
     const value = parsed.data;
     if (value.imageAssetId) { const [assets] = await pool.execute("SELECT id FROM media_assets WHERE id = ?", [value.imageAssetId]); if (!assets[0]) return response.status(400).json({ error: "Selected media does not exist." }); }
     if (id === null) {
-      const [result] = await pool.execute("INSERT INTO portfolio_projects (title, description, category, image_asset_id, image_url, project_url, published, display_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [value.title, value.description, value.category, value.imageAssetId, value.imageUrl, value.projectUrl, value.published ? 1 : 0, value.displayOrder]);
+      const [result] = await pool.execute("INSERT INTO portfolio_projects (title, description, department, category, image_asset_id, image_url, project_url, published, display_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [value.title, value.description, value.department, value.category, value.imageAssetId, value.imageUrl, value.projectUrl, value.published ? 1 : 0, value.displayOrder]);
       return response.status(201).json({ id: String(result.insertId) });
     }
     if (!/^[1-9]\d{0,19}$/.test(id)) return response.status(400).json({ error: "Invalid project id." });
+    const [existingRows] = await pool.execute("SELECT department FROM portfolio_projects WHERE id = ? LIMIT 1", [id]);
+    if (!existingRows[0]) return response.status(404).json({ error: "Project not found." });
+    if (existingRows[0].department !== value.department) return response.status(409).json({ error: "A project's department cannot be changed during editing." });
     const [result] = await pool.execute("UPDATE portfolio_projects SET title = ?, description = ?, category = ?, image_asset_id = ?, image_url = ?, project_url = ?, published = ?, display_order = ? WHERE id = ?", [value.title, value.description, value.category, value.imageAssetId, value.imageUrl, value.projectUrl, value.published ? 1 : 0, value.displayOrder, id]);
     return result.affectedRows ? response.json({ id }) : response.status(404).json({ error: "Project not found." });
   } catch (error) { return next(error); }
 }
 async function readSetting(pool, key) { const [rows] = await pool.execute("SELECT setting_value FROM site_settings WHERE setting_key = ?", [key]); if (!rows[0]) throw new Error("Setting missing"); return rows[0].setting_value; }
 
-module.exports = { createPortalRouter };
+module.exports = { createPortalRouter, departments, projectSchema, projectUpdateSchema, departmentSchema };

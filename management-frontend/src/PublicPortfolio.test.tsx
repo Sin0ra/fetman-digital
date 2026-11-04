@@ -7,7 +7,9 @@ const portfolioScript = readFileSync(resolve(process.cwd(), '../public-portfolio
 
 function prepareWebsite() {
   const parsed = new DOMParser().parseFromString(websiteHtml, 'text/html')
-  document.body.innerHTML = parsed.querySelector('#portfolio')?.outerHTML || ''
+  const portfolio = parsed.querySelector('#portfolio')
+  const managedPortfolios = parsed.querySelector('#managed-portfolios')
+  document.body.innerHTML = `${portfolio?.outerHTML || ''}${managedPortfolios?.outerHTML || ''}`
   return document.querySelector('#portfolio .portfolio-collection .row') as HTMLElement
 }
 
@@ -36,5 +38,44 @@ describe('public portfolio integration', () => {
     window.eval(portfolioScript)
     await vi.waitFor(() => expect((globalThis.fetch as ReturnType<typeof vi.fn>)).toHaveBeenCalledOnce())
     expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(initial)
+  })
+
+  it('renders a published project without an image instead of dropping it', async () => {
+    prepareWebsite()
+    const grid = document.querySelector('[data-portfolio-department="IT"]') as HTMLElement
+    const initial = grid.querySelectorAll('.portfolio-item').length
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [{
+      title: 'Image-free published project',
+      department: 'IT',
+      category: 'Web application',
+      description: 'A published project without an image asset.',
+      projectUrl: 'https://example.test/image-free',
+    }] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    window.eval(portfolioScript)
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/public/portfolio', expect.anything()))
+    await vi.waitFor(() => expect(grid.textContent).toContain('Image-free published project'))
+    expect(grid.querySelector('.portfolio-image-placeholder')).toBeTruthy()
+    expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(initial + 1)
+  })
+
+  it('places published projects in their department grids and keeps legacy projects in the existing grid', async () => {
+    const legacyGrid = prepareWebsite()
+    const designGrid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
+    const itGrid = document.querySelector('[data-portfolio-department="IT"]') as HTMLElement
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'Design project', department: 'Graphic Design', category: 'Branding', description: 'Design work.', projectUrl: 'https://example.test/design' },
+      { title: 'IT project', department: 'IT', category: 'Web application', description: 'IT work.', projectUrl: 'https://example.test/it' },
+      { title: 'Legacy project', department: null, category: 'Existing', description: 'Unclassified work.', projectUrl: 'https://example.test/legacy' },
+    ] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    window.eval(portfolioScript)
+    await vi.waitFor(() => expect(designGrid.textContent).toContain('Design project'))
+    expect(designGrid.textContent).not.toContain('IT project')
+    expect(itGrid.textContent).toContain('IT project')
+    expect(itGrid.textContent).not.toContain('Design project')
+    expect(legacyGrid.textContent).toContain('Legacy project')
   })
 })

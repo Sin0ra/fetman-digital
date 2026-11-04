@@ -50,6 +50,7 @@ CREATE TABLE portfolio_projects (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   title VARCHAR(160) NOT NULL,
   description TEXT NOT NULL,
+  department VARCHAR(24) NOT NULL DEFAULT 'IT',
   category VARCHAR(80) NOT NULL,
   image_asset_id BIGINT UNSIGNED NULL,
   image_url VARCHAR(500) NULL,
@@ -62,7 +63,8 @@ CREATE TABLE portfolio_projects (
   KEY ix_portfolio_projects_published_order (published, display_order, id),
   CONSTRAINT fk_portfolio_projects_asset FOREIGN KEY (image_asset_id)
     REFERENCES media_assets (id) ON DELETE SET NULL,
-  CONSTRAINT chk_portfolio_projects_published CHECK (published IN (0, 1))
+  CONSTRAINT chk_portfolio_projects_published CHECK (published IN (0, 1)),
+  CONSTRAINT chk_portfolio_projects_department CHECK (department IN ('Graphic Design', 'IT'))
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE enquiries (
