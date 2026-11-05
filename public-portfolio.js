@@ -6,9 +6,8 @@
   const legacyCollection = legacyGrid?.closest('.portfolio-collection');
   const departmentGrids = new Map([...document.querySelectorAll('[data-portfolio-department]')].map((grid) => [grid.dataset.portfolioDepartment, grid]));
   const managedCollections = [...departmentGrids.values()].map((grid) => grid.closest('.portfolio-collection')).filter(Boolean);
-  const search = document.getElementById('search-bar');
   let graphicGallery;
-  if (!portfolio || !legacyGrid || !legacyCollection || !search) return;
+  if (!portfolio || !legacyGrid || !legacyCollection) return;
 
   legacyCollection.hidden = true;
   managedCollections.forEach((collection) => { collection.hidden = true; });
@@ -18,9 +17,9 @@
   const cards = () => [...document.querySelectorAll('.portfolio-item')];
 
   function update() {
-    // Search filters every rendered card, then asks the carousel to select the next
-    // valid item so a search can never leave an empty or hidden slide on screen.
-    const query = search.value.trim().toLowerCase();
+    // Category filters own Graphic Design visibility; all other published cards
+    // remain available in their existing department or legacy collection.
+    const query = '';
     cards().forEach((card) => {
       card.hidden = !card.textContent.toLowerCase().includes(query);
     });
@@ -38,7 +37,7 @@
     card.dataset.portfolioDepartment = project.department || '';
     const image = typeof project.imageUrl === 'string' ? project.imageUrl.trim() : '';
     const imageAlt = project.title?.trim() || `${category} artwork`;
-    const imageMarkup = image ? `<img class="card-img-top" width="1440" height="900" loading="lazy" decoding="async" alt="${escapeAttribute(imageAlt)} preview" src="${escapeAttribute(image)}">` : '';
+    const imageMarkup = image ? `<img class="card-img-top" loading="lazy" decoding="async" alt="${escapeAttribute(imageAlt)} preview" src="${escapeAttribute(image)}">` : '';
     const mediaFrame = image
       ? (projectUrl
         ? `<a class="portfolio-image-link" href="${escapeAttribute(projectUrl)}" target="_blank" rel="noopener noreferrer">${imageMarkup}<span class="portfolio-image-cta">View project <span aria-hidden="true">↗</span></span></a>`
@@ -94,7 +93,6 @@
     }
   }
 
-  search.addEventListener('input', update);
   graphicGallery = createGraphicDesignGallery(departmentGrids.get('Graphic Design'));
   update();
   void loadProjects();
@@ -119,16 +117,49 @@
     let activeFilter = 'all';
     let artworkRestoreFocus;
     let observer;
+    let masonryObserver;
+    let masonryFrame;
+    const imageListeners = new Map();
+    const requestFrame = (callback) => typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame(callback) : window.setTimeout(callback, 0);
+    const cancelFrame = (frame) => typeof window.cancelAnimationFrame === 'function' ? window.cancelAnimationFrame(frame) : window.clearTimeout(frame);
     const categoryNames = ['Branding', 'Logos', 'Posters', 'Social Media', 'Packaging', 'Campaigns'];
     const normalized = (value) => String(value || '').trim().toLowerCase();
     const cardsInGrid = () => [...grid.querySelectorAll('.portfolio-item')];
     const matches = (card, query) => !query || card.textContent.toLowerCase().includes(query);
     const showEmptyState = (visible) => { empty.hidden = visible; };
-    const refresh = (query = search.value.trim().toLowerCase()) => {
+    const layoutMasonry = () => {
+      masonryFrame = undefined;
+      const styles = getComputedStyle(grid);
+      const rowHeight = Number.parseFloat(styles.gridAutoRows) || 8;
+      const rowGap = Number.parseFloat(styles.rowGap) || 0;
+      cardsInGrid().forEach((card) => {
+        if (card.hidden) { card.style.gridRowEnd = 'auto'; return; }
+        const height = card.getBoundingClientRect().height;
+        const span = Math.max(1, Math.ceil((height + rowGap) / (rowHeight + rowGap)));
+        const value = `span ${span}`;
+        if (card.style.gridRowEnd !== value) card.style.gridRowEnd = value;
+      });
+    };
+    const scheduleMasonry = () => {
+      if (masonryFrame !== undefined) return;
+      masonryFrame = requestFrame(layoutMasonry);
+    };
+    const bindMasonryImages = () => {
+      cardsInGrid().forEach((card) => {
+        const image = card.querySelector('img');
+        if (!image || imageListeners.has(image)) return;
+        const listener = () => scheduleMasonry();
+        image.addEventListener('load', listener);
+        imageListeners.set(image, listener);
+      });
+    };
+    const refresh = (query = '') => {
       const cards = cardsInGrid();
       const visible = cards.filter((card) => (activeFilter === 'all' || normalized(card.dataset.portfolioCategory) === normalized(activeFilter)) && matches(card, query));
       cards.forEach((card) => { card.hidden = !visible.includes(card); card.classList.toggle('graphic-gallery-card-visible', visible.includes(card)); });
       showEmptyState(visible.length > 0);
+      bindMasonryImages();
+      scheduleMasonry();
       return visible;
     };
     const openArtwork = (card) => {
@@ -160,8 +191,20 @@
       }
     });
     if ('IntersectionObserver' in window) { observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('graphic-gallery-card-visible'); observer.unobserve(entry.target); } }), { threshold: .08 }); cardsInGrid().forEach((card) => observer.observe(card)); }
+    if ('ResizeObserver' in window) { masonryObserver = new ResizeObserver(scheduleMasonry); masonryObserver.observe(grid); }
+    window.addEventListener('resize', scheduleMasonry);
     renderFilters();
-    return { refresh(query) { renderFilters(); return refresh(query); }, destroy() { observer?.disconnect(); } };
+    return {
+      refresh(query) { renderFilters(); return refresh(query); },
+      destroy() {
+        observer?.disconnect();
+        masonryObserver?.disconnect();
+        window.removeEventListener('resize', scheduleMasonry);
+        if (masonryFrame !== undefined) cancelFrame(masonryFrame);
+        imageListeners.forEach((listener, image) => image.removeEventListener('load', listener));
+        imageListeners.clear();
+      },
+    };
   }
 
   // Stage A catalog: stable IDs identify projects independently of display names.

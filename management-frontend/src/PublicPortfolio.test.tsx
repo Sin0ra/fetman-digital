@@ -19,39 +19,31 @@ function prepareWebsite() {
 afterEach(() => { document.body.innerHTML = ''; vi.useRealTimers(); vi.unstubAllGlobals() })
 
 describe('public portfolio integration', () => {
-  it('provides a visible, accessible search field and filters cards while typing and clearing', async () => {
-    const grid = prepareWebsite()
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
-      { title: 'Nakoba project', department: null, category: 'Website', description: 'A website.', projectUrl: 'https://example.test/nakoba' },
-      { title: 'Brand project', department: null, category: 'Branding', description: 'A brand.', projectUrl: 'https://example.test/brand' },
-    ] }) })
-    vi.stubGlobal('fetch', fetchMock)
-    window.eval(portfolioScript)
-    await vi.waitFor(() => expect(grid.textContent).toContain('Nakoba project'))
-
-    const search = document.querySelector('#search-bar') as HTMLInputElement
-    expect(search.placeholder).toBe('Search published projects...')
-    expect(document.querySelector('.portfolio-search-field .bi-search')).not.toBeNull()
-    expect(websiteHtml).toContain('background: #fff;')
-    await userEvent.type(search, 'Nakoba')
-    expect(grid.querySelector('[hidden]')?.textContent).toContain('Brand project')
-    await userEvent.clear(search)
-    expect(grid.querySelectorAll('[hidden]')).toHaveLength(0)
+  it('starts the public portfolio directly with portfolio content and no global search', () => {
+    prepareWebsite()
+    expect(websiteHtml).not.toContain('Digital portfolio')
+    expect(websiteHtml).not.toContain('Published work with a clear point of view.')
+    expect(websiteHtml).not.toContain('Published portfolio projects from the Fetman Digital management dashboard.')
+    expect(document.querySelector('#search-bar')).toBeNull()
+    expect(document.querySelector('.portfolio-search-field')).toBeNull()
+    expect(document.querySelector('#graphic-design-portfolio')).not.toBeNull()
   })
 
   it('keeps the requested light and dark section text palettes explicit', () => {
-    expect(websiteHtml).toContain('#portfolio .portfolio-intro')
     expect(websiteHtml).toContain('color: rgba(255, 255, 255, .82)')
     expect(websiteHtml).toContain('.it-division .section-heading h2')
     expect(websiteHtml).toContain('color: var(--ink)')
   })
 
-  it('keeps managed portfolio artwork in bounded responsive thumbnail frames', () => {
+  it('uses measured masonry rows for natural artwork proportions', () => {
     expect(websiteHtml).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
-    expect(websiteHtml).toContain('height: clamp(240px, 20vw, 280px)')
+    expect(websiteHtml).toContain('grid-auto-rows: 8px')
+    expect(websiteHtml).toContain('grid-auto-flow: row')
+    expect(portfolioScript).toContain('gridRowEnd')
+    expect(portfolioScript).toContain('ResizeObserver')
     expect(websiteHtml).toContain('object-fit: contain')
     expect(websiteHtml).toContain('grid-template-columns: repeat(2, minmax(0, 1fr))')
-    expect(websiteHtml).toContain('height: min(220px, 62vw)')
+    expect(websiteHtml).toContain('grid-template-columns: 1fr')
   })
 
   it('does not include public artwork placeholders in the managed portfolio markup', () => {

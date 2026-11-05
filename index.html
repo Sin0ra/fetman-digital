@@ -756,19 +756,6 @@
 <!-- Portfolio Section -->
 <section id="portfolio" class="portfolio py-5">
     <div class="container">
-        <p class="section-kicker">Digital portfolio</p>
-        <h2 class="text-center mb-4">Published work with a clear point of view.</h2>
-        <p class="portfolio-intro">Published portfolio projects from the Fetman Digital management dashboard.</p>
-        <div class="portfolio-controls">
-            <div class="portfolio-search">
-                <label class="visually-hidden" for="search-bar">Search published projects</label>
-                <div class="portfolio-search-field">
-                    <i class="bi bi-search" aria-hidden="true"></i>
-                    <input type="text" id="search-bar" class="form-control" placeholder="Search published projects...">
-                </div>
-            </div>
-        </div>
-
         <div class="portfolio-collection" id="legacy-portfolio">
             <div class="collection-heading">
                 <div>
@@ -2203,18 +2190,6 @@
             letter-spacing: .18em;
         }
 
-        .portfolio .container > h2,
-        .portfolio .container > .portfolio-intro {
-            max-width: 760px;
-        }
-
-        .portfolio-intro {
-            margin: 0 0 38px;
-            color: var(--muted);
-            font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-            line-height: 1.75;
-        }
-
         .portfolio-collection {
             margin-top: 30px;
         }
@@ -2330,76 +2305,6 @@
 
         .portfolio-collection + .portfolio-collection {
             margin-top: 72px;
-        }
-
-        .portfolio-controls {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 18px 28px;
-            margin-bottom: 46px;
-            padding: 18px 0;
-            border-top: 1px solid rgba(24, 52, 58, .13);
-            border-bottom: 1px solid rgba(24, 52, 58, .13);
-        }
-
-        .portfolio-source-status {
-            min-height: 1.5em;
-            margin: 0 0 24px;
-            color: var(--neutral-dark);
-            font-size: .78rem;
-            line-height: 1.5;
-        }
-
-        .portfolio-search {
-            width: min(100%, 280px);
-        }
-
-        .portfolio-search-field {
-            position: relative;
-        }
-
-        .portfolio-search-field > i {
-            position: absolute;
-            top: 50%;
-            left: 14px;
-            z-index: 1;
-            color: var(--deep);
-            pointer-events: none;
-            transform: translateY(-50%);
-        }
-
-        #search-bar {
-            width: 100% !important;
-            min-height: 42px;
-            margin: 0 !important;
-            padding: 8px 12px 8px 40px;
-            border: 1px solid rgba(6, 43, 51, .35);
-            border-radius: 6px;
-            background: #fff;
-            color: var(--deep);
-            box-shadow: none;
-            transition: border-color .2s ease, box-shadow .2s ease;
-        }
-
-        #search-bar::placeholder {
-            color: #52666b;
-            opacity: 1;
-        }
-
-        .portfolio-filters {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px 24px;
-        }
-
-        #search-bar:focus {
-            border-color: var(--teal);
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(32, 196, 190, .25);
-            outline: 0;
         }
 
         .filter-btn {
@@ -2857,21 +2762,6 @@
                 gap: 42px;
             }
 
-            .portfolio-controls {
-                align-items: stretch;
-                gap: 18px;
-                width: 100%;
-                margin-bottom: 34px;
-            }
-
-            .portfolio-search {
-                max-width: none;
-            }
-
-            .portfolio-filters {
-                gap: 6px 22px;
-            }
-
             .filter-btn {
                 padding: 7px 0;
                 font-size: .82rem;
@@ -2997,16 +2887,8 @@
         }
 
         @media (max-width: 420px) {
-            .portfolio-filters {
-                gap: 5px 18px;
-            }
-
             .filter-btn {
                 width: auto;
-            }
-
-            .portfolio-controls {
-                margin-bottom: 28px;
             }
         }
 
@@ -3159,6 +3041,9 @@
         #managed-portfolios #graphic-design-portfolio .managed-project-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-auto-rows: 8px;
+            grid-auto-flow: row;
+            align-items: start;
             gap: 1.5rem;
         }
 
@@ -3170,9 +3055,9 @@
         }
 
         #managed-portfolios #graphic-design-portfolio .portfolio-item[hidden] { display: none; }
-        #managed-portfolios #graphic-design-portfolio .portfolio-item .card { height: 100%; border: 0; background: transparent; }
-        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { display: flex; width: 100%; height: clamp(240px, 20vw, 280px); align-items: center; justify-content: center; overflow: hidden; background: rgba(255, 255, 255, .08); }
-        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-item .card { height: auto; border: 0; background: transparent; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { display: block; width: 100%; overflow: hidden; background: rgba(255, 255, 255, .08); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
         #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover img,
         #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible img { transform: scale(1.035); }
         #managed-portfolios #graphic-design-portfolio .portfolio .card-body { padding-top: 1rem; }
@@ -3200,7 +3085,8 @@
         @keyframes graphic-gallery-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) { #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; } #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { transition: none; } }
         @media (max-width: 900px) { #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (max-width: 600px) { .graphic-design-gallery-tools { align-items: flex-start; flex-direction: column; } .graphic-design-filters { justify-content: flex-start; } #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: 1fr; } .graphic-artwork-dialog { padding: 1rem; } }
+        @media (max-width: 600px) { .graphic-design-gallery-tools { align-items: flex-start; flex-direction: column; } .graphic-design-filters { justify-content: flex-start; } #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; } .graphic-artwork-dialog { padding: 1rem; } }
+        @media (max-width: 480px) { #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: 1fr; } }
 
         #managed-portfolios .portfolio-collection + .portfolio-collection {
             margin-top: 72px;
