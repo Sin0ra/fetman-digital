@@ -2800,18 +2800,29 @@
         }
 
         .graphic-design-carousel .managed-project-grid {
-            display: block !important;
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr);
             position: relative;
         }
 
         .graphic-design-carousel .managed-project-grid > .portfolio-item {
-            display: none;
+            grid-column: 1;
+            grid-row: 1;
+            align-self: start;
+            display: block;
             width: 100%;
             padding: 0;
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+            transition: opacity .45s ease, visibility 0s linear .45s;
         }
 
         .graphic-design-carousel .managed-project-grid > .portfolio-item.is-active {
-            display: block;
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
+            transition-delay: 0s;
         }
 
         .graphic-design-carousel .managed-project-grid .card {
@@ -2821,7 +2832,19 @@
         }
 
         .graphic-design-carousel .managed-project-grid .portfolio-image-link {
-            min-height: clamp(260px, 42vw, 520px);
+            display: flex;
+            width: 100%;
+            height: min(380px, 42vw);
+            min-height: 220px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .graphic-design-carousel .managed-project-grid .portfolio-image-link img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
         }
 
         .graphic-carousel-controls {
@@ -2861,8 +2884,19 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
+            .graphic-design-carousel .managed-project-grid > .portfolio-item {
+                transition: none;
+            }
+
             .graphic-carousel-button {
                 transition: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .graphic-design-carousel .managed-project-grid .portfolio-image-link {
+                height: min(240px, 68vw);
+                min-height: 180px;
             }
         }
 

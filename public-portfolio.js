@@ -107,7 +107,8 @@
 
     let activeIndex = 0;
     let timer;
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    let touchStartX;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
     const visibleCards = () => [...grid.querySelectorAll('.portfolio-item')].filter((card) => !card.hidden);
     const stop = () => { if (timer) window.clearInterval(timer); timer = undefined; };
     const start = () => {
@@ -134,6 +135,16 @@
     collection.addEventListener('mouseleave', start);
     collection.addEventListener('focusin', stop);
     collection.addEventListener('focusout', (event) => { if (!collection.contains(event.relatedTarget)) start(); });
+    collection.addEventListener('touchstart', (event) => {
+      touchStartX = event.changedTouches[0]?.clientX;
+      stop();
+    }, { passive: true });
+    collection.addEventListener('touchend', (event) => {
+      const endX = event.changedTouches[0]?.clientX;
+      if (typeof touchStartX === 'number' && typeof endX === 'number' && Math.abs(endX - touchStartX) > 40) show(endX < touchStartX ? activeIndex + 1 : activeIndex - 1);
+      touchStartX = undefined;
+      start();
+    }, { passive: true });
     return { refresh() { show(activeIndex); start(); } };
   }
 

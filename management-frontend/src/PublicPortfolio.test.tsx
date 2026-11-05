@@ -13,7 +13,7 @@ function prepareWebsite() {
   return document.querySelector('#portfolio .portfolio-collection .row') as HTMLElement
 }
 
-afterEach(() => { document.body.innerHTML = ''; vi.unstubAllGlobals() })
+afterEach(() => { document.body.innerHTML = ''; vi.useRealTimers(); vi.unstubAllGlobals() })
 
 describe('public portfolio integration', () => {
   it('does not include public artwork placeholders in the managed portfolio markup', () => {
@@ -160,5 +160,28 @@ describe('public portfolio integration', () => {
     ;(designCollection.querySelector('[aria-label="Next Graphic Design project"]') as HTMLButtonElement).click()
     expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('2 / 2')
     expect(designCollection.querySelector('.is-active')?.textContent).toContain('Second design project')
+  })
+
+  it('loops Graphic Design slides every five seconds and defines a compact contained image frame', async () => {
+    expect(websiteHtml).toContain('height: min(380px, 42vw)')
+    expect(websiteHtml).toContain('height: min(240px, 68vw)')
+    expect(websiteHtml).toContain('object-fit: contain')
+    expect(websiteHtml).toContain('object-position: center')
+
+    prepareWebsite()
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: '' },
+      { title: 'Second design project', department: 'Graphic Design', category: 'Campaign', description: 'Second project.', projectUrl: '' },
+    ] }) })
+    vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers()
+
+    window.eval(portfolioScript)
+    const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
+    await vi.waitFor(() => expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 2'))
+    vi.advanceTimersByTime(5000)
+
+    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('2 / 2')
+    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
   })
 })
