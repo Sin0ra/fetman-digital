@@ -22,6 +22,11 @@ form { display:grid; gap:10px; } label { color:var(--ink); font-size:13px; font-
 .portfolio-thumb { width: 72px; height: 54px; object-fit: cover; border-radius: 6px; flex: 0 0 auto; }
 .portfolio-placeholder { display: grid; place-items: center; background: #edf1ee; color: #607066; font-size: .75rem; }
 .portfolio-editor-preview { display: block; max-width: 240px; max-height: 160px; object-fit: contain; border-radius: 8px; }
+.image-upload { display: grid; gap: 10px; margin-bottom: 12px; }
+.field-label { color: var(--ink); font-size: 13px; font-weight: 700; }
+.field-help { margin: 0; color: var(--muted); font-size: 13px; }
+.image-upload-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.image-upload-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: auto; }
 .legacy-project { align-items: flex-start; flex-wrap: wrap; }
 .legacy-project-details { flex: 1 1 260px; display: grid; gap: 4px; }
 .legacy-project .field { flex: 0 1 180px; margin: 0; }
