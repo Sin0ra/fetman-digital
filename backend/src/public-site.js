@@ -13,9 +13,6 @@ const PUBLIC_FILES = new Set([
   "Fetman Digital website background-optimized-960.jpg",
   "Fetman Digital website background.jpg",
   "fetman digital 2023 black.png",
-  "portfolio-candyflossist.jpg",
-  "portfolio-dental.jpg",
-  "portfolio-nakoba.jpg",
 ]);
 
 function createPublicSiteApp({ pool, siteDirectory = DEFAULT_SITE_DIRECTORY }) {
@@ -112,11 +109,8 @@ function isWithinDirectory(directory, target) {
 }
 
 function sendMaintenancePage(response, siteDirectory) {
-  response.set({
-    "Cache-Control": "no-store",
-    "Retry-After": "300",
-    "X-Robots-Tag": "noindex, nofollow",
-  });
+  response.set({ "Cache-Control": "no-store", "Retry-After": "300" });
+  if (!response.getHeader("X-Robots-Tag")) response.setHeader("X-Robots-Tag", "noindex, nofollow");
   return fs.readFile(path.join(siteDirectory, "maintenance.html"))
     .then((contents) => response.status(503).type("html").send(addNonce(contents.toString(), response.locals.cspNonce)));
 }

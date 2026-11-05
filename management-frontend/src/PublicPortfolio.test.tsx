@@ -16,11 +16,42 @@ function prepareWebsite() {
 afterEach(() => { document.body.innerHTML = ''; vi.unstubAllGlobals() })
 
 describe('public portfolio integration', () => {
+  it('does not include public artwork placeholders in the managed portfolio markup', () => {
+    expect(websiteHtml).not.toContain('Artwork slot')
+    expect(websiteHtml).not.toContain('View slot details')
+    expect(websiteHtml).toContain('data-portfolio-department="Graphic Design"')
+    expect(websiteHtml).toContain('data-portfolio-department="IT"')
+  })
+
+  it('hides empty managed department sections when no projects are published', async () => {
+    prepareWebsite()
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    window.eval(portfolioScript)
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
+
+    expect(document.querySelector('#graphic-design-portfolio')?.hasAttribute('hidden')).toBe(true)
+    expect(document.querySelector('#it-portfolio')?.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('does not show fallback or demonstration cards when the public API is unavailable', async () => {
+    const legacyGrid = prepareWebsite()
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
+    window.eval(portfolioScript)
+
+    await vi.waitFor(() => expect((globalThis.fetch as ReturnType<typeof vi.fn>)).toHaveBeenCalledOnce())
+    expect(legacyGrid.querySelectorAll('.portfolio-item')).toHaveLength(0)
+    expect(document.querySelector('#legacy-portfolio')?.hasAttribute('hidden')).toBe(true)
+    expect(document.querySelector('#graphic-design-portfolio')?.hasAttribute('hidden')).toBe(true)
+    expect(document.querySelector('#it-portfolio')?.hasAttribute('hidden')).toBe(true)
+  })
+
   it('loads only complete published project records and keeps same-origin requests', async () => {
     const grid = prepareWebsite()
     const initial = grid.querySelectorAll('.portfolio-item').length
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
-      { title: 'Published example', category: 'Business Website', description: 'A published project.', projectUrl: 'https://example.test', imageUrl: 'preview.webp' },
+      { title: 'Published example', department: null, category: 'Business Website', description: 'A published project.', projectUrl: 'https://example.test', imageUrl: '/preview.webp' },
       { title: 'Incomplete project', category: 'Business Website' },
     ] }) })
     vi.stubGlobal('fetch', fetchMock)
@@ -29,15 +60,6 @@ describe('public portfolio integration', () => {
     await vi.waitFor(() => expect(grid.textContent).toContain('Published example'))
     expect(grid.textContent).not.toContain('Incomplete project')
     expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(initial + 1)
-  })
-
-  it('retains static cards when the public API is unavailable', async () => {
-    const grid = prepareWebsite()
-    const initial = grid.querySelectorAll('.portfolio-item').length
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
-    window.eval(portfolioScript)
-    await vi.waitFor(() => expect((globalThis.fetch as ReturnType<typeof vi.fn>)).toHaveBeenCalledOnce())
-    expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(initial)
   })
 
   it('renders a published project without an image instead of dropping it', async () => {
@@ -56,8 +78,28 @@ describe('public portfolio integration', () => {
     window.eval(portfolioScript)
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/public/portfolio', expect.anything()))
     await vi.waitFor(() => expect(grid.textContent).toContain('Image-free published project'))
-    expect(grid.querySelector('.portfolio-image-placeholder')).toBeTruthy()
+    expect(grid.querySelector('.portfolio-image-placeholder')).toBeNull()
+    expect(grid.querySelector('img')).toBeNull()
     expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(initial + 1)
+  })
+
+  it('renders a published project without a URL without creating a broken link', async () => {
+    prepareWebsite()
+    const grid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [{
+      title: 'URL-free published project',
+      department: 'Graphic Design',
+      category: 'Logo & Brand Identity',
+      description: 'A published project presented without an external URL.',
+      imageUrl: null,
+      projectUrl: '',
+    }] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    window.eval(portfolioScript)
+    await vi.waitFor(() => expect(grid.textContent).toContain('URL-free published project'))
+    expect(grid.querySelector('a[href=""]')).toBeNull()
+    expect(grid.querySelector('.portfolio-link-muted')?.textContent).toContain('Published project')
   })
 
   it('places published projects in their department grids and keeps legacy projects in the existing grid', async () => {
@@ -77,5 +119,24 @@ describe('public portfolio integration', () => {
     expect(itGrid.textContent).toContain('IT project')
     expect(itGrid.textContent).not.toContain('Design project')
     expect(legacyGrid.textContent).toContain('Legacy project')
+  })
+
+  it('rejects malformed records and does not assign unknown departments to a public section', async () => {
+    const legacyGrid = prepareWebsite()
+    const designGrid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
+    const itGrid = document.querySelector('[data-portfolio-department="IT"]') as HTMLElement
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'Unknown department project', department: 'Other', category: 'Invalid' },
+      { title: 'Missing category', department: 'IT' },
+      { title: 'Invalid URL', department: 'Graphic Design', category: 'Branding', projectUrl: 'javascript:alert(1)' },
+    ] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    window.eval(portfolioScript)
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
+
+    expect(legacyGrid.textContent).not.toContain('Unknown department project')
+    expect(designGrid.textContent).not.toContain('Invalid URL')
+    expect(itGrid.textContent).not.toContain('Missing category')
   })
 })

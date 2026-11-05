@@ -33,6 +33,16 @@ function createPool() {
       if (sql.startsWith("SELECT COUNT(*) AS count FROM media_assets")) return [[{ count: state.media.length }], []];
       if (sql.startsWith("UPDATE site_settings SET setting_value") && sql.includes("maintenance_mode")) { state.maintenance = values[0]; return [{ affectedRows: 1 }, []]; }
       if (sql.startsWith("SELECT id, title") && sql.includes("portfolio_projects")) return [state.projects.map((item) => ({ ...item })), []];
+      if (sql.startsWith("SELECT department, description, image_asset_id AS imageAssetId")) {
+        const project = state.projects.find((item) => String(item.id) === String(values[0]));
+        return [project ? [{ department: project.department, description: project.description, imageAssetId: project.imageAssetId, imageUrl: project.imageUrl, projectUrl: project.projectUrl }] : [], []];
+      }
+      if (sql.startsWith("UPDATE portfolio_projects SET title = ?")) {
+        const project = state.projects.find((item) => String(item.id) === String(values[8]));
+        if (!project) return [{ affectedRows: 0 }, []];
+        Object.assign(project, { title: values[0], description: values[1], category: values[2], imageAssetId: values[3], imageUrl: values[4], projectUrl: values[5], published: Boolean(values[6]), displayOrder: values[7] });
+        return [{ affectedRows: 1 }, []];
+      }
       if (sql.startsWith("SELECT storage_name") && sql.includes("media_assets")) return [[], []];
       throw new Error(`Unexpected SQL in active-scope test: ${sql}`);
     },
@@ -47,7 +57,7 @@ async function csrf(url, existingCookie) {
 async function login(url, email = OWNER_EMAIL, secret = password) {
   const token = await csrf(url);
   const response = await fetch(`${url}/api/auth/login`, { method: "POST", headers: { Cookie: token.cookie, "Content-Type": "application/json", "X-CSRF-Token": token.token }, body: JSON.stringify({ email, password: secret }) });
-  return { response, cookie: cookie(response) };
+  return { response, cookie: cookie(response) || token.cookie };
 }
 
 before(async () => {
@@ -121,6 +131,67 @@ describe("active application authentication and owner portal", () => {
     const me = await fetch(`${baseUrl}/api/auth/me`, { headers: { Cookie: owner.cookie } });
     assert.equal(logout.status, 204);
     assert.equal(me.status, 401);
+  });
+});
+
+describe("developer portfolio updates", () => {
+  function seedProject() {
+    state.maintenance = "0";
+    state.projects = [{ id: "7", department: "IT", title: "Existing project", description: "Stored description", category: "Business Website", imageAssetId: "12", imageUrl: "https://example.test/existing.webp", projectUrl: "https://example.test/existing", published: true, displayOrder: 3 }];
+  }
+
+  async function updateProject(body) {
+    const owner = await login(baseUrl);
+    const token = await csrf(baseUrl, owner.cookie);
+    return fetch(`${baseUrl}/api/developer/portfolio/7`, { method: "PUT", headers: { Cookie: token.cookie, "X-CSRF-Token": token.token, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  }
+
+  it("preserves omitted optional fields during an existing project update", async () => {
+    seedProject();
+    const response = await updateProject({ title: "Updated project", department: "IT", category: "Business Website", published: true, displayOrder: 3 });
+    assert.equal(response.status, 200);
+    assert.equal(state.projects[0].description, "Stored description");
+    assert.equal(state.projects[0].imageAssetId, "12");
+    assert.equal(state.projects[0].imageUrl, "https://example.test/existing.webp");
+    assert.equal(state.projects[0].projectUrl, "https://example.test/existing");
+  });
+
+  it("normalizes blank text fields and explicitly clears image fields", async () => {
+    seedProject();
+    const response = await updateProject({ title: "Updated project", department: "IT", category: "Business Website", description: "   ", projectUrl: "   ", imageUrl: "   ", imageAssetId: "", published: true, displayOrder: 3 });
+    assert.equal(response.status, 200);
+    assert.equal(state.projects[0].description, "");
+    assert.equal(state.projects[0].projectUrl, "");
+    assert.equal(state.projects[0].imageUrl, null);
+    assert.equal(state.projects[0].imageAssetId, null);
+  });
+
+  it("rejects department changes during an ordinary project update", async () => {
+    seedProject();
+    const response = await updateProject({ title: "Updated project", department: "Graphic Design", category: "Branding", published: true, displayOrder: 3 });
+    assert.equal(response.status, 409);
+    assert.equal(state.projects[0].department, "IT");
+  });
+
+  it("validates required fields during an existing project update", async () => {
+    const isolatedServer = createApp(config, { pool, sessionStore: new session.MemoryStore() }).listen(0, "127.0.0.1");
+    try {
+      await new Promise((resolve, reject) => { isolatedServer.once("listening", resolve); isolatedServer.once("error", reject); });
+      const isolatedBaseUrl = `http://127.0.0.1:${isolatedServer.address().port}`;
+      const owner = await login(isolatedBaseUrl);
+      assert.equal(owner.response.status, 200);
+      const token = await csrf(isolatedBaseUrl, owner.cookie);
+      assert.equal(token.response.status, 200);
+      for (const field of ["title", "department", "category"]) {
+        seedProject();
+        const body = { title: "Updated project", department: "IT", category: "Business Website", published: true, displayOrder: 3 };
+        delete body[field];
+        const response = await fetch(`${isolatedBaseUrl}/api/developer/portfolio/7`, { method: "PUT", headers: { Cookie: token.cookie, "X-CSRF-Token": token.token, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        assert.equal(response.status, 400, `expected ${field} to be required`);
+      }
+    } finally {
+      if (isolatedServer.listening) await new Promise((resolve, reject) => isolatedServer.close((error) => error ? reject(error) : resolve()));
+    }
   });
 });
 

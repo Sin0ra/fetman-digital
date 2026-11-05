@@ -10,9 +10,20 @@ const { requireCsrf } = require("../middleware/csrf");
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const departments = ["Graphic Design", "IT"];
 const httpUrlSchema = z.string().trim().url().max(500).refine((value) => {
-  const protocol = new URL(value).protocol;
-  return protocol === "http:" || protocol === "https:";
+  if (value === "") return true;
+  try {
+    const protocol = new URL(value).protocol;
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
 }, "Only HTTP and HTTPS URLs are allowed.");
+const normalizeProjectUrl = (value) => value == null || typeof value === "string" && value.trim() === "" ? "" : value;
+const projectUrlSchema = z.preprocess(normalizeProjectUrl, z.union([httpUrlSchema, z.literal("")]));
+const optionalUpdateProjectUrlSchema = z.preprocess(
+  (value) => value === undefined ? undefined : normalizeProjectUrl(value),
+  z.union([httpUrlSchema, z.literal("")]).optional(),
+);
 const optionalHttpUrlSchema = z.preprocess(
   (value) => typeof value === "string" && value.trim() === "" ? null : value,
   httpUrlSchema.nullable().default(null),
@@ -21,14 +32,31 @@ const optionalMediaIdSchema = z.preprocess(
   (value) => typeof value === "string" && value.trim() === "" ? null : value,
   z.union([z.string().regex(/^[1-9]\d{0,19}$/), z.null()]).default(null),
 );
+const optionalUpdateHttpUrlSchema = z.preprocess(
+  (value) => value === undefined ? undefined : typeof value === "string" && value.trim() === "" ? null : value,
+  httpUrlSchema.nullable().optional(),
+);
+const optionalUpdateMediaIdSchema = z.preprocess(
+  (value) => value === undefined ? undefined : typeof value === "string" && value.trim() === "" ? null : value,
+  z.union([z.string().regex(/^[1-9]\d{0,19}$/), z.null()]).optional(),
+);
+const normalizeDescription = (value) => value == null || typeof value === "string" && value.trim() === "" ? "" : value;
+const descriptionSchema = z.preprocess(normalizeDescription, z.string().trim().max(5000));
+const optionalUpdateDescriptionSchema = z.preprocess(
+  (value) => value === undefined ? undefined : normalizeDescription(value),
+  z.string().trim().max(5000).optional(),
+);
 const projectSchema = z.object({
-  title: z.string().trim().min(1).max(160), description: z.string().trim().min(1).max(5000),
+  title: z.string().trim().min(1).max(160), description: descriptionSchema,
   department: z.enum(departments), category: z.string().trim().min(1).max(80), imageAssetId: optionalMediaIdSchema,
-  imageUrl: optionalHttpUrlSchema, projectUrl: httpUrlSchema,
+  imageUrl: optionalHttpUrlSchema, projectUrl: projectUrlSchema,
   published: z.boolean().default(false), displayOrder: z.number().int().min(0).max(100000).default(0),
 }).strict();
-const projectUpdateSchema = projectSchema.omit({ department: true }).extend({
-  department: z.enum(departments),
+const projectUpdateSchema = z.object({
+  title: z.string().trim().min(1).max(160), description: optionalUpdateDescriptionSchema,
+  department: z.enum(departments), category: z.string().trim().min(1).max(80), imageAssetId: optionalUpdateMediaIdSchema,
+  imageUrl: optionalUpdateHttpUrlSchema, projectUrl: optionalUpdateProjectUrlSchema,
+  published: z.boolean().default(false), displayOrder: z.number().int().min(0).max(100000).default(0),
   id: z.string().regex(/^[1-9]\d{0,19}$/).optional(),
   imagePreviewUrl: z.string().max(500).optional(),
 }).strict();
@@ -147,10 +175,14 @@ async function saveProject(pool, request, response, next, id) {
       return response.status(201).json({ id: String(result.insertId) });
     }
     if (!/^[1-9]\d{0,19}$/.test(id)) return response.status(400).json({ error: "Invalid project id." });
-    const [existingRows] = await pool.execute("SELECT department FROM portfolio_projects WHERE id = ? LIMIT 1", [id]);
+    const [existingRows] = await pool.execute("SELECT department, description, image_asset_id AS imageAssetId, image_url AS imageUrl, project_url AS projectUrl FROM portfolio_projects WHERE id = ? LIMIT 1", [id]);
     if (!existingRows[0]) return response.status(404).json({ error: "Project not found." });
     if (existingRows[0].department !== value.department) return response.status(409).json({ error: "A project's department cannot be changed during editing." });
-    const [result] = await pool.execute("UPDATE portfolio_projects SET title = ?, description = ?, category = ?, image_asset_id = ?, image_url = ?, project_url = ?, published = ?, display_order = ? WHERE id = ?", [value.title, value.description, value.category, value.imageAssetId, value.imageUrl, value.projectUrl, value.published ? 1 : 0, value.displayOrder, id]);
+    const description = value.description === undefined ? existingRows[0].description : value.description;
+    const imageAssetId = value.imageAssetId === undefined ? existingRows[0].imageAssetId : value.imageAssetId;
+    const imageUrl = value.imageUrl === undefined ? existingRows[0].imageUrl : value.imageUrl;
+    const projectUrl = value.projectUrl === undefined ? existingRows[0].projectUrl : value.projectUrl;
+    const [result] = await pool.execute("UPDATE portfolio_projects SET title = ?, description = ?, category = ?, image_asset_id = ?, image_url = ?, project_url = ?, published = ?, display_order = ? WHERE id = ?", [value.title, description, value.category, imageAssetId, imageUrl, projectUrl, value.published ? 1 : 0, value.displayOrder, id]);
     return result.affectedRows ? response.json({ id }) : response.status(404).json({ error: "Project not found." });
   } catch (error) { return next(error); }
 }

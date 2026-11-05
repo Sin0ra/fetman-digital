@@ -24,10 +24,16 @@ const MANAGEMENT_PATHS = new Set([
   "/developer/maintenance",
   "/set-password",
 ]);
+const INDEXABLE_HOSTNAMES = new Set(["fetmandigital.com", "www.fetmandigital.com"]);
 
 function createApp(config, { pool, sessionStore, publicSiteDirectory, managementFrontendDirectory, startupReady = true } = {}) {
   if (!pool || !sessionStore) throw new Error("A database pool and persistent session store are required.");
   const app = express(); app.locals.startupReady = startupReady; app.disable("x-powered-by"); app.set("trust proxy", 1);
+  app.use((request, response, next) => {
+    const hostname = hostnameFromHostHeader(request.headers.host);
+    if (!INDEXABLE_HOSTNAMES.has(hostname)) response.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return next();
+  });
   app.use((_request, response, next) => {
     const nonce = randomBytes(16).toString("base64");
     response.locals.cspNonce = nonce;
@@ -72,5 +78,15 @@ function createApp(config, { pool, sessionStore, publicSiteDirectory, management
   app.use((_request, response) => response.status(404).json({ error: "Not found" }));
   app.use((error, request, response, next) => { if (response.headersSent) return next(error); console.error("Unhandled request error", { method: request.method, path: request.path, errorCode: typeof error?.code === "string" ? error.code : "INTERNAL_ERROR" }); return response.status(Number.isInteger(error.status) ? error.status : 500).json({ error: Number.isInteger(error.status) ? "Invalid request" : "Internal server error" }); });
   return app;
+}
+
+function hostnameFromHostHeader(hostHeader) {
+  if (typeof hostHeader !== "string") return "";
+  const host = hostHeader.trim().toLowerCase();
+  if (host.startsWith("[")) {
+    const closingBracket = host.indexOf("]");
+    return closingBracket > 0 ? host.slice(1, closingBracket) : "";
+  }
+  return host.replace(/:\d+$/, "");
 }
 module.exports = { createApp };

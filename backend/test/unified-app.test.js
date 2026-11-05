@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
+const http = require("node:http");
 const os = require("node:os");
 const path = require("node:path");
 const session = require("express-session");
@@ -22,6 +23,22 @@ let siteDirectory;
 let frontendDirectory;
 let server;
 let baseUrl;
+
+function requestWithHost(pathname, host, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const request = http.request({
+      hostname: "127.0.0.1",
+      port: server.address().port,
+      path: pathname,
+      headers: { ...headers, Host: host },
+    }, (response) => {
+      response.resume();
+      response.on("end", () => resolve(response));
+    });
+    request.once("error", reject);
+    request.end();
+  });
+}
 
 before(async () => {
   rootDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "fetman-unified-app-test-"));
@@ -54,6 +71,31 @@ after(async () => {
 });
 
 describe("single-server production routing", () => {
+  it("sets noindex headers for non-production hosts across response types", async () => {
+    const host = `staging.fetmandigital.com:${server.address().port}`;
+    for (const path of ["/", "/login", "/assets/app.js", "/api/does-not-exist", "/does-not-exist"]) {
+      const response = await requestWithHost(path, host);
+      assert.equal(response.headers["x-robots-tag"], "noindex, nofollow, noarchive", path);
+    }
+  });
+
+  it("keeps production hosts indexable and does not trust forwarded host overrides", async () => {
+    for (const hostname of ["fetmandigital.com", "www.fetmandigital.com"]) {
+      const productionHost = `${hostname}:${server.address().port}`;
+      for (const path of ["/", "/login", "/assets/app.js", "/api/does-not-exist", "/does-not-exist"]) {
+        const response = await requestWithHost(path, productionHost);
+        assert.equal(Object.hasOwn(response.headers, "x-robots-tag"), false, `${hostname}${path}`);
+      }
+    }
+
+    const forwardedHostResponse = await requestWithHost(
+      "/",
+      `fetmandigital.com:${server.address().port}`,
+      { "X-Forwarded-Host": "staging.fetmandigital.com" },
+    );
+    assert.equal(Object.hasOwn(forwardedHostResponse.headers, "x-robots-tag"), false);
+  });
+
   it("serves the management shell for direct portal navigation and refresh", async () => {
     for (const route of [
       "/login",

@@ -110,4 +110,78 @@ describe('single-owner developer portal', () => {
     await userEvent.setup().click(screen.getByRole('button', { name: 'Confirm classification' }))
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/developer/portfolio/7/department', expect.objectContaining({ method: 'PATCH' })))
   })
+
+  it('saves a project without a description, image URL, or uploaded media', async () => {
+    window.history.replaceState({}, '', '/developer/portfolio/graphic-design')
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input)
+      if (path === '/api/auth/me') return response({ user: { email: 'sinoworkguma@gmail.com' } })
+      if (path === '/api/developer/portfolio?department=Graphic%20Design') return response({ projects: [] })
+      if (path === '/api/developer/media') return response({ media: [] })
+      if (path === '/api/auth/csrf') return response({ csrfToken: 'test-token' })
+      if (path === '/api/developer/portfolio' && init?.method === 'POST') return response({ id: '8' }, 201)
+      return response({})
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<App />)
+
+    await screen.findByRole('heading', { name: 'Graphic Design portfolio' })
+    await userEvent.setup().type(screen.getByLabelText('Title'), 'Image-free project')
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Save project' }))
+
+    await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input) === '/api/developer/portfolio' && init?.method === 'POST')).toBe(true))
+    const request = fetchMock.mock.calls.find(([input, init]) => String(input) === '/api/developer/portfolio' && init?.method === 'POST')
+    const body = JSON.parse(String(request?.[1]?.body))
+    expect(body.description).toBe('')
+    expect(body.projectUrl).toBe('')
+    expect(body.imageUrl).toBeNull()
+    expect(body.imageAssetId).toBeNull()
+  })
+
+  it('keeps required fields required while optional portfolio fields remain optional', async () => {
+    window.history.replaceState({}, '', '/developer/portfolio/it')
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input)
+      if (path === '/api/auth/me') return response({ user: { email: 'sinoworkguma@gmail.com' } })
+      if (path === '/api/developer/portfolio?department=IT') return response({ projects: [] })
+      if (path === '/api/developer/media') return response({ media: [] })
+      return response({})
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<App />)
+
+    await screen.findByRole('heading', { name: 'IT portfolio' })
+    expect((screen.getByLabelText('Title') as HTMLInputElement).required).toBe(true)
+    expect((screen.getByLabelText('Category') as HTMLInputElement).required).toBe(true)
+    expect((screen.getByLabelText('Project URL') as HTMLInputElement).required).toBe(false)
+    expect((screen.getByLabelText('Description') as HTMLTextAreaElement).required).toBe(false)
+    expect((screen.getByLabelText('Image URL (optional)') as HTMLInputElement).required).toBe(false)
+    expect((screen.getByLabelText('Uploaded media (optional)') as HTMLSelectElement).required).toBe(false)
+  })
+
+  it('preserves existing description and images when editing without changing them', async () => {
+    window.history.replaceState({}, '', '/developer/portfolio/it')
+    const project = { id: '9', department: 'IT', title: 'Existing project', description: 'Keep this description', category: 'Business Website', imageAssetId: '12', imageUrl: 'https://example.test/existing.webp', projectUrl: 'https://example.test/existing', published: true, displayOrder: 2, imagePreviewUrl: 'https://example.test/existing.webp' }
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input)
+      if (path === '/api/auth/me') return response({ user: { email: 'sinoworkguma@gmail.com' } })
+      if (path === '/api/developer/portfolio?department=IT') return response({ projects: [project] })
+      if (path === '/api/developer/media') return response({ media: [] })
+      if (path === '/api/auth/csrf') return response({ csrfToken: 'test-token' })
+      if (path === '/api/developer/portfolio/9' && init?.method === 'PUT') return response({ id: '9' })
+      return response({})
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<App />)
+
+    await userEvent.setup().click(await screen.findByRole('button', { name: 'Edit' }))
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Save project' }))
+    await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input) === '/api/developer/portfolio/9' && init?.method === 'PUT')).toBe(true))
+    const request = fetchMock.mock.calls.find(([input, init]) => String(input) === '/api/developer/portfolio/9' && init?.method === 'PUT')
+    const body = JSON.parse(String(request?.[1]?.body))
+    expect(body.department).toBe(project.department)
+    expect(body.description).toBe(project.description)
+    expect(body.imageUrl).toBe(project.imageUrl)
+    expect(body.imageAssetId).toBe(project.imageAssetId)
+  })
 })
