@@ -1,4 +1,6 @@
 (() => {
+  // The public page owns the presentation layer; the API remains the source of truth
+  // for published projects, departments, media routes, and project links.
   const portfolio = document.querySelector('#portfolio');
   const legacyGrid = portfolio?.querySelector('.portfolio-collection .row');
   const legacyCollection = legacyGrid?.closest('.portfolio-collection');
@@ -14,6 +16,8 @@
   const cards = () => [...document.querySelectorAll('.portfolio-item')];
 
   function update() {
+    // Search filters every rendered card, then asks the carousel to select the next
+    // valid item so a search can never leave an empty or hidden slide on screen.
     const query = search.value.trim().toLowerCase();
     cards().forEach((card) => {
       card.hidden = !card.textContent.toLowerCase().includes(query);
@@ -22,6 +26,8 @@
   }
 
   function createProjectCard(project) {
+    // Project fields are escaped before being inserted because these values are
+    // editable in the management dashboard and are rendered into HTML here.
     const card = document.createElement('article');
     const category = project.category.trim();
     const projectUrl = typeof project.projectUrl === 'string' ? project.projectUrl.trim() : '';
@@ -56,6 +62,9 @@
   }
 
   async function loadProjects() {
+    // Only published records are returned by /api/public/portfolio. We keep the
+    // department split in the markup so the owner can classify work without losing
+    // older unclassified projects.
     try {
       const response = await fetch('/api/public/portfolio', { headers: { Accept: 'application/json' }, cache: 'no-store' });
       if (!response.ok) return;
@@ -83,6 +92,9 @@
   void loadProjects();
 
   function createGraphicDesignCarousel(grid) {
+    // Graphic Design is intentionally a sequential carousel: the current card is
+    // hidden first, then the next card enters after a short editorial pause. This
+    // avoids crossfading two artworks and keeps the image as the visual focus.
     if (!grid) return null;
     const collection = grid.closest('.portfolio-collection');
     if (!collection || collection.querySelector('.graphic-carousel-status')) return null;
@@ -94,13 +106,24 @@
 
     let activeIndex = 0;
     let timer;
+    let pauseTimer;
     let touchStartX;
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
     const visibleCards = () => [...grid.querySelectorAll('.portfolio-item')].filter((card) => !card.hidden);
-    const stop = () => { if (timer) window.clearInterval(timer); timer = undefined; };
+    const stop = () => {
+      if (timer) window.clearTimeout(timer);
+      if (pauseTimer) window.clearTimeout(pauseTimer);
+      timer = undefined;
+      pauseTimer = undefined;
+    };
     const start = () => {
       stop();
-      if (!reducedMotion && visibleCards().length > 1) timer = window.setInterval(() => show(activeIndex + 1), 5000);
+      if (!reducedMotion && visibleCards().length > 1) {
+        timer = window.setTimeout(() => {
+          grid.querySelectorAll('.portfolio-item').forEach((card) => card.classList.remove('is-active'));
+          pauseTimer = window.setTimeout(() => show(activeIndex + 1), 500);
+        }, 4500);
+      }
     };
     function show(index) {
       const cardsToShow = visibleCards();
@@ -114,6 +137,8 @@
       cardsToShow[activeIndex].classList.add('is-active');
       status.textContent = `${activeIndex + 1} / ${cardsToShow.length}`;
     }
+    // Hover, focus, and touch pause rotation so visitors can inspect artwork and
+    // activate its project link without the slide changing underneath them.
     collection.addEventListener('mouseenter', stop);
     collection.addEventListener('mouseleave', start);
     collection.addEventListener('focusin', stop);
@@ -129,6 +154,75 @@
       start();
     }, { passive: true });
     return { refresh() { show(activeIndex); start(); } };
+  }
+
+  createWebsiteShowcase(document.querySelector('[data-website-showcase]'));
+
+  function createWebsiteShowcase(stage) {
+    // These are verified Fetman Digital demo links, not portfolio API records. A
+    // Real iframe previews are used only for verified demo destinations, instead of
+    // decorative cards pretending to show a live website. A destination that cannot
+    // be verified is presented as a clear link-only state.
+    if (!stage) return;
+    const projects = [
+      { name: 'Nakoba Services', url: 'https://nakobaservices.netlify.app/', status: 'Completed project.', preview: true },
+      { name: 'DRV Dental Centre', url: 'https://drvvdentacentre.netlify.app/', status: 'Website demo.', preview: true },
+      // This URL currently resolves to a different, unconfirmed presentation. Keep
+      // the requested project link visible without embedding content we cannot verify.
+      { name: 'Candyflossist', url: 'https://adorable-gumdrop-544616.netlify.app/', status: 'Website link.', preview: false },
+    ];
+    let activeIndex = 0;
+    let timer;
+    let pauseTimer;
+    let isPaused = false;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+    const indicators = document.createElement('div');
+    indicators.className = 'website-showcase-indicators';
+    indicators.setAttribute('aria-label', 'Website demos');
+    const updateIndicators = () => indicators.querySelectorAll('button').forEach((button, index) => button.setAttribute('aria-current', index === activeIndex ? 'true' : 'false'));
+    const render = (index, animate = true) => {
+      activeIndex = (index + projects.length) % projects.length;
+      const project = projects[activeIndex];
+      const previewMarkup = project.preview
+        ? `<iframe title="${escapeAttribute(project.name)} website preview" src="${escapeAttribute(project.url)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+        : '<div class="website-demo-preview-unavailable"><span>Preview unavailable</span><small>Open the website to view this project.</small></div>';
+      stage.innerHTML = `<article class="website-demo-card${animate ? ' is-entering' : ''}">
+        <div class="website-demo-preview">${previewMarkup}</div>
+        <div class="website-demo-copy"><p class="website-demo-status">${escapeHtml(project.status)}</p><h4>${escapeHtml(project.name)}</h4><a class="portfolio-link" href="${escapeAttribute(project.url)}" target="_blank" rel="noopener noreferrer">Visit Website <span aria-hidden="true">↗</span></a></div>
+      </article>`;
+      updateIndicators();
+    };
+    projects.forEach((project, index) => {
+      const indicator = document.createElement('button');
+      indicator.type = 'button';
+      indicator.className = 'website-showcase-indicator';
+      indicator.setAttribute('aria-label', `Show ${project.name}`);
+      indicator.addEventListener('click', () => { render(index); schedule(); });
+      indicators.append(indicator);
+    });
+    stage.after(indicators);
+    const interactionTarget = stage.parentElement;
+    const stop = () => { if (timer) window.clearTimeout(timer); if (pauseTimer) window.clearTimeout(pauseTimer); timer = undefined; pauseTimer = undefined; };
+    const schedule = () => {
+      // The outgoing demo is removed before the next iframe is mounted, preserving
+      // the same one-at-a-time rhythm as the Graphic Design presentation.
+      stop();
+      if (reducedMotion || isPaused || projects.length < 2) return;
+      timer = window.setTimeout(() => {
+        stage.querySelector('.website-demo-card')?.classList.add('is-exiting');
+        pauseTimer = window.setTimeout(() => render(activeIndex + 1), 350);
+      }, 5650);
+    };
+    const pause = () => { isPaused = true; stop(); };
+    const resume = () => { isPaused = false; schedule(); };
+    interactionTarget?.addEventListener('mouseenter', pause);
+    interactionTarget?.addEventListener('mouseleave', resume);
+    interactionTarget?.addEventListener('focusin', pause);
+    interactionTarget?.addEventListener('focusout', (event) => { if (!interactionTarget.contains(event.relatedTarget)) resume(); });
+    interactionTarget?.addEventListener('touchstart', pause, { passive: true });
+    interactionTarget?.addEventListener('touchend', resume, { passive: true });
+    render(0, false);
+    schedule();
   }
 
   function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&#38;', '<': '&#60;', '>': '&#62;', "'": '&#39;', '"': '&#34;' }[character])); }
