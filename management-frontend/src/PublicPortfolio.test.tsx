@@ -10,8 +10,9 @@ function prepareWebsite() {
   const parsed = new DOMParser().parseFromString(websiteHtml, 'text/html')
   const portfolio = parsed.querySelector('#portfolio')
   const managedPortfolios = parsed.querySelector('#managed-portfolios')
+  const artworkModal = parsed.querySelector('[data-graphic-artwork-modal]')
   const itDivision = parsed.querySelector('#it-division')
-  document.body.innerHTML = `${portfolio?.outerHTML || ''}${managedPortfolios?.outerHTML || ''}${itDivision?.outerHTML || ''}`
+  document.body.innerHTML = `${portfolio?.outerHTML || ''}${managedPortfolios?.outerHTML || ''}${artworkModal?.outerHTML || ''}${itDivision?.outerHTML || ''}`
   return document.querySelector('#portfolio .portfolio-collection .row') as HTMLElement
 }
 
@@ -60,7 +61,8 @@ describe('public portfolio integration', () => {
     window.eval(portfolioScript)
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
 
-    expect(document.querySelector('#graphic-design-portfolio')?.hasAttribute('hidden')).toBe(true)
+    expect(document.querySelector('#graphic-design-portfolio')?.hasAttribute('hidden')).toBe(false)
+    expect(document.querySelector('.graphic-design-empty-state')).not.toBeNull()
     expect(document.querySelector('#it-portfolio')?.hasAttribute('hidden')).toBe(true)
   })
 
@@ -72,7 +74,8 @@ describe('public portfolio integration', () => {
     await vi.waitFor(() => expect((globalThis.fetch as ReturnType<typeof vi.fn>)).toHaveBeenCalledOnce())
     expect(legacyGrid.querySelectorAll('.portfolio-item')).toHaveLength(0)
     expect(document.querySelector('#legacy-portfolio')?.hasAttribute('hidden')).toBe(true)
-    expect(document.querySelector('#graphic-design-portfolio')?.hasAttribute('hidden')).toBe(true)
+    expect(document.querySelector('#graphic-design-portfolio')?.hasAttribute('hidden')).toBe(false)
+    expect(document.querySelector('.graphic-design-empty-state')).not.toBeNull()
     expect(document.querySelector('#it-portfolio')?.hasAttribute('hidden')).toBe(true)
   })
 
@@ -170,7 +173,7 @@ describe('public portfolio integration', () => {
     expect(itGrid.textContent).not.toContain('Missing category')
   })
 
-  it('presents Graphic Design projects one at a time with an indicator', async () => {
+  it('renders a filterable Graphic Design gallery with canonical categories', async () => {
     prepareWebsite()
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
       { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: 'https://example.test/first' },
@@ -182,95 +185,45 @@ describe('public portfolio integration', () => {
     const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
     await vi.waitFor(() => expect(designCollection.textContent).toContain('First design project'))
 
-    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
-    expect(designCollection.querySelector('.graphic-carousel-controls')).toBeNull()
-    expect(designCollection.querySelectorAll('button')).toHaveLength(0)
-    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 2')
+    expect(designCollection.querySelectorAll('.portfolio-item')).toHaveLength(2)
+    expect(designCollection.querySelector('[data-graphic-filter="branding"]')).not.toBeNull()
+    expect(designCollection.querySelector('[data-graphic-filter="campaigns"]')).not.toBeNull()
+    await userEvent.click(designCollection.querySelector('[data-graphic-filter="campaigns"]') as HTMLElement)
+    expect(designCollection.querySelector('.portfolio-item:not([hidden])')?.textContent).toContain('Second design project')
+    expect(designCollection.querySelector('.portfolio-item:not([hidden])')?.textContent).not.toContain('First design project')
   })
 
-  it('keeps a single Graphic Design project visible without navigation controls', async () => {
+  it('renders untitled Graphic Design artwork without a blank heading', async () => {
     prepareWebsite()
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
-      { title: 'Only design project', department: 'Graphic Design', category: 'Branding', description: 'A single project.', projectUrl: '' },
+      { title: null, department: 'Graphic Design', category: 'Branding', description: 'A single project.', imageUrl: '/artwork.webp', projectUrl: '' },
     ] }) }))
 
     window.eval(portfolioScript)
     const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
-    await vi.waitFor(() => expect(designCollection.textContent).toContain('Only design project'))
+    await vi.waitFor(() => expect(designCollection.textContent).toContain('A single project.'))
 
-    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 1')
-    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
-    expect(designCollection.querySelectorAll('button')).toHaveLength(0)
+    expect(designCollection.querySelector('.card-title')).toBeNull()
+    expect(designCollection.querySelector('img')?.getAttribute('alt')).toContain('Branding artwork')
   })
 
-  it('loops Graphic Design slides every five seconds and defines a compact contained image frame', async () => {
-    expect(websiteHtml).toContain('height: min(380px, 42vw)')
-    expect(websiteHtml).toContain('height: min(240px, 68vw)')
+  it('opens and closes artwork in an enlarged view without changing the URL', async () => {
+    expect(websiteHtml).toContain('data-graphic-artwork-modal')
     expect(websiteHtml).toContain('object-fit: contain')
-    expect(websiteHtml).toContain('object-position: center')
-    expect(websiteHtml).toContain('.graphic-design-carousel .managed-project-grid .portfolio-image-link::after')
 
     prepareWebsite()
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
-      { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: '' },
-      { title: 'Second design project', department: 'Graphic Design', category: 'Campaign', description: 'Second project.', projectUrl: '' },
+      { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', imageUrl: '/first.webp', projectUrl: '' },
+      { title: 'Second design project', department: 'Graphic Design', category: 'Campaign', description: 'Second project.', imageUrl: '/second.webp', projectUrl: '' },
     ] }) })
     vi.stubGlobal('fetch', fetchMock)
-    vi.useFakeTimers()
-
     window.eval(portfolioScript)
     const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
-    await vi.waitFor(() => expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 2'))
-    vi.advanceTimersByTime(5000)
-
-    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('2 / 2')
-    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
-  })
-
-  it('fully hides a Graphic Design slide before popping in the next one', async () => {
-    prepareWebsite()
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
-      { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: '' },
-      { title: 'Second design project', department: 'Graphic Design', category: 'Campaign', description: 'Second project.', projectUrl: '' },
-    ] }) })
-    vi.stubGlobal('fetch', fetchMock)
-    vi.useFakeTimers()
-    window.eval(portfolioScript)
-    const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
-    await vi.waitFor(() => expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1))
-    vi.advanceTimersByTime(4500)
-    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(0)
-    vi.advanceTimersByTime(500)
-    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
-    expect(designCollection.textContent).toContain('2 / 2')
-  })
-
-  it('rotates the three website demos with exact names and links and excludes PVL', async () => {
-    prepareWebsite()
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [] }) }))
-    vi.useFakeTimers()
-    window.eval(portfolioScript)
-    const stage = document.querySelector('[data-website-showcase]') as HTMLElement
-    expect(stage.textContent).toContain('Nakoba Services')
-    expect(stage.querySelector('a')?.getAttribute('href')).toBe('https://nakobaservices.netlify.app/')
-    expect(document.body.textContent).not.toContain('PVL')
-    vi.advanceTimersByTime(6000)
-    expect(stage.textContent).toContain('DRV Dental Centre')
-    expect(stage.querySelector('a')?.getAttribute('href')).toBe('https://drvvdentacentre.netlify.app/')
-  })
-
-  it('does not autoplay Graphic Design or website demos when reduced motion is preferred', async () => {
-    prepareWebsite()
-    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }))
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
-      { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: '' },
-      { title: 'Second design project', department: 'Graphic Design', category: 'Campaign', description: 'Second project.', projectUrl: '' },
-    ] }) }))
-    vi.useFakeTimers()
-    window.eval(portfolioScript)
-    await vi.waitFor(() => expect(document.querySelector('#graphic-design-portfolio')?.textContent).toContain('First design project'))
-    vi.advanceTimersByTime(12000)
-    expect(document.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 2')
-    expect(document.querySelector('[data-website-showcase]')?.textContent).toContain('Nakoba Services')
+    await vi.waitFor(() => expect(designCollection.textContent).toContain('First design project'))
+    await userEvent.click(designCollection.querySelector('.portfolio-image-link') as HTMLElement)
+    expect(document.querySelector('[data-graphic-artwork-modal]')?.hasAttribute('hidden')).toBe(false)
+    expect(window.location.href).not.toContain('#graphic-artwork')
+    await userEvent.click(document.querySelector('[data-graphic-artwork-close]') as HTMLElement)
+    expect(document.querySelector('[data-graphic-artwork-modal]')?.hasAttribute('hidden')).toBe(true)
   })
 })

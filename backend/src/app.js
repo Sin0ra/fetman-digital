@@ -26,7 +26,7 @@ const MANAGEMENT_PATHS = new Set([
 ]);
 const INDEXABLE_HOSTNAMES = new Set(["fetmandigital.com", "www.fetmandigital.com"]);
 
-function createApp(config, { pool, sessionStore, publicSiteDirectory, managementFrontendDirectory, startupReady = true } = {}) {
+function createApp(config, { pool, sessionStore, publicSiteDirectory, managementFrontendDirectory, startupReady = true, loginLimit } = {}) {
   if (!pool || !sessionStore) throw new Error("A database pool and persistent session store are required.");
   const app = express(); app.locals.startupReady = startupReady; app.disable("x-powered-by"); app.set("trust proxy", 1);
   app.use((request, response, next) => {
@@ -57,7 +57,7 @@ function createApp(config, { pool, sessionStore, publicSiteDirectory, management
   app.use(session({ name: "fetman.sid", secret: config.sessionSecret, store: sessionStore, resave: false, saveUninitialized: false, rolling: true, cookie: { httpOnly: true, secure: config.environment === "production", sameSite: "lax", maxAge: 8 * 60 * 60 * 1000, path: "/" } }));
   app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, limit: 150, standardHeaders: "draft-8", legacyHeaders: false }));
   app.use("/api/health", createHealthRouter(pool));
-  app.use("/api/auth", createAuthRouter({ pool, sessionStore }));
+  app.use("/api/auth", createAuthRouter({ pool, sessionStore, ...(loginLimit === undefined ? {} : { loginLimit }) }));
   app.use("/api/public", async (_request, response, next) => { try { const setting = await readMaintenanceMode(pool); if (setting.maintenanceMode) return response.status(503).json({ error: "The public website is temporarily unavailable." }); return next(); } catch { return response.status(503).json({ error: "The public website is temporarily unavailable." }); } });
   app.use("/api/public", createPublicRouter({ pool, smtp: config.smtp || { host: "" }, recipient: config.contactRecipient || "", mediaDirectory: config.mediaDirectory }));
   app.use("/api/developer", createPortalRouter({ pool, mediaDirectory: config.mediaDirectory }));

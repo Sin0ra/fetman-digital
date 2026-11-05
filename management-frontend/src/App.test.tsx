@@ -126,19 +126,19 @@ describe('single-owner developer portal', () => {
     render(<App />)
 
     await screen.findByRole('heading', { name: 'Graphic Design portfolio' })
-    await userEvent.setup().type(screen.getByLabelText('Title'), 'Image-free project')
     await userEvent.setup().click(screen.getByRole('button', { name: 'Save project' }))
 
     await waitFor(() => expect(fetchMock.mock.calls.some(([input, init]) => String(input) === '/api/developer/portfolio' && init?.method === 'POST')).toBe(true))
     const request = fetchMock.mock.calls.find(([input, init]) => String(input) === '/api/developer/portfolio' && init?.method === 'POST')
     const body = JSON.parse(String(request?.[1]?.body))
+    expect(body.title).toBe('')
     expect(body.description).toBe('')
     expect(body.projectUrl).toBe('')
     expect(body.imageUrl).toBeNull()
     expect(body.imageAssetId).toBeNull()
   })
 
-  it('keeps required fields required while optional portfolio fields remain optional', async () => {
+  it('keeps category required while title and other optional portfolio fields remain optional', async () => {
     window.history.replaceState({}, '', '/developer/portfolio/it')
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const path = String(input)
@@ -151,7 +151,7 @@ describe('single-owner developer portal', () => {
     render(<App />)
 
     await screen.findByRole('heading', { name: 'IT portfolio' })
-    expect((screen.getByLabelText('Title') as HTMLInputElement).required).toBe(true)
+    expect((screen.getByLabelText('Title (optional)') as HTMLInputElement).required).toBe(false)
     expect((screen.getByLabelText('Category') as HTMLInputElement).required).toBe(true)
     expect((screen.getByLabelText('Project URL') as HTMLInputElement).required).toBe(false)
     expect((screen.getByLabelText('Description') as HTMLTextAreaElement).required).toBe(false)
@@ -177,7 +177,7 @@ describe('single-owner developer portal', () => {
 
     const input = await screen.findByLabelText('Choose project image')
     const user = userEvent.setup()
-    await user.type(screen.getByLabelText('Title'), 'Uploaded project')
+    await user.type(screen.getByLabelText('Title (optional)'), 'Uploaded project')
     await user.type(screen.getByLabelText('Category'), 'Branding')
     await user.upload(input, new File(['first'], 'design.png', { type: 'image/png' }))
     expect((await screen.findByAltText('Selected project preview')).getAttribute('src')).toBe('/api/developer/media/21')

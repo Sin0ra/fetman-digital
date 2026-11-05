@@ -1,6 +1,7 @@
 # Fresh MariaDB setup
 
-The new runtime uses only `000_fresh_portal_schema.sql`. Apply it manually with
+The new runtime starts with `000_fresh_portal_schema.sql`, followed by the
+forward migrations required by the target database. Apply them manually with
 a schema administrator; the application never runs migrations at startup.
 
 The `001`–`005` files are legacy development migrations from the former
@@ -68,6 +69,18 @@ The expected `unclassified_projects` count is zero only after every existing
 row has been reviewed and classified. Do not run the example `UPDATE` statements
 with placeholder comments; replace them with the reviewed IDs. The application
 already sends the department explicitly for newly created and edited projects.
+
+For an existing database, apply `007_optional_portfolio_titles.sql` after the
+department migration and before deploying the title-optional management flow.
+It changes only the nullability of `portfolio_projects.title`; existing titles
+are preserved. Fresh installations already create this column as nullable in
+`000_fresh_portal_schema.sql`. Do not run this migration against production
+until the target database has been backed up and the change has been reviewed.
+
+For a fresh installation, apply `006_portfolio_departments.sql` and then
+`007_optional_portfolio_titles.sql` after `000_fresh_portal_schema.sql`.
+The resulting fresh schema permits nullable project titles while preserving the
+historical migration files.
 
 ## Backup and replacement procedure
 

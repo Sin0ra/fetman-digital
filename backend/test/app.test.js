@@ -33,15 +33,20 @@ function createPool() {
       if (sql.startsWith("SELECT COUNT(*) AS count FROM media_assets")) return [[{ count: state.media.length }], []];
       if (sql.startsWith("UPDATE site_settings SET setting_value") && sql.includes("maintenance_mode")) { state.maintenance = values[0]; return [{ affectedRows: 1 }, []]; }
       if (sql.startsWith("SELECT id, title") && sql.includes("portfolio_projects")) return [state.projects.map((item) => ({ ...item })), []];
-      if (sql.startsWith("SELECT department, description, image_asset_id AS imageAssetId")) {
+      if (sql.startsWith("SELECT title, department, description, image_asset_id AS imageAssetId")) {
         const project = state.projects.find((item) => String(item.id) === String(values[0]));
-        return [project ? [{ department: project.department, description: project.description, imageAssetId: project.imageAssetId, imageUrl: project.imageUrl, projectUrl: project.projectUrl }] : [], []];
+        return [project ? [{ title: project.title, department: project.department, description: project.description, imageAssetId: project.imageAssetId, imageUrl: project.imageUrl, projectUrl: project.projectUrl }] : [], []];
       }
       if (sql.startsWith("UPDATE portfolio_projects SET title = ?")) {
         const project = state.projects.find((item) => String(item.id) === String(values[8]));
         if (!project) return [{ affectedRows: 0 }, []];
         Object.assign(project, { title: values[0], description: values[1], category: values[2], imageAssetId: values[3], imageUrl: values[4], projectUrl: values[5], published: Boolean(values[6]), displayOrder: values[7] });
         return [{ affectedRows: 1 }, []];
+      }
+      if (sql.startsWith("INSERT INTO portfolio_projects")) {
+        const project = { id: String(state.projects.length + 1), title: values[0], description: values[1], department: values[2], category: values[3], imageAssetId: values[4], imageUrl: values[5], projectUrl: values[6], published: Boolean(values[7]), displayOrder: values[8] };
+        state.projects.push(project);
+        return [{ insertId: project.id }, []];
       }
       if (sql.startsWith("SELECT storage_name") && sql.includes("media_assets")) return [[], []];
       throw new Error(`Unexpected SQL in active-scope test: ${sql}`);
@@ -63,7 +68,7 @@ async function login(url, email = OWNER_EMAIL, secret = password) {
 before(async () => {
   state.account = { id: 1, email: OWNER_EMAIL, password_hash: await argon2.hash(password, { type: argon2.argon2id }) };
   pool = createPool();
-  server = createApp(config, { pool, sessionStore: new session.MemoryStore() }).listen(0, "127.0.0.1");
+  server = createApp(config, { pool, sessionStore: new session.MemoryStore(), loginLimit: 100 }).listen(0, "127.0.0.1");
   await new Promise((resolve, reject) => { server.once("listening", resolve); server.once("error", reject); });
   baseUrl = `http://127.0.0.1:${server.address().port}`;
 });
@@ -146,6 +151,23 @@ describe("developer portfolio updates", () => {
     return fetch(`${baseUrl}/api/developer/portfolio/7`, { method: "PUT", headers: { Cookie: token.cookie, "X-CSRF-Token": token.token, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   }
 
+  async function createProject(body) {
+    const owner = await login(baseUrl);
+    const token = await csrf(baseUrl, owner.cookie);
+    return fetch(`${baseUrl}/api/developer/portfolio`, { method: "POST", headers: { Cookie: token.cookie, "X-CSRF-Token": token.token, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  }
+
+  it("creates titled and untitled projects while retaining required category and department validation", async () => {
+    state.projects = [];
+    const required = { department: "Graphic Design", description: "Artwork", category: "Branding", projectUrl: "", published: true, displayOrder: 0 };
+    for (const title of ["Named artwork", undefined, null, "", "   "]) {
+      const response = await createProject({ ...required, ...(title === undefined ? {} : { title }) });
+      assert.equal(response.status, 201);
+      assert.equal(state.projects.at(-1).title, title?.trim() || null);
+    }
+    assert.equal((await createProject({ ...required, category: "" })).status, 400);
+  });
+
   it("preserves omitted optional fields during an existing project update", async () => {
     seedProject();
     const response = await updateProject({ title: "Updated project", department: "IT", category: "Business Website", published: true, displayOrder: 3 });
@@ -154,6 +176,13 @@ describe("developer portfolio updates", () => {
     assert.equal(state.projects[0].imageAssetId, "12");
     assert.equal(state.projects[0].imageUrl, "https://example.test/existing.webp");
     assert.equal(state.projects[0].projectUrl, "https://example.test/existing");
+  });
+
+  it("preserves an existing title when an update omits title", async () => {
+    seedProject();
+    const response = await updateProject({ department: "IT", category: "Business Website", published: true, displayOrder: 3 });
+    assert.equal(response.status, 200);
+    assert.equal(state.projects[0].title, "Existing project");
   });
 
   it("normalizes blank text fields and explicitly clears image fields", async () => {
@@ -173,8 +202,15 @@ describe("developer portfolio updates", () => {
     assert.equal(state.projects[0].department, "IT");
   });
 
+  it("clears a Graphic Design project title when the update sends blank text", async () => {
+    state.projects = [{ id: "7", department: "Graphic Design", title: "Existing artwork", description: "Stored description", category: "Branding", imageAssetId: "12", imageUrl: "https://example.test/existing.webp", projectUrl: "", published: true, displayOrder: 3 }];
+    const response = await updateProject({ title: "   ", department: "Graphic Design", category: "Branding", published: true, displayOrder: 3 });
+    assert.equal(response.status, 200);
+    assert.equal(state.projects[0].title, null);
+  });
+
   it("validates required fields during an existing project update", async () => {
-    const isolatedServer = createApp(config, { pool, sessionStore: new session.MemoryStore() }).listen(0, "127.0.0.1");
+    const isolatedServer = createApp(config, { pool, sessionStore: new session.MemoryStore(), loginLimit: 100 }).listen(0, "127.0.0.1");
     try {
       await new Promise((resolve, reject) => { isolatedServer.once("listening", resolve); isolatedServer.once("error", reject); });
       const isolatedBaseUrl = `http://127.0.0.1:${isolatedServer.address().port}`;
@@ -182,7 +218,7 @@ describe("developer portfolio updates", () => {
       assert.equal(owner.response.status, 200);
       const token = await csrf(isolatedBaseUrl, owner.cookie);
       assert.equal(token.response.status, 200);
-      for (const field of ["title", "department", "category"]) {
+      for (const field of ["department", "category"]) {
         seedProject();
         const body = { title: "Updated project", department: "IT", category: "Business Website", published: true, displayOrder: 3 };
         delete body[field];

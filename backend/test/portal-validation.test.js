@@ -41,6 +41,20 @@ describe('owner portfolio validation', () => {
     assert.equal(result.data.imageAssetId, null);
   });
 
+  it('accepts titled and untitled projects and normalizes blank titles to null', () => {
+    for (const title of ['A project', undefined, null, '', '   ']) {
+      const result = projectSchema.safeParse({ ...baseProject, title });
+      assert.equal(result.success, true);
+      assert.equal(result.data.title, title?.trim() || null);
+    }
+  });
+
+  it('preserves the title length limit', () => {
+    assert.equal(projectSchema.safeParse({ ...baseProject, title: 'x'.repeat(160) }).success, true);
+    assert.equal(projectSchema.safeParse({ ...baseProject, title: 'x'.repeat(161) }).success, false);
+    assert.equal(projectUpdateSchema.safeParse({ ...baseProject, title: 'x'.repeat(161) }).success, false);
+  });
+
   it('accepts projects without either image field', () => {
     const result = projectSchema.safeParse(baseProject);
     assert.equal(result.success, true);
@@ -66,7 +80,6 @@ describe('owner portfolio validation', () => {
     assert.equal(projectSchema.safeParse({ ...baseProject, imageUrl: 'javascript:alert(1)' }).success, false);
     assert.equal(projectSchema.safeParse({ ...baseProject, projectUrl: 'javascript:alert(1)' }).success, false);
     assert.equal(projectSchema.safeParse({ ...baseProject, imageAssetId: 'not-an-id' }).success, false);
-    assert.equal(projectSchema.safeParse({ ...baseProject, title: '' }).success, false);
     assert.equal(projectSchema.safeParse({ ...baseProject, category: '' }).success, false);
     assert.equal(projectSchema.safeParse({ ...baseProject, department: undefined }).success, false);
   });
@@ -93,6 +106,17 @@ describe('owner portfolio validation', () => {
     assert.equal(Object.hasOwn(result.data, 'description'), false);
     assert.equal(Object.hasOwn(result.data, 'imageUrl'), false);
     assert.equal(Object.hasOwn(result.data, 'imageAssetId'), false);
+  });
+
+  it('allows updates to omit or clear a project title', () => {
+    const omitted = { ...baseProject };
+    delete omitted.title;
+    assert.equal(projectUpdateSchema.safeParse(omitted).success, true);
+    for (const title of [null, '', '   ']) {
+      const result = projectUpdateSchema.safeParse({ ...baseProject, title });
+      assert.equal(result.success, true);
+      assert.equal(result.data.title, null);
+    }
   });
 
   it('preserves omitted project URLs and normalizes explicit empty update values', () => {

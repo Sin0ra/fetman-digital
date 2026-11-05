@@ -594,6 +594,9 @@
                     <a class="nav-link" href="#it-division">Web & IT</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="#pricing">Pricing</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="#contact">Contact</a>
                 </li>
 
@@ -783,8 +786,8 @@
     <div class="container">
         <div class="portfolio-collection" id="graphic-design-portfolio">
             <div class="collection-heading">
-                <div><span class="collection-label">Graphic Design portfolio</span><h3>Identities made to be remembered.</h3></div>
-                <p>Published identity, campaign and visual design work from the Fetman Digital portfolio.</p>
+                <div><span class="collection-label">Graphic Design portfolio</span><h3>Visual work with a point of view.</h3></div>
+                <p>Explore Fetman Digital artwork across branding, logos, posters, social media, packaging and campaigns.</p>
             </div>
             <div class="row managed-project-grid" data-portfolio-department="Graphic Design"></div>
         </div>
@@ -797,6 +800,14 @@
         </div>
     </div>
 </section>
+
+<div class="graphic-artwork-modal" data-graphic-artwork-modal hidden>
+    <div class="graphic-artwork-backdrop" data-graphic-artwork-close></div>
+    <div class="graphic-artwork-dialog" role="dialog" aria-modal="true" aria-labelledby="graphic-artwork-title">
+        <header><div><span class="section-kicker">Graphic Design</span><h2 id="graphic-artwork-title" data-graphic-artwork-title>Graphic artwork</h2></div><button type="button" aria-label="Close enlarged artwork" data-graphic-artwork-close>×</button></header>
+        <div class="graphic-artwork-preview" data-graphic-artwork-preview></div>
+    </div>
+</div>
 
 <section id="it-division" class="it-division">
     <div class="container">
@@ -842,21 +853,62 @@
                 <details class="it-details"><summary>Read more</summary><p>Domain and mailbox requirements can be mapped into a setup and handover plan.</p></details>
             </article>
         </div>
-        <section class="website-showcase" aria-labelledby="website-showcase-title">
-            <div class="website-showcase-heading">
+        <section class="website-portfolio-prototype" aria-labelledby="website-portfolio-title">
+            <div class="website-portfolio-intro">
                 <div>
-                    <span class="section-kicker">Website development</span>
-                    <h3 id="website-showcase-title">Website demos, presented clearly.</h3>
+                    <span class="section-kicker">Portfolio</span>
+                    <h3 id="website-portfolio-title">Different industries. Distinct digital experiences.</h3>
                 </div>
-                <p>Explore selected website demos from Fetman Digital.</p>
+                <p>Explore selected digital experiences across commerce, hospitality, professional services, platforms and business systems.</p>
             </div>
-            <div class="website-showcase-stage" data-website-showcase></div>
+            <div class="website-portfolio-tabs" role="tablist" aria-label="Website portfolio categories" data-website-portfolio-tabs></div>
+            <div class="website-portfolio-grid" id="website-portfolio-grid" role="tabpanel" tabindex="0" aria-label="Portfolio experiences" data-website-portfolio-grid></div>
+            <p class="website-portfolio-note"><span aria-hidden="true">✦</span> Each experience is designed around the audience, content and interaction model of its industry.</p>
         </section>
         <a class="it-enquiry-link" href="#contact">Discuss a technology brief <span aria-hidden="true">↗</span></a>
     </div>
 </section>
 
-<script src="public-portfolio.js?v=portfolio-editorial-20261023-2" defer></script>
+<div class="website-portfolio-modal" data-website-portfolio-modal hidden>
+    <div class="website-portfolio-modal-backdrop" data-website-portfolio-close></div>
+    <div class="website-portfolio-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="website-portfolio-modal-title">
+        <div class="website-portfolio-modal-header">
+            <div>
+                <span class="section-kicker">Portfolio preview</span>
+                <h2 id="website-portfolio-modal-title" data-website-portfolio-modal-title></h2>
+            </div>
+            <button class="website-portfolio-modal-close" type="button" aria-label="Close portfolio preview" data-website-portfolio-close>×</button>
+        </div>
+        <div class="website-portfolio-modal-preview" data-website-portfolio-modal-preview></div>
+        <div class="website-portfolio-modal-footer">
+            <p data-website-portfolio-modal-description></p>
+            <div class="website-portfolio-modal-actions">
+                <button class="btn btn-primary" type="button" data-website-demo-open>Open experience</button>
+                <button class="btn btn-outline-primary" type="button" data-website-portfolio-close>Return to portfolio</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="demo-experience-modal" data-demo-experience hidden>
+    <div class="demo-experience-backdrop" data-demo-close></div>
+    <div class="demo-experience-dialog" role="dialog" aria-modal="true" aria-labelledby="demo-experience-title">
+        <header class="demo-experience-header">
+            <div>
+                <span class="section-kicker">Portfolio experience</span>
+                <h2 id="demo-experience-title" data-demo-title></h2>
+                <p data-demo-disclaimer>Explore the interface and interactions. Actions stay in this browser and do not connect to production services.</p>
+            </div>
+            <div class="demo-experience-header-actions">
+                <button class="demo-reset-button" type="button" data-demo-reset>Reset experience</button>
+                <button class="website-portfolio-modal-close" type="button" aria-label="Close portfolio experience" data-demo-close>×</button>
+            </div>
+        </header>
+        <div class="demo-experience-body" data-demo-root></div>
+    </div>
+</div>
+
+<script src="public-portfolio.js?v=portfolio-stage-a-20261105" defer></script>
 
 <section class="why-choose">
     <div class="container">
@@ -916,58 +968,143 @@
     </div>
 </section>
 
-<section class="pricing">
+<section class="pricing" id="pricing">
     <div class="container">
-        <div class="section-heading">
-            <span class="section-kicker">Project options</span>
-            <h2>Flexible design packages tailored to your needs.</h2>
+        <div class="section-heading pricing-heading">
+            <span class="section-kicker">Websites, software & ongoing care</span>
+            <h2>Clear starting prices. A digital experience shaped around your business.</h2>
+            <p>Choose a once-off build, spread your investment with a monthly partnership, or ask us to scope a more specialised system. Every price shown is VAT-inclusive.</p>
         </div>
-        <div class="pricing-grid">
-            <article class="price-card">
-                <span class="plan-tag">Logo Starter</span>
-                <h3>Logo design</h3>
-                <p class="price-placeholder">From quote-based pricing</p>
-                <ul>
-                    <li>Initial concept exploration</li>
-                    <li>Recommended design direction</li>
-                    <li>Basic logo refinement</li>
-                    <li>Editable source files where applicable</li>
-                </ul>
-                <a href="#contact" class="btn btn-primary">Request a quote</a>
+
+        <div class="pricing-intro-note" role="note">
+            <span class="pricing-note-mark" aria-hidden="true">R</span>
+            <p><strong>Prices are VAT-inclusive.</strong> For example, a R999 total comprises R868.70 excluding VAT and R130.30 VAT (15%). We do not add VAT again to the prices shown here.</p>
+        </div>
+
+        <div class="pricing-section-heading">
+            <div><span class="section-kicker">Website packages</span><h3>Website development</h3></div>
+            <p>From a focused business presence to a fully custom digital experience. Final page counts, features, content responsibilities and review rounds are confirmed in your written proposal.</p>
+        </div>
+        <div class="pricing-cards pricing-website-grid">
+            <article class="price-card pricing-package">
+                <span class="plan-tag">A clear starting point</span><h4>Template Website</h4>
+                <p class="package-summary">A polished, mobile-ready presence built from a suitable design foundation and tailored to your brand.</p>
+                <div class="package-price-row"><span>Once-off</span><strong>R4,950</strong></div>
+                <div class="package-price-row"><span>Monthly partnership</span><strong>R399 <small>/ month</small></strong></div>
+                <div class="package-setup"><span>Monthly option setup</span><strong>R3,950</strong><small>One-time setup fee, separate from the monthly subscription.</small></div>
+                <ul><li>Responsive layout and brand styling</li><li>Core business information and enquiry path</li><li>Baseline search-friendly page setup</li><li>Launch checks and handover</li></ul>
+                <a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Development" data-pricing-package="Template Website">Enquire about Template</a>
             </article>
-            <article class="price-card featured-plan">
-                <span class="plan-tag">Most popular</span>
-                <h3>Brand identity</h3>
-                <p class="price-placeholder">Project-based pricing</p>
-                <ul>
-                    <li>Logo and brand direction</li>
-                    <li>Colour palette and typography</li>
-                    <li>Brand collateral support</li>
-                    <li>Refined design system</li>
-                </ul>
-                <a href="#contact" class="btn btn-primary">Discuss your brief</a>
+            <article class="price-card pricing-package">
+                <span class="plan-tag">For growing businesses</span><h4>Basic Website</h4>
+                <p class="package-summary">A tailored business website with a considered structure for your services, story and next steps.</p>
+                <div class="package-price-row"><span>Once-off</span><strong>R8,500</strong></div>
+                <div class="package-price-row"><span>Monthly partnership</span><strong>R499 <small>/ month</small></strong></div>
+                <div class="package-setup"><span>Monthly option setup</span><strong>R6,800</strong><small>One-time setup fee, separate from the monthly subscription.</small></div>
+                <ul><li>Customised page structure and visual direction</li><li>Responsive service and contact experience</li><li>Baseline search-friendly setup</li><li>Launch checks and handover</li></ul>
+                <a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Development" data-pricing-package="Basic Website">Enquire about Basic</a>
             </article>
-            <article class="price-card">
-                <span class="plan-tag">Marketing design</span>
-                <h3>Promotional design</h3>
-                <p class="price-placeholder">Pricing based on scope</p>
-                <ul>
-                    <li>Flyers and posters</li>
-                    <li>Social media graphics</li>
-                    <li>Campaign design support</li>
-                    <li>Production-ready artwork</li>
-                </ul>
-                <a href="#contact" class="btn btn-primary">Ask for a quote</a>
+            <article class="price-card pricing-package featured-plan">
+                <span class="plan-tag">A versatile foundation</span><h4>Standard Website</h4>
+                <p class="package-summary">A more developed web presence for businesses ready to present a broader offer with confidence.</p>
+                <div class="package-price-row"><span>Once-off</span><strong>R15,500</strong></div>
+                <div class="package-price-row"><span>Monthly partnership</span><strong>R699 <small>/ month</small></strong></div>
+                <div class="package-setup"><span>Monthly option setup</span><strong>R12,400</strong><small>One-time setup fee, separate from the monthly subscription.</small></div>
+                <ul><li>Brand-led layouts across the agreed pages</li><li>Structured service or information sections</li><li>Responsive design and enquiry journey</li><li>Launch checks and handover</li></ul>
+                <a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Development" data-pricing-package="Standard Website">Enquire about Standard</a>
+            </article>
+            <article class="price-card pricing-package">
+                <span class="plan-tag">For ambitious teams</span><h4>Advanced Website</h4>
+                <p class="package-summary">A bespoke, feature-rich website for a more involved customer journey or content structure.</p>
+                <div class="package-price-row"><span>Once-off</span><strong>R28,500</strong></div>
+                <div class="package-price-row"><span>Monthly partnership</span><strong>R999 <small>/ month</small></strong></div>
+                <div class="package-setup"><span>Monthly option setup</span><strong>R22,800</strong><small>One-time setup fee, separate from the monthly subscription.</small></div>
+                <ul><li>Custom page layouts and agreed interactions</li><li>More involved content and conversion paths</li><li>Responsive build and quality checks</li><li>Launch checks and handover</li></ul>
+                <a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Development" data-pricing-package="Advanced Website">Enquire about Advanced</a>
+            </article>
+            <article class="price-card pricing-package">
+                <span class="plan-tag">Bespoke scope</span><h4>Premium Digital Experience</h4>
+                <p class="package-summary">A high-touch digital product or website experience planned around distinctive goals, journeys and integrations.</p>
+                <div class="package-price-row"><span>Once-off</span><strong>From R45,000</strong></div>
+                <div class="package-price-row"><span>Monthly partnership</span><strong>Custom</strong></div>
+                <div class="package-setup"><span>Monthly option setup</span><strong>Custom quote</strong><small>Set after discovery and a written scope.</small></div>
+                <ul><li>Discovery and experience planning</li><li>Custom visual system and interaction design</li><li>Feature and integration scope agreed in writing</li><li>Milestone-based delivery and handover</li></ul>
+                <a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Development" data-pricing-package="Premium Digital Experience">Discuss a premium experience</a>
             </article>
         </div>
+
+        <div class="partnership-panel">
+            <div class="partnership-copy"><span class="section-kicker">The monthly website partnership</span><h3>Keep your website cared for after launch.</h3><p>The setup fee covers the initial website development. The monthly subscription pays for the ongoing care listed in your approved quotation, such as maintenance, security checks, backups, routine software and dependency updates where applicable, performance monitoring, technical support and minor content updates.</p><p>Included maintenance is not charged again separately to monthly partnership customers. It does not include unlimited revisions, new features, redesigns or development. Any work beyond the included care is scoped and quoted before it starts.</p></div>
+            <div class="partnership-detail"><h4>How the monthly option works</h4><ul><li>Setup and recurring subscription are separate charges.</li><li>Only work described in the approved quotation or statement of work is included. Revision rounds, client approvals and supplied content responsibilities are agreed in writing.</li><li>Hosting management is included only when your proposal says so; domain, email and other third-party fees may be billed separately.</li><li>Monthly website partnerships and maintenance plans require 30 days’ written cancellation notice. Cancellation takes effect at the end of the applicable notice period. Charges remain due for services delivered and undisputed balances outstanding up to that effective date; no cancellation penalty is added.</li><li>After cancellation, handover arrangements are agreed in writing. Outstanding undisputed invoices must be settled before transfer of paid-for deliverables, subject to applicable law and the signed agreement.</li><li>Ownership and any usage or source-file rights are recorded in the project agreement.</li></ul><a href="#contact" class="inline-link" data-pricing-enquiry="Website Development" data-pricing-package="Monthly website partnership">Ask about a monthly partnership <span aria-hidden="true">↗</span></a></div>
+        </div>
+
+        <div class="pricing-section-heading pricing-subsection-heading">
+            <div><span class="section-kicker">Online stores</span><h3>E-commerce development</h3></div>
+            <p>Store scope depends on catalogue size, payment and delivery requirements, integrations and the platform selected. Product data and provider charges are discussed separately.</p>
+        </div>
+        <div class="pricing-cards pricing-three-grid">
+            <article class="price-card pricing-package"><span class="plan-tag">Start selling online</span><h4>Starter Online Store</h4><p class="package-summary">A practical storefront foundation for a focused product range and a clear buying journey.</p><div class="package-price-row"><span>Once-off</span><strong>R18,500</strong></div><div class="package-price-row"><span>Monthly partnership</span><strong>R799 <small>/ month</small></strong></div><ul><li>Responsive storefront and product presentation</li><li>Core cart and checkout configuration</li><li>Payment provider setup (provider fees excluded)</li><li>Launch checks and store handover</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="E-commerce Development" data-pricing-package="Starter Online Store">Enquire about Starter Store</a></article>
+            <article class="price-card pricing-package"><span class="plan-tag">For a broader catalogue</span><h4>Advanced Store</h4><p class="package-summary">A more flexible store experience with expanded catalogue and operational requirements.</p><div class="package-price-row"><span>Once-off</span><strong>R32,500</strong></div><div class="package-price-row"><span>Monthly partnership</span><strong>R999 <small>/ month</small></strong></div><ul><li>Tailored storefront and category structure</li><li>Expanded product and checkout configuration</li><li>Agreed shipping or operational integrations</li><li>Launch checks and store handover</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="E-commerce Development" data-pricing-package="Advanced Store">Enquire about Advanced Store</a></article>
+            <article class="price-card pricing-package"><span class="plan-tag">Complex requirements</span><h4>Custom E-Commerce</h4><p class="package-summary">A custom store planned around specialised workflows, integrations or a large catalogue.</p><div class="package-price-row"><span>Once-off</span><strong>From R65,000</strong></div><div class="package-price-row"><span>Monthly partnership</span><strong>Custom</strong></div><ul><li>Discovery and technical planning</li><li>Custom shopping and operational journeys</li><li>Integrations and migration scoped separately</li><li>Milestone-based build and handover</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="E-commerce Development" data-pricing-package="Custom E-Commerce">Discuss a custom store</a></article>
+        </div>
+
+        <div class="pricing-section-heading pricing-subsection-heading">
+            <div><span class="section-kicker">Custom software</span><h3>Management systems</h3></div>
+            <p>Starting prices help frame a conversation. A discovery and written specification determine the final scope, schedule, integrations, support and hosting requirements.</p>
+        </div>
+        <div class="pricing-cards pricing-four-grid">
+            <article class="price-card pricing-package"><span class="plan-tag">Focused workflow</span><h4>Basic Management System</h4><p class="package-summary">A tailored system for a defined operational process and essential records.</p><div class="package-price-row"><span>Once-off</span><strong>R25,000</strong></div><div class="package-price-row"><span>Ongoing service</span><strong>From R1,250 <small>/ month</small></strong></div><ul><li>Agreed workflow and role planning</li><li>Core records and management views</li><li>Secure access and essential validation</li><li>Testing, launch and handover</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Web Application" data-pricing-package="Basic Management System">Discuss a basic system</a></article>
+            <article class="price-card pricing-package"><span class="plan-tag">Connected processes</span><h4>Standard Management System</h4><p class="package-summary">A broader application for connected workflows, reporting and team activity.</p><div class="package-price-row"><span>Once-off</span><strong>R45,000</strong></div><div class="package-price-row"><span>Ongoing service</span><strong>From R2,500 <small>/ month</small></strong></div><ul><li>Multiple agreed workflows and roles</li><li>Structured dashboards and reporting</li><li>Defined integrations and notifications</li><li>Testing, launch and handover</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Web Application" data-pricing-package="Standard Management System">Discuss a standard system</a></article>
+            <article class="price-card pricing-package"><span class="plan-tag">Advanced operations</span><h4>Advanced Management System</h4><p class="package-summary">A more involved system for complex processes, permissions and integration needs.</p><div class="package-price-row"><span>Once-off</span><strong>R75,000</strong></div><div class="package-price-row"><span>Ongoing service</span><strong>From R4,500 <small>/ month</small></strong></div><ul><li>Detailed process and permission design</li><li>Advanced workflow and reporting scope</li><li>Integration and data needs assessed</li><li>Phased testing and handover</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Web Application" data-pricing-package="Advanced Management System">Discuss an advanced system</a></article>
+            <article class="price-card pricing-package"><span class="plan-tag">Enterprise scope</span><h4>Enterprise Software</h4><p class="package-summary">A discovery-led software engagement for organisation-wide requirements.</p><div class="package-price-row"><span>Once-off</span><strong>From R120,000</strong></div><div class="package-price-row"><span>Ongoing service</span><strong>Custom</strong></div><ul><li>Discovery, architecture and phased delivery</li><li>Role, security and integration planning</li><li>Deployment and operational handover</li><li>Support scope quoted separately</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Web Application" data-pricing-package="Enterprise Software">Discuss enterprise software</a></article>
+        </div>
+
+        <div class="pricing-section-heading pricing-subsection-heading">
+            <div><span class="section-kicker">Ongoing care</span><h3>Standalone maintenance</h3></div>
+            <p>For an existing website that needs dependable maintenance. Website partnership customers do not pay separately for maintenance already included in their agreement.</p>
+        </div>
+        <div class="pricing-cards pricing-three-grid maintenance-grid">
+            <article class="price-card pricing-package"><span class="plan-tag">Essential Care</span><h4>Essential Care</h4><div class="maintenance-price">R650 <small>/ month · incl. VAT</small></div><ul><li>Basic website health checks</li><li>Security and backup checks</li><li>Applicable software updates</li><li>30 minutes of minor changes</li><li>Basic technical support</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Maintenance" data-pricing-package="Essential Care">Choose Essential Care</a></article>
+            <article class="price-card pricing-package featured-plan"><span class="plan-tag">Business Care</span><h4>Business Care</h4><div class="maintenance-price">R1,250 <small>/ month · incl. VAT</small></div><ul><li>Everything in Essential Care</li><li>Two hours of minor updates</li><li>Performance monitoring</li><li>Priority support</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Maintenance" data-pricing-package="Business Care">Choose Business Care</a></article>
+            <article class="price-card pricing-package"><span class="plan-tag">Premium Care</span><h4>Premium Care</h4><div class="maintenance-price">R2,500 <small>/ month · incl. VAT</small></div><ul><li>Everything in Business Care</li><li>Five hours of minor updates</li><li>Advanced monitoring</li><li>Priority support</li><li>Monthly maintenance report</li></ul><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Maintenance" data-pricing-package="Premium Care">Choose Premium Care</a></article>
+        </div>
+        <p class="maintenance-boundary">Included time covers small content or configuration changes within the existing site. Unused hours do not roll over. New features, large content projects, redesigns, emergency work and third-party fees are quoted separately. A maintenance plan does not include hosting unless stated in writing.</p>
+
+        <div class="pricing-section-heading pricing-subsection-heading">
+            <div><span class="section-kicker">Extend your project</span><h3>Additional services</h3></div>
+            <p>Starting prices for common add-ons. Final fees depend on the existing setup, content readiness and the agreed scope.</p>
+        </div>
+        <div class="additional-services-wrap">
+            <dl class="additional-services">
+                <div><dt>Additional standard page</dt><dd>R850</dd></div><div><dt>Additional custom page</dt><dd>R1,500</dd></div><div><dt>Landing page</dt><dd>R2,500</dd></div><div><dt>Website redesign</dt><dd>R5,500</dd></div><div><dt>Basic SEO</dt><dd>R1,500</dd></div><div><dt>Advanced SEO</dt><dd>R3,500</dd></div><div><dt>Content upload</dt><dd>R750</dd></div><div><dt>WhatsApp integration</dt><dd>R500</dd></div><div><dt>Contact form</dt><dd>R750</dd></div><div><dt>Booking functionality</dt><dd>From R3,500</dd></div><div><dt>Payment gateway integration</dt><dd>From R2,500</dd></div><div><dt>API integration</dt><dd>From R3,500</dd></div><div><dt>Website migration</dt><dd>From R2,500</dd></div><div><dt>Speed optimisation</dt><dd>R1,500</dd></div><div><dt>Product upload</dt><dd>R35 per product</dd></div><div><dt>Business email setup</dt><dd>From R750</dd></div><div><dt>Analytics setup</dt><dd>R750</dd></div><div><dt>Search Console setup</dt><dd>R750</dd></div>
+            </dl>
+            <p>All listed add-on prices are VAT-inclusive starting prices. <a href="#contact" data-pricing-enquiry="Other" data-pricing-package="Additional service">Ask us to scope a service <span aria-hidden="true">↗</span></a></p>
+        </div>
+
+        <div class="costs-panel">
+            <div><span class="section-kicker">Plan for the full cost</span><h3>Hosting, domains and third-party services</h3></div>
+            <p>Domain registrations, hosting-provider charges, premium plugins, external APIs, payment gateway fees, email services, SMS, stock imagery and other third-party services may carry separate charges. Where possible, clients pay providers directly and remain subject to their terms, availability and support. If Fetman Digital pays on a client’s behalf, we obtain written approval and disclose the amount and any handling fee before incurring the cost. Third-party services are not guaranteed or controlled by Fetman Digital, and provider charges are not added or treated as VAT-inclusive twice without prior disclosure.</p>
+        </div>
+
+        <div class="commercial-terms" aria-labelledby="commercial-terms-title">
+            <div class="commercial-terms-heading"><span class="section-kicker">Working terms</span><h3 id="commercial-terms-title">A clear brief protects both sides.</h3><p>These website notes help you understand how projects are planned and supported. They are not a substitute for a signed quotation, statement of work or service agreement.</p></div>
+            <div class="commercial-terms-grid">
+                <article><h4>Scope, approvals and client responsibilities</h4><p>Only work in an approved quotation or statement of work is included. Additional features, new functionality, redesigns and work beyond included maintenance hours require written approval and a separate quotation. Revision limits are agreed for each project, and client approval is required before agreed work is published or released.</p><p>Clients provide lawful content, accurate information, necessary approvals and access credentials. Clients remain responsible for rights to supplied images, logos, fonts, text and other materials. Missing content, access or approvals may affect delivery dates.</p></article>
+                <article><h4>Ownership, licences and reusable tools</h4><p>Client-owned materials remain the client’s materials. Paid-for deliverables, source files and any copyright assignment or licence are handled according to the signed project agreement and payment terms. Fetman Digital’s pre-existing code, tools, frameworks, methods and reusable components remain subject to that agreement. Third-party software, fonts, plugins, imagery and other assets remain subject to their licences.</p></article>
+                <article><h4>Care, security and reasonable limits</h4><p>Fetman Digital will use reasonable care and skill in delivering the agreed services. No website or system can be promised completely secure, continuously available or unaffected by events outside our reasonable control. We do not guarantee third-party uptime, search rankings, sales, revenue or other business outcomes.</p><p>Backup and restoration arrangements depend on the selected service and agreed scope. Any responsibility or liability is governed by the signed agreement and applicable South African law, including consumer rights and restrictions concerning gross negligence. Nothing here excludes liability that cannot legally be excluded.</p></article>
+                <article><h4>Personal information and complaints</h4><p>Personal information is handled in accordance with applicable data-protection law, including POPIA. Where Fetman Digital processes information on a client’s behalf, the parties’ roles, instructions, security measures and incident responsibilities should be recorded in the project agreement. Clients remain responsible for having a lawful basis and required notices for information they collect.</p><p>Raise a complaint in writing through the enquiry form with the relevant project details. The parties should exchange the facts and attempt good-faith negotiation before formal proceedings, without removing any statutory right or remedy.</p></article>
+            </div>
+        </div>
+
+        <div class="pricing-cta-band"><div><span class="section-kicker">Not sure which option fits?</span><h3>Tell us what you need. We’ll recommend a clear scope.</h3></div><a href="#contact" class="btn btn-primary" data-pricing-enquiry="Website Development" data-pricing-package="Pricing consultation">Request a tailored quotation <span aria-hidden="true">↗</span></a></div>
     </div>
 </section>
 
 <section class="faq">
     <div class="container">
         <div class="section-heading">
-            <span class="section-kicker">FAQ</span>
-            <h2>Common questions before we begin.</h2>
+            <span class="section-kicker">Pricing questions</span>
+            <h2>Understand the investment before we begin.</h2>
         </div>
         <div class="accordion faq-accordion" id="faqAccordion">
             <div class="accordion-item faq-item">
@@ -1009,6 +1146,26 @@
                 <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">Final file formats are discussed with each client and may include editable source files and production-ready versions depending on the project.</div>
                 </div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingSix"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSix" aria-expanded="false" aria-controls="faqCollapseSix">Are the prices shown inclusive of VAT?</button></h2>
+                <div id="faqCollapseSix" class="accordion-collapse collapse" aria-labelledby="faqHeadingSix" data-bs-parent="#faqAccordion"><div class="accordion-body">Yes. Advertised prices are VAT-inclusive at 15%. A quotation shows the VAT-exclusive subtotal, VAT amount and VAT-inclusive total. VAT is not added a second time.</div></div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingSeven"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSeven" aria-expanded="false" aria-controls="faqCollapseSeven">What does the monthly website setup fee cover?</button></h2>
+                <div id="faqCollapseSeven" class="accordion-collapse collapse" aria-labelledby="faqHeadingSeven" data-bs-parent="#faqAccordion"><div class="accordion-body">The one-time setup fee covers the initial development of the agreed website. The separate monthly subscription covers only the ongoing care stated in your proposal. New features, redesigns and additional development are scoped and quoted separately.</div></div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingEight"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseEight" aria-expanded="false" aria-controls="faqCollapseEight">Can I cancel a monthly service, and what happens to my website?</button></h2>
+                <div id="faqCollapseEight" class="accordion-collapse collapse" aria-labelledby="faqHeadingEight" data-bs-parent="#faqAccordion"><div class="accordion-body">There is no advertised fixed 12 or 24-month term. Cancellation notice and effective dates are set out in your service agreement. Once outstanding invoices are settled, agreed website files and deliverables can be handed over. Third-party accounts and licences remain subject to their providers’ terms.</div></div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingNine"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseNine" aria-expanded="false" aria-controls="faqCollapseNine">Is hosting included in the package price?</button></h2>
+                <div id="faqCollapseNine" class="accordion-collapse collapse" aria-labelledby="faqHeadingNine" data-bs-parent="#faqAccordion"><div class="accordion-body">Hosting management is included only when your written proposal says so. Domain registration, hosting, email, payment processing, premium licences and other third-party costs are shown separately where applicable.</div></div>
+            </div>
+            <div class="accordion-item faq-item">
+                <h2 class="accordion-header" id="faqHeadingTen"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTen" aria-expanded="false" aria-controls="faqCollapseTen">What is included in minor maintenance updates?</button></h2>
+                <div id="faqCollapseTen" class="accordion-collapse collapse" aria-labelledby="faqHeadingTen" data-bs-parent="#faqAccordion"><div class="accordion-body">Plan hours cover small content or configuration changes to the existing website. New functionality, substantial content work, redesigns and development are not minor updates and are quoted separately. Monthly website partnership clients are not charged again for maintenance already included in their agreement.</div></div>
             </div>
         </div>
     </div>
@@ -1153,7 +1310,7 @@
                     if (entry.isIntersecting) updateActiveNavigation(entry.target.id);
                 });
             }, { rootMargin: "-35% 0px -55%", threshold: 0 });
-            ["about", "services", "portfolio", "it-division", "contact"].forEach((id) => {
+            ["about", "services", "portfolio", "it-division", "pricing", "contact"].forEach((id) => {
                 const section = document.getElementById(id);
                 if (section) navigationObserver.observe(section);
             });
@@ -1187,6 +1344,19 @@
         }
 
         const projectEnquiryForm = document.getElementById("projectEnquiryForm");
+
+        // Pricing calls to action reuse the existing enquiry form and API. The
+        // visitor's description is preserved whenever they have already started it.
+        document.querySelectorAll("[data-pricing-enquiry]").forEach((link) => {
+            link.addEventListener("click", () => {
+                const serviceField = document.getElementById("service");
+                const projectField = document.getElementById("project");
+                const service = link.dataset.pricingEnquiry;
+                const packageName = link.dataset.pricingPackage;
+                if (serviceField && [...serviceField.options].some((option) => option.value === service)) serviceField.value = service;
+                if (projectField && !projectField.value.trim()) projectField.value = `I am interested in ${packageName}. Please contact me to discuss the scope and next steps.`;
+            });
+        });
 
         // Site copy is optional: the saved HTML remains the fallback when the API is
         // unavailable, which is important for static previews and maintenance mode.
@@ -1242,6 +1412,36 @@
                 }
             });
         }
+
+        // Keep the browser-local portfolio renderer's public language aligned with the
+        // portfolio presentation without changing its interaction or production API.
+        const refreshPortfolioLanguage = () => {
+            const portfolioRoot = document.querySelector('.website-portfolio-prototype');
+            if (!portfolioRoot) return;
+            const roots = [portfolioRoot, document.querySelector('[data-website-portfolio-modal]'), document.querySelector('[data-demo-experience]')].filter(Boolean);
+            const replacements = [
+                [/Open concept preview/gi, 'Open portfolio experience'],
+                [/Open concept/gi, 'View experience'],
+                [/fictional concept demonstration/gi, 'browser-local portfolio experience'],
+                [/fictional customer/gi, 'sample customer'],
+                [/fictional viewing/gi, 'viewing'],
+                [/simulated enquiry/gi, 'enquiry'],
+                [/simulated cart/gi, 'cart'],
+                [/simulated checkout/gi, 'checkout'],
+                [/fictional content/gi, 'sample content'],
+                [/demo websites?/gi, 'portfolio experiences']
+            ];
+            roots.forEach((root) => {
+                root.querySelectorAll('[aria-label]').forEach((element) => {
+                    const label = element.getAttribute('aria-label');
+                    if (label) element.setAttribute('aria-label', label.replace(/Open concept preview/gi, 'Open portfolio experience'));
+                });
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+                while (walker.nextNode()) replacements.forEach(([pattern, value]) => { walker.currentNode.nodeValue = walker.currentNode.nodeValue.replace(pattern, value); });
+            });
+        };
+        new MutationObserver(refreshPortfolioLanguage).observe(document.body, { childList: true, subtree: true });
+        refreshPortfolioLanguage();
     </script>
 
     <style>
@@ -2910,6 +3110,98 @@
             color: var(--bright);
         }
 
+        .graphic-design-gallery-tools {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255, 255, 255, .15);
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .graphic-design-gallery-label {
+            color: rgba(255, 255, 255, .65);
+            font-size: .75rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .graphic-design-filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: .45rem;
+        }
+
+        .graphic-design-filters button {
+            border: 1px solid rgba(255, 255, 255, .28);
+            border-radius: 999px;
+            padding: .45rem .8rem;
+            background: transparent;
+            color: rgba(255, 255, 255, .8);
+            cursor: pointer;
+            font-size: .78rem;
+            transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+        }
+
+        .graphic-design-filters button:hover,
+        .graphic-design-filters button:focus-visible,
+        .graphic-design-filters button[aria-selected="true"] {
+            border-color: var(--bright);
+            background: var(--bright);
+            color: var(--deep);
+        }
+
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+
+        #managed-portfolios #graphic-design-portfolio .portfolio-item {
+            display: block;
+            width: auto;
+            padding: 0;
+            animation: graphic-gallery-enter 2s cubic-bezier(.2, .75, .25, 1) both;
+        }
+
+        #managed-portfolios #graphic-design-portfolio .portfolio-item[hidden] { display: none; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-item .card { height: 100%; border: 0; background: transparent; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { display: block; overflow: hidden; aspect-ratio: 4 / 3; background: rgba(255, 255, 255, .08); }
+        #managed-portfolios #graphic-design-portfolio .portfolio img { height: 100%; aspect-ratio: auto; object-fit: contain; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover img,
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible img { transform: scale(1.035); }
+        #managed-portfolios #graphic-design-portfolio .portfolio .card-body { padding-top: 1rem; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-category { color: rgba(255, 255, 255, .6); }
+        #managed-portfolios #graphic-design-portfolio .card-title { color: #fff; }
+        #managed-portfolios #graphic-design-portfolio .card-text { color: rgba(255, 255, 255, .7); }
+
+        .graphic-design-empty-state { display: grid; max-width: 600px; margin: 2rem auto 0; padding: 4rem 2rem; border: 1px dashed rgba(255, 255, 255, .3); place-items: center; text-align: center; }
+        .graphic-design-empty-state[hidden] { display: none; }
+        .graphic-design-empty-mark { color: var(--bright); font-size: 2rem; }
+        .graphic-design-empty-state h4 { margin: .8rem 0 .5rem; color: #fff; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+        .graphic-design-empty-state p { max-width: 44ch; margin: 0 0 1.5rem; color: rgba(255, 255, 255, .7); line-height: 1.7; }
+
+        .graphic-artwork-modal[hidden] { display: none; }
+        .graphic-artwork-modal { position: fixed; z-index: 1200; inset: 0; display: grid; padding: 3vw; place-items: center; }
+        .graphic-artwork-backdrop { position: absolute; inset: 0; background: rgba(3, 22, 26, .86); }
+        .graphic-artwork-dialog { position: relative; width: min(1100px, 100%); max-height: 94vh; overflow: auto; padding: 1.5rem; background: #f7f8f5; box-shadow: 0 30px 90px rgba(0, 0, 0, .35); }
+        .graphic-artwork-dialog header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .graphic-artwork-dialog h2 { margin: .3rem 0 0; color: var(--deep); }
+        .graphic-artwork-dialog header button { border: 0; background: transparent; color: var(--deep); cursor: pointer; font-size: 2rem; line-height: 1; }
+        .graphic-artwork-preview { display: grid; min-height: 45vh; place-items: center; background: #e9eeea; }
+        .graphic-artwork-preview img { display: block; max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; }
+        .graphic-artwork-modal-open { overflow: hidden; }
+
+        @keyframes graphic-gallery-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) { #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; } #managed-portfolios #graphic-design-portfolio .portfolio img { transition: none; } }
+        @media (max-width: 900px) { #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 600px) { .graphic-design-gallery-tools { align-items: flex-start; flex-direction: column; } .graphic-design-filters { justify-content: flex-start; } #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: 1fr; } .graphic-artwork-dialog { padding: 1rem; } }
+
         #managed-portfolios .portfolio-collection + .portfolio-collection {
             margin-top: 72px;
         }
@@ -3034,9 +3326,6 @@
                 transition: none;
             }
 
-            .website-demo-card {
-                animation: none !important;
-            }
         }
 
         @media (max-width: 767px) {
@@ -3156,155 +3445,583 @@
             color: var(--muted);
         }
 
-        .website-showcase {
-            margin-top: 64px;
-            padding-top: 34px;
+        /* The prototype borrows the useful part of a package-led agency portfolio:
+           category tabs make the offer scannable, while the project cards keep the
+           work contained in a balanced desktop gallery. */
+        .website-portfolio-prototype {
+            max-width: 1180px;
+            margin: 92px auto 0;
+            padding-top: 42px;
             border-top: 1px solid rgba(24, 52, 58, .16);
         }
 
-        .website-showcase-heading {
+        .website-portfolio-intro {
             display: flex;
             align-items: end;
             justify-content: space-between;
-            gap: 24px;
-            margin-bottom: 22px;
+            gap: 40px;
+            margin-bottom: 32px;
         }
 
-        .website-showcase-heading h3 {
+        .website-portfolio-intro h3 {
+            max-width: 13ch;
             margin: 8px 0 0;
             color: var(--ink);
-            font-size: clamp(1.7rem, 3vw, 2.5rem);
-            letter-spacing: -.04em;
+            font-size: clamp(2rem, 4vw, 3.6rem);
+            letter-spacing: -.055em;
+            line-height: .98;
         }
 
-        .website-showcase-heading p {
+        .website-portfolio-intro p {
+            max-width: 34ch;
             margin: 0;
             color: var(--muted);
-            font-size: .92rem;
+            font-size: .98rem;
+            line-height: 1.7;
         }
 
-        .website-showcase-stage {
-            min-height: 230px;
+        .website-portfolio-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            padding: 7px;
+            overflow-x: auto;
+            border: 1px solid rgba(24, 52, 58, .14);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .72);
         }
 
-        .website-demo-card {
+        .website-portfolio-tab {
+            display: inline-flex;
+            flex: 1 0 auto;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 45px;
+            padding: 8px 17px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--muted);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: .88rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: color .25s ease, background .25s ease, border-color .25s ease, transform .25s ease;
+        }
+
+        .website-portfolio-tab:hover,
+        .website-portfolio-tab:focus-visible {
+            border-color: rgba(15, 175, 169, .34);
+            color: var(--deep);
+        }
+
+        .website-portfolio-tab.is-active {
+            border-color: var(--deep);
+            background: var(--deep);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(6, 43, 51, .16);
+        }
+
+        .website-portfolio-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(190px, .85fr);
-            min-height: 230px;
-            overflow: hidden;
-            border: 1px solid rgba(15, 175, 169, .34);
-            border-radius: 4px;
-            background: #fff;
-            box-shadow: 0 16px 34px rgba(6, 43, 51, .08);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 28px;
         }
 
-        .website-demo-card.is-entering {
-            animation: website-demo-pop .55s cubic-bezier(.2, .75, .25, 1) both;
+        .website-portfolio-card-wrap {
+            min-width: 0;
+            animation: website-portfolio-card-in .55s cubic-bezier(.2, .75, .25, 1) both;
         }
 
-        .website-demo-card.is-exiting {
-            animation: website-demo-disappear .35s ease both;
-        }
-
-        .website-demo-preview {
-            position: relative;
-            overflow: hidden;
-            min-height: 230px;
-            background: #dfe9e5;
-        }
-
-        .website-demo-preview::after {
-            position: absolute;
-            inset: 0;
-            border: 1px solid rgba(15, 175, 169, .2);
-            content: "";
-            pointer-events: none;
-        }
-
-        .website-demo-preview iframe {
-            display: block;
+        .website-portfolio-card {
+            display: flex;
             width: 100%;
             height: 100%;
-            min-height: 230px;
-            border: 0;
+            flex-direction: column;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid rgba(24, 52, 58, .14);
+            border-radius: 14px;
             background: #fff;
+            color: var(--ink);
+            text-align: left;
+            box-shadow: 0 18px 38px rgba(6, 43, 51, .07);
+            transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
         }
 
-        .website-demo-preview-unavailable {
+        .website-portfolio-card:hover,
+        .website-portfolio-card:focus-visible {
+            border-color: rgba(15, 175, 169, .72);
+            box-shadow: 0 24px 48px rgba(6, 43, 51, .13);
+            transform: translateY(-5px);
+        }
+
+        .website-portfolio-card-preview {
+            display: block;
+            padding: 14px;
+            background: #edf1ee;
+        }
+
+        .website-portfolio-card-copy {
             display: flex;
-            min-height: 230px;
+            flex: 1;
             flex-direction: column;
             align-items: flex-start;
-            justify-content: center;
+            gap: 10px;
+            padding: 20px 22px 22px;
+        }
+
+        .website-portfolio-card-meta {
+            display: flex;
+            flex-wrap: wrap;
             gap: 8px;
-            padding: 30px;
-            background: var(--deep);
-            color: var(--bright-soft);
+            color: var(--teal);
+            font-size: .66rem;
+            font-weight: 700;
+            letter-spacing: .13em;
+            line-height: 1.4;
+            text-transform: uppercase;
         }
 
-        .website-demo-preview-unavailable span {
+        .website-portfolio-card-meta span + span::before {
+            margin-right: 8px;
+            color: var(--neutral-medium);
+            content: "·";
+        }
+
+        .website-portfolio-card-copy strong {
             font-family: "Space Grotesk", sans-serif;
-            font-size: 1.55rem;
-            font-weight: 600;
+            font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+            letter-spacing: -.035em;
         }
 
-        .website-demo-preview-unavailable small {
-            max-width: 24ch;
-            color: rgba(255, 255, 255, .72);
+        .website-portfolio-card-copy > span:not(.website-portfolio-card-meta) {
+            max-width: 46ch;
+            color: var(--muted);
+            font-size: .92rem;
+            line-height: 1.65;
+        }
+
+        .website-portfolio-card-copy em {
+            display: inline-flex;
+            gap: 9px;
+            margin-top: auto;
+            color: var(--deep);
+            font-size: .82rem;
+            font-style: normal;
+            font-weight: 700;
+        }
+
+        .website-portfolio-card-copy em b {
+            color: var(--teal);
+            font-size: 1rem;
+        }
+
+        .website-portfolio-note {
+            margin: 26px 0 0;
+            color: var(--muted);
+            font-size: .8rem;
+        }
+
+        .website-portfolio-note span {
+            margin-right: 6px;
+            color: var(--teal);
+        }
+
+        .concept-browser-window {
+            overflow: hidden;
+            border: 1px solid rgba(6, 43, 51, .18);
+            border-radius: 9px;
+            background: #fff;
+            box-shadow: 0 12px 24px rgba(6, 43, 51, .15);
+        }
+
+        .concept-browser-window.is-large {
+            box-shadow: 0 24px 60px rgba(6, 43, 51, .22);
+        }
+
+        .concept-browser-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 31px;
+            padding: 0 11px;
+            background: #f4f5f2;
+            color: #6b7977;
+            font-size: .58rem;
+        }
+
+        .concept-browser-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .concept-browser-dots i {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #c5cfca;
+        }
+
+        .concept-browser-address {
+            flex: 1;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #e8ece9;
+            text-align: center;
+        }
+
+        .concept-browser-mark {
+            color: var(--teal);
+            font-size: .6rem;
+            font-weight: 800;
+        }
+
+        .concept-site-shell {
+            min-height: 212px;
+            overflow: hidden;
+            background: #f7f4eb;
+        }
+
+        .concept-site-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            color: var(--concept-ink, #18343a);
+            font-size: .58rem;
+        }
+
+        .concept-site-nav strong {
+            flex: 1;
+            font-size: .72rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        .concept-site-nav span {
+            opacity: .55;
+        }
+
+        .concept-site-nav b {
+            font-size: .8rem;
+        }
+
+        .concept-site-hero {
+            min-height: 135px;
+            padding: 14px 18px 20px;
+            color: var(--concept-ink, #18343a);
+        }
+
+        .concept-site-hero > span {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--concept-accent, #0fafa9);
+            font-size: .52rem;
+            font-weight: 800;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+        }
+
+        .concept-site-hero h4 {
+            max-width: 14ch;
+            margin: 0 0 9px;
+            color: inherit;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(1.25rem, 3vw, 2.2rem);
+            letter-spacing: -.065em;
+            line-height: .94;
+        }
+
+        .concept-site-hero p {
+            max-width: 30ch;
+            margin: 0 0 13px;
+            color: var(--concept-muted, #5f6e73);
+            font-size: .62rem;
             line-height: 1.5;
         }
 
-        .website-demo-copy {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 28px;
+        .concept-site-hero em {
+            display: inline-flex;
+            gap: 8px;
+            color: var(--concept-ink, #18343a);
+            font-size: .59rem;
+            font-style: normal;
+            font-weight: 800;
         }
 
-        .website-demo-status {
-            margin: 0 0 8px;
-            color: var(--teal);
-            font-size: .72rem;
-            font-weight: 700;
+        .concept-site-hero em b {
+            color: var(--concept-accent, #0fafa9);
+        }
+
+        .concept-site-grid {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr .8fr;
+            gap: 5px;
+            height: 34px;
+            padding: 0 18px 14px;
+        }
+
+        .concept-site-grid span {
+            border-radius: 3px;
+            background: var(--concept-block, #cbd8cf);
+        }
+
+        .concept-site-grid span:nth-child(2) { opacity: .65; }
+        .concept-site-grid span:nth-child(3) { opacity: .4; }
+
+        .concept-dashboard-preview,
+        .concept-kanban-preview,
+        .concept-support-preview,
+        .concept-commerce-preview,
+        .concept-experience-preview {
+            min-height: 181px;
+            padding: 16px 18px;
+            color: var(--concept-ink, #18343a);
+        }
+
+        .concept-dashboard-preview {
+            display: grid;
+            grid-template-columns: 76px 1fr;
+            gap: 12px;
+            background: var(--concept-surface, #eef4f0);
+        }
+
+        .concept-dashboard-side {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 5px;
+            background: var(--concept-side, #18343a);
+            color: var(--concept-side-ink, #dff2ec);
+            font-size: .46rem;
+        }
+
+        .concept-dashboard-side b {
+            margin-bottom: 12px;
+            color: var(--concept-accent, #20c4be);
+            font-size: .56rem;
+        }
+
+        .concept-dashboard-side span { opacity: .68; }
+
+        .concept-dashboard-main > span,
+        .concept-kanban-preview > span,
+        .concept-support-preview span,
+        .concept-commerce-preview > span,
+        .concept-experience-preview span {
+            display: block;
+            color: var(--concept-accent, #0fafa9);
+            font-size: .48rem;
+            font-weight: 800;
             letter-spacing: .12em;
             text-transform: uppercase;
         }
 
-        .website-demo-copy h4 {
-            margin: 0;
-            color: var(--ink);
-            font-size: clamp(1.4rem, 2.5vw, 2rem);
+        .concept-dashboard-main h4,
+        .concept-kanban-preview h4,
+        .concept-support-preview h4,
+        .concept-commerce-preview h4,
+        .concept-experience-preview h4 {
+            max-width: 20ch;
+            margin: 8px 0 12px;
+            color: inherit;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(1.05rem, 2.5vw, 1.65rem);
+            letter-spacing: -.06em;
+            line-height: .95;
         }
 
-        .website-showcase-indicators {
+        .concept-dashboard-stats,
+        .concept-dashboard-table,
+        .concept-kanban-columns,
+        .concept-commerce-preview > div {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 16px;
+            gap: 6px;
         }
 
-        .website-showcase-indicator {
-            width: 8px;
-            height: 8px;
-            padding: 0;
-            border: 0;
+        .concept-dashboard-stats i,
+        .concept-dashboard-table i,
+        .concept-kanban-columns i,
+        .concept-commerce-preview > div i,
+        .concept-experience-preview > i {
+            display: block;
+            border-radius: 3px;
+            background: var(--concept-block, #b8cfad);
+        }
+
+        .concept-dashboard-stats i { width: 35px; height: 25px; }
+        .concept-dashboard-table { flex-direction: column; margin-top: 8px; }
+        .concept-dashboard-table i { width: 100%; height: 5px; opacity: .62; }
+
+        .concept-kanban-preview { background: var(--concept-surface, #edf1ee); }
+        .concept-kanban-columns { align-items: start; }
+        .concept-kanban-columns i { display: flex; flex: 1; flex-direction: column; gap: 5px; padding: 6px; background: rgba(255, 255, 255, .5); }
+        .concept-kanban-columns b { margin-bottom: 4px; font-size: .46rem; }
+        .concept-kanban-columns em { height: 18px; border-radius: 3px; background: var(--concept-block, #b8cfad); }
+
+        .concept-support-preview { display: grid; grid-template-columns: 1fr .8fr; align-items: center; gap: 12px; background: var(--concept-surface, #e8efec); }
+        .concept-support-ticket { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 6px; background: rgba(255, 255, 255, .62); font-size: .48rem; }
+        .concept-support-ticket i { height: 16px; background: var(--concept-block, #b8cfad); }
+
+        .concept-commerce-preview { background: var(--concept-surface, #332522); color: var(--concept-ink, #f2e6d1); }
+        .concept-commerce-preview > div { margin: 16px 0; }
+        .concept-commerce-preview > div i { flex: 1; height: 44px; background: var(--concept-block, #5e4037); }
+        .concept-commerce-preview em,
+        .concept-experience-preview em { display: inline-flex; gap: 8px; color: inherit; font-size: .55rem; font-style: normal; font-weight: 800; }
+        .concept-commerce-preview em b,
+        .concept-experience-preview em b { color: var(--concept-accent, #d69a5b); }
+
+        .concept-experience-preview { display: grid; grid-template-columns: 1.2fr .8fr .8fr; align-items: end; gap: 6px; background: var(--concept-surface, #e9eff0); }
+        .concept-experience-preview > i { height: 110px; background: var(--concept-block, #c2d0d6); }
+        .concept-experience-preview > i:nth-last-child(1) { height: 76px; opacity: .6; }
+
+        .layout-dashboard .concept-site-nav,
+        .layout-kanban .concept-site-nav,
+        .layout-support .concept-site-nav { background: var(--concept-side, #18343a); color: var(--concept-side-ink, #dff2ec); }
+        .layout-commerce .concept-site-nav { background: var(--concept-surface, #332522); color: var(--concept-ink, #f2e6d1); }
+
+        .theme-bloom { --concept-ink: #254b3a; --concept-accent: #d05d49; --concept-muted: #617565; --concept-block: #b8cfad; }
+        .theme-bloom .concept-site-shell { background: #edf1dc; }
+        .theme-cornerstone { --concept-ink: #3c2c25; --concept-accent: #b47546; --concept-muted: #786a5f; --concept-block: #d8b99a; }
+        .theme-cornerstone .concept-site-shell { background: #f1e8dc; }
+        .theme-clearsmile { --concept-ink: #174d5d; --concept-accent: #1db8ae; --concept-muted: #66828a; --concept-block: #b7e4df; }
+        .theme-clearsmile .concept-site-shell { background: #e8f5f3; }
+        .theme-apex { --concept-ink: #f2f4ef; --concept-accent: #d7a837; --concept-muted: #bdc7c0; --concept-block: #3f5759; }
+        .theme-apex .concept-site-shell { background: #1d3538; }
+        .theme-apex .concept-site-nav span { color: #d2ddd6; }
+        .theme-velora { --concept-ink: #34475b; --concept-accent: #b27d51; --concept-muted: #70808b; --concept-block: #c2d0d6; }
+        .theme-velora .concept-site-shell { background: #e9eff0; }
+        .theme-meridian { --concept-ink: #e8eee9; --concept-accent: #70c7b2; --concept-muted: #a5b9b3; --concept-block: #38575b; }
+        .theme-meridian .concept-site-shell { background: #19373c; }
+        .theme-meridian .concept-site-nav span { color: #c4d3ce; }
+        .theme-maison { --concept-ink: #f2e6d1; --concept-accent: #d69a5b; --concept-muted: #c3aa91; --concept-block: #5e4037; }
+        .theme-maison .concept-site-shell { background: #332522; }
+        .theme-maison .concept-site-nav span { color: #d7c7b4; }
+        .theme-atlas { --concept-ink: #20343a; --concept-accent: #d35e39; --concept-muted: #697b7d; --concept-block: #b8c9c6; }
+        .theme-atlas .concept-site-shell { background: #e8efec; }
+        .theme-greenline { --concept-ink: #163d38; --concept-accent: #e4a72f; --concept-muted: #5d7971; --concept-block: #b8d6b8; --concept-surface: #e6f0df; --concept-side: #24554a; }
+        .theme-greenline .concept-site-shell { background: #e6f0df; }
+        .theme-summit { --concept-ink: #2d3857; --concept-accent: #db6f4f; --concept-muted: #69768c; --concept-block: #c4cde1; }
+        .theme-summit .concept-site-shell { background: #edf0f8; }
+        .theme-novatech { --concept-ink: #e9f2f2; --concept-accent: #6ae0d0; --concept-muted: #a8c2c1; --concept-block: #28535b; --concept-surface: #15363e; --concept-side: #0c272f; }
+        .theme-novatech .concept-site-shell { background: #15363e; }
+        .theme-autohaus { --concept-ink: #e7eceb; --concept-accent: #e56d4d; --concept-muted: #aabbb8; --concept-block: #405c61; --concept-surface: #1e3539; }
+        .theme-autohaus .concept-site-shell { background: #1e3539; }
+        .theme-autohaus .concept-site-nav span { color: #c0cfcb; }
+        .theme-eventsphere { --concept-ink: #f8eee4; --concept-accent: #f5b36b; --concept-muted: #d6b9a5; --concept-block: #6b4b64; --concept-surface: #44344d; }
+        .theme-eventsphere .concept-site-shell { background: #44344d; }
+        .theme-eventsphere .concept-site-nav span { color: #d8c7d7; }
+        .theme-booklypro { --concept-ink: #273457; --concept-accent: #e17391; --concept-muted: #72809b; --concept-block: #c7d1e5; --concept-surface: #edf0f8; }
+        .theme-booklypro .concept-site-shell { background: #edf0f8; }
+        .theme-clientconnect { --concept-ink: #e7f1f0; --concept-accent: #6bd0ba; --concept-muted: #9dbbb8; --concept-block: #335862; --concept-surface: #19373e; --concept-side: #102a32; }
+        .theme-clientconnect .concept-site-shell { background: #19373e; }
+        .theme-clientconnect .concept-site-nav span { color: #c3d6d2; }
+        .theme-stockpilot { --concept-ink: #e7f2ec; --concept-accent: #8bd6a8; --concept-muted: #a6c1b2; --concept-block: #3a6355; --concept-surface: #17372f; --concept-side: #0e2a24; }
+        .theme-stockpilot .concept-site-shell { background: #17372f; }
+        .theme-stockpilot .concept-site-nav span { color: #c3d9cd; }
+        .theme-finflow { --concept-ink: #eee9dc; --concept-accent: #e5bb69; --concept-muted: #c8c0a7; --concept-block: #5b5a42; --concept-surface: #37352a; --concept-side: #24241e; }
+        .theme-finflow .concept-site-shell { background: #37352a; }
+        .theme-finflow .concept-site-nav span { color: #d6cfb9; }
+        .theme-staffcore { --concept-ink: #273d5a; --concept-accent: #f08b64; --concept-muted: #718197; --concept-block: #c4d2e0; --concept-surface: #edf2f7; }
+        .theme-staffcore .concept-site-shell { background: #edf2f7; }
+        .theme-projectflow { --concept-ink: #eaf1f2; --concept-accent: #e6b45f; --concept-muted: #a7bcc1; --concept-block: #3a5964; --concept-surface: #1d3c45; --concept-side: #132e37; }
+        .theme-projectflow .concept-site-shell { background: #1d3c45; }
+        .theme-projectflow .concept-site-nav span { color: #c4d3d4; }
+        .theme-servicedesk { --concept-ink: #27314c; --concept-accent: #5f8ee8; --concept-muted: #71809a; --concept-block: #c8d5ee; --concept-surface: #eef2fa; }
+        .theme-servicedesk .concept-site-shell { background: #eef2fa; }
+
+        .website-portfolio-modal[hidden] { display: none; }
+
+        .website-portfolio-modal {
+            position: fixed;
+            z-index: 2000;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+        }
+
+        .website-portfolio-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 25, 30, .78);
+            backdrop-filter: blur(7px);
+        }
+
+        .website-portfolio-modal-dialog {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 1080px);
+            max-height: calc(100vh - 56px);
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 18px;
+            background: #f7f7f4;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, .34);
+            animation: website-modal-in .35s cubic-bezier(.2, .75, .25, 1) both;
+        }
+
+        .website-portfolio-modal-header,
+        .website-portfolio-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 24px 30px;
+        }
+
+        .website-portfolio-modal-header {
+            border-bottom: 1px solid rgba(24, 52, 58, .12);
+        }
+
+        .website-portfolio-modal-header h2 {
+            margin: 7px 0 0;
+            color: var(--ink);
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            letter-spacing: -.06em;
+        }
+
+        .website-portfolio-modal-close {
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(24, 52, 58, .18);
             border-radius: 50%;
-            background: var(--neutral-medium);
+            background: transparent;
+            color: var(--ink);
+            font-size: 1.6rem;
+            line-height: 1;
         }
 
-        .website-showcase-indicator[aria-current="true"] {
-            background: var(--teal);
-            box-shadow: 0 0 0 3px rgba(15, 175, 169, .18);
+        .website-portfolio-modal-preview {
+            padding: 32px;
+            background: #e7ebe8;
         }
 
-        @keyframes website-demo-pop {
-            from { opacity: 0; transform: scale(.97); }
-            to { opacity: 1; transform: scale(1); }
+        .website-portfolio-modal-footer {
+            align-items: end;
         }
 
-        @keyframes website-demo-disappear {
-            to { opacity: 0; transform: scale(.985); }
+        .website-portfolio-modal-footer p {
+            max-width: 58ch;
+            margin: 0;
+            color: var(--muted);
+            font-size: .95rem;
+            line-height: 1.7;
+        }
+
+        .website-portfolio-modal-open { overflow: hidden; }
+
+        @keyframes website-portfolio-card-in {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes website-modal-in {
+            from { opacity: 0; transform: translateY(12px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .btn-primary,
@@ -3393,29 +4110,53 @@
                 padding-bottom: 78px;
             }
 
-            .website-showcase-heading {
+            .website-portfolio-prototype {
+                margin-top: 68px;
+                padding-top: 30px;
+            }
+
+            .website-portfolio-intro {
                 display: block;
             }
 
-            .website-showcase-heading p {
-                margin-top: 12px;
+            .website-portfolio-intro p {
+                margin-top: 18px;
             }
 
-            .website-demo-card {
+            .website-portfolio-tabs {
+                justify-content: flex-start;
+                border-radius: 18px;
+            }
+
+            .website-portfolio-tab {
+                flex: 0 0 auto;
+            }
+
+            .website-portfolio-grid {
                 grid-template-columns: 1fr;
             }
 
-            .website-demo-preview {
-                min-height: 150px;
+            .website-portfolio-modal {
+                padding: 12px;
             }
 
-            .website-demo-preview iframe {
-                min-height: 190px;
+            .website-portfolio-modal-dialog {
+                max-height: calc(100vh - 24px);
+                border-radius: 14px;
             }
 
-            .website-demo-preview-unavailable {
-                min-height: 190px;
-                padding: 24px;
+            .website-portfolio-modal-header,
+            .website-portfolio-modal-footer,
+            .website-portfolio-modal-preview {
+                padding: 20px;
+            }
+
+            .website-portfolio-modal-footer {
+                display: block;
+            }
+
+            .website-portfolio-modal-footer .btn {
+                margin-top: 18px;
             }
         }
 
@@ -3428,6 +4169,384 @@
             .it-card:hover {
                 transform: translateY(-4px);
             }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .website-portfolio-card-wrap,
+            .website-portfolio-modal-dialog {
+                animation: none;
+            }
+        }
+
+        /* The demo studio is deliberately contained in the public page so fictional
+           records can be explored without touching the managed portfolio backend. */
+        .website-portfolio-modal-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+        .demo-experience-modal[hidden] { display: none; }
+        .demo-experience-modal { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 1rem; background: rgba(12, 15, 18, .78); }
+        .demo-experience-backdrop { position: absolute; inset: 0; }
+        .demo-experience-dialog { position: relative; z-index: 1; width: min(1180px, 100%); max-height: min(920px, 96vh); overflow: hidden; border: 1px solid rgba(255,255,255,.16); border-radius: 1.25rem; background: #f5f2ec; box-shadow: 0 2rem 8rem rgba(0,0,0,.35); }
+        .demo-experience-header { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; padding: 1.25rem 1.5rem; background: #171a1e; color: #fff; }
+        .demo-experience-header h2 { margin: .25rem 0 .35rem; font-size: clamp(1.35rem, 2vw, 2rem); }
+        .demo-experience-header p { max-width: 42rem; margin: 0; color: #aeb6b7; font-size: .82rem; }
+        .demo-experience-header-actions { display: flex; gap: .75rem; align-items: center; }
+        .demo-reset-button { border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: .55rem .8rem; color: #fff; background: transparent; font-size: .75rem; cursor: pointer; }
+        .demo-experience-body { max-height: calc(min(920px, 96vh) - 110px); overflow: auto; }
+        .demo-site-shell, .demo-management { min-height: 100%; color: #1d2825; background: #f7f5f0; }
+        .demo-fake-browser-bar { display: flex; align-items: center; gap: .4rem; padding: .65rem 1rem; background: #e8e4dc; }
+        .demo-fake-browser-bar span { width: .45rem; height: .45rem; border-radius: 50%; background: #9c9b92; }
+        .demo-fake-browser-bar small { margin-left: .5rem; color: #77766f; }
+        .demo-demo-banner { padding: .55rem 1.5rem; background: #dfe8df; color: #385442; text-align: center; font-size: .72rem; letter-spacing: .04em; }
+        .demo-site-nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 1040px; margin: auto; padding: 1.25rem 2rem; }
+        .demo-site-nav strong { letter-spacing: .08em; font-size: .8rem; text-transform: uppercase; }
+        .demo-site-nav div { display: flex; gap: 1rem; }
+        .demo-site-nav button { border: 0; color: inherit; background: none; cursor: pointer; font: inherit; font-size: .78rem; }
+        .demo-nav-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid currentColor; border-radius: 50%; font-size: .65rem; }
+        .demo-site-hero { display: grid; grid-template-columns: 1.3fr .7fr; gap: 2rem; align-items: center; max-width: 1040px; min-height: 360px; margin: auto; padding: 3rem 2rem; }
+        .demo-eyebrow, .demo-section-heading > span, .demo-card-detail { color: #bc643e; font-size: .7rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+        .demo-site-hero h1 { max-width: 700px; margin: .8rem 0 1rem; font-family: Georgia, serif; font-size: clamp(2.6rem, 7vw, 5.8rem); line-height: .92; letter-spacing: -.065em; }
+        .demo-site-hero p { max-width: 40rem; margin-bottom: 1.5rem; color: #53605b; font-size: 1.03rem; line-height: 1.7; }
+        .demo-primary-action, .demo-inline-action { border: 0; border-radius: 999px; padding: .75rem 1rem; color: #fff; background: #1d2825; cursor: pointer; font: inherit; font-size: .78rem; }
+        .demo-inline-action { margin-top: 1rem; padding: 0; color: #1d2825; background: none; font-weight: 700; }
+        .demo-hero-orbit { display: grid; place-items: center; width: min(260px, 100%); aspect-ratio: 1; margin: auto; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f0c4a6, #a75f50 42%, #263d38 43%, #172521 70%); color: #fff; text-align: center; transform: rotate(-8deg); }
+        .demo-hero-orbit span { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+        .demo-hero-orbit b { font-family: Georgia, serif; font-size: 2rem; line-height: .9; }
+        .demo-site-section { max-width: 1040px; margin: auto; padding: 4rem 2rem; }
+        .demo-section-heading { margin-bottom: 1.5rem; }
+        .demo-section-heading h2, .demo-story h2, .demo-contact h2 { max-width: 34rem; margin: .55rem 0; font-family: Georgia, serif; font-size: clamp(1.8rem, 4vw, 3.35rem); line-height: .98; letter-spacing: -.045em; }
+        .demo-story { border-top: 1px solid #d9d6ce; border-bottom: 1px solid #d9d6ce; }
+        .demo-story > p { max-width: 720px; margin: 0; color: #53605b; font-size: 1.2rem; line-height: 1.7; }
+        .demo-content-grid, .demo-people-grid, .demo-quote-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .demo-content-card, .demo-people-grid article { min-height: 205px; padding: 1.35rem; border: 1px solid #dfdbd2; background: rgba(255,255,255,.58); }
+        .demo-content-card h3, .demo-people-grid h3 { margin: .65rem 0 .5rem; font-size: 1.15rem; }
+        .demo-content-card p, .demo-people-grid p { color: #64706b; line-height: 1.55; }
+        .demo-content-card strong { font-size: 1.05rem; }
+        .demo-filter-bar, .demo-toolbar { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin-bottom: 1rem; }
+        .demo-filter-bar label, .demo-toolbar label, .demo-form label, .demo-record-fields label { display: grid; gap: .35rem; color: #69716c; font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        .demo-filter-bar input, .demo-filter-bar select, .demo-toolbar input, .demo-form input, .demo-form textarea, .demo-record-fields input { min-width: 180px; border: 1px solid #d2d0c8; border-radius: .45rem; padding: .7rem; background: #fff; color: #1d2825; font: inherit; }
+        .demo-filter-bar select { min-width: 150px; }
+        .demo-property-image, .demo-product-image { display: grid; place-items: end start; min-height: 95px; margin: -1.35rem -1.35rem 1rem; padding: .75rem; background: linear-gradient(125deg, #d8c6ae, #6f8171); color: #fff; }
+        .demo-product-image { background: linear-gradient(145deg, #d9d3c6, #505d67); }
+        .demo-property-image span, .demo-product-image span { font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; }
+        .demo-people-grid { grid-template-columns: repeat(2, 1fr); }
+        .demo-avatar { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: #d9b99f; font-weight: 700; }
+        .demo-people-grid strong { color: #bc643e; font-size: .78rem; }
+        .demo-quote-grid blockquote { margin: 0; padding: 1.5rem; background: #1d2825; color: #fff; }
+        .demo-quote-grid p { min-height: 5rem; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.25; }
+        .demo-quote-grid cite { color: #b8c2bc; font-size: .75rem; font-style: normal; }
+        .demo-faq details { border-top: 1px solid #d9d6ce; padding: 1rem 0; }
+        .demo-faq details:last-child { border-bottom: 1px solid #d9d6ce; }
+        .demo-faq summary { cursor: pointer; font-weight: 700; }
+        .demo-faq details p { max-width: 650px; color: #64706b; line-height: 1.6; }
+        .demo-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: #e5e0d7; }
+        .demo-contact strong { color: #bc643e; }
+        .demo-form, .demo-record-fields { display: grid; gap: 1rem; }
+        .demo-form textarea { min-height: 100px; resize: vertical; }
+        .demo-feedback { min-height: 1.2rem; color: #47704f; font-size: .8rem; }
+        .demo-site-footer { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1.25rem 2rem; background: #1d2825; color: #cbd3ce; font-size: .72rem; }
+        .demo-site-footer strong { color: #fff; text-transform: uppercase; }
+        .demo-cart-summary { margin-bottom: 1rem; padding: .8rem 1rem; border: 1px solid #d3d0c7; background: #fff; font-size: .8rem; }
+        .demo-empty { grid-column: 1 / -1; padding: 2rem; border: 1px dashed #bdbab0; color: #69716c; text-align: center; }
+        .demo-management { padding: 2rem; background: #f3f6f5; }
+        .demo-management-top { display: flex; justify-content: space-between; align-items: end; gap: 1rem; max-width: 1040px; margin: auto; }
+        .demo-management-top h2 { margin: .4rem 0; font-size: clamp(2rem, 5vw, 4rem); letter-spacing: -.06em; }
+        .demo-management-top p { color: #69716c; }
+        .demo-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 1040px; margin: 2rem auto; }
+        .demo-metrics article { padding: 1.2rem; border: 1px solid #d6dedb; background: #fff; }
+        .demo-metrics span { color: #69716c; font-size: .72rem; text-transform: uppercase; }
+        .demo-metrics strong { display: block; margin-top: .5rem; font-size: 2rem; }
+        .demo-tabs, .demo-toolbar, .demo-table-wrap, .demo-add-record-panel { max-width: 1040px; margin-right: auto; margin-left: auto; }
+        .demo-tabs { display: flex; gap: .35rem; overflow-x: auto; border-bottom: 1px solid #d6dedb; }
+        .demo-tabs button { border: 0; border-bottom: 2px solid transparent; padding: .85rem 1rem; background: none; color: #69716c; cursor: pointer; white-space: nowrap; }
+        .demo-tabs button.is-active { border-color: #bc643e; color: #1d2825; font-weight: 700; }
+        .demo-toolbar { justify-content: space-between; padding: 1.25rem 0; color: #69716c; font-size: .8rem; }
+        .demo-table-wrap { overflow-x: auto; background: #fff; }
+        .demo-table { width: 100%; border-collapse: collapse; min-width: 680px; }
+        .demo-table th, .demo-table td { padding: .9rem 1rem; border-bottom: 1px solid #e4e9e6; text-align: left; font-size: .8rem; }
+        .demo-table th { color: #69716c; font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; }
+        .demo-table-action { border: 0; margin-right: .4rem; color: #bc643e; background: none; cursor: pointer; font-size: .72rem; }
+        .demo-add-record-panel { margin-top: 1rem; padding: 1.25rem; background: #fff; }
+        .demo-add-record-panel h3 { margin-top: 0; }
+        .demo-record-fields { grid-template-columns: repeat(3, 1fr); margin-bottom: 1rem; }
+        .demo-print-panel { position: fixed; inset: 10% 10%; z-index: 2; padding: 2rem; background: #fff; box-shadow: 0 1rem 4rem rgba(0,0,0,.25); }
+        @media (max-width: 700px) { .demo-site-nav, .demo-site-hero, .demo-site-section, .demo-management { padding-right: 1rem; padding-left: 1rem; } .demo-site-nav div { display: none; } .demo-site-hero, .demo-contact { grid-template-columns: 1fr; } .demo-content-grid, .demo-quote-grid, .demo-metrics, .demo-record-fields { grid-template-columns: 1fr; } .demo-people-grid { grid-template-columns: 1fr; } .demo-experience-header { padding: 1rem; } .demo-experience-header p, .demo-reset-button { display: none; } .demo-management-top { align-items: start; flex-direction: column; } }
+        @media (prefers-reduced-motion: reduce) { .demo-experience-modal *, .demo-experience-modal *::before, .demo-experience-modal *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+        /* Portfolio experiences: each theme receives its own art direction while
+           staying inside the browser-local renderer and avoiding production APIs. */
+        .demo-experience-body .demo-demo-banner,
+        .demo-experience-body .demo-testimonials,
+        .demo-experience-body .demo-faq,
+        .demo-experience-body .demo-site-footer span:nth-child(2) { display: none; }
+        .demo-site-nav button[data-demo-scroll="faq"] { display: none; }
+        .demo-management-top p { font-size: 0; }
+        .demo-management-top p::after { content: "Workspace preview with browser-local interactions."; color: #69716c; font-size: .95rem; }
+        .demo-contact > div > p { font-size: 0; }
+        .demo-contact > div > p::after { content: "Explore the contact flow and see how the experience guides a considered enquiry."; color: #69716c; font-size: .95rem; line-height: 1.6; }
+        .demo-form .demo-primary-action,
+        .demo-property-card [data-demo-item-action],
+        .demo-content-card [data-demo-item-action],
+        .demo-product-card [data-demo-add-product],
+        [data-demo-checkout] { font-size: 0; }
+        .demo-form .demo-primary-action::after { content: "Send enquiry"; font-size: .78rem; }
+        .demo-property-card [data-demo-item-action]::after { content: "Request viewing"; font-size: .78rem; }
+        .demo-content-card [data-demo-item-action]::after { content: "Explore details"; font-size: .78rem; }
+        .demo-product-card [data-demo-add-product]::after { content: "Add to cart"; font-size: .78rem; }
+        [data-demo-checkout]::after { content: "Continue to checkout"; font-size: .78rem; }
+        .website-portfolio-modal-footer > p { font-size: 0; }
+        .website-portfolio-modal-footer > p::after { content: "A considered digital experience shaped around its audience and purpose."; color: var(--muted); font-size: .95rem; line-height: 1.7; }
+        .website-portfolio-card-copy em { font-size: 0; }
+        .website-portfolio-card-copy em::before { content: "View experience"; font-size: .8rem; }
+        .demo-site-shell { overflow: hidden; font-family: "DM Sans", sans-serif; }
+        .demo-site-shell .demo-site-nav { position: relative; z-index: 2; max-width: 1160px; }
+        .demo-site-shell .demo-site-nav strong { font-family: "Space Grotesk", sans-serif; }
+        .demo-site-shell .demo-site-hero { max-width: 1160px; min-height: 470px; }
+        .demo-site-shell .demo-site-hero h1 { font-family: "Space Grotesk", sans-serif; }
+        .demo-site-shell .demo-site-section { max-width: 1160px; }
+
+        /* Urban Bloom: quiet editorial commerce with a botanical palette. */
+        .theme-bloom { --concept-ink: #234536; --concept-accent: #c55e48; --concept-muted: #607668; --concept-block: #b9d2ad; --concept-surface: #f7f2df; }
+        .theme-bloom .demo-site-nav { border-bottom: 1px solid rgba(35,69,54,.18); }
+        .theme-bloom .demo-site-nav strong { font-family: Georgia, serif; font-size: 1.15rem; letter-spacing: -.04em; text-transform: lowercase; }
+        .theme-bloom .demo-site-hero { grid-template-columns: .9fr 1.1fr; min-height: 570px; background: #edf1dc; }
+        .theme-bloom .demo-site-hero h1 { max-width: 480px; font-family: Georgia, serif; font-size: clamp(3rem, 7vw, 6.8rem); font-weight: 400; line-height: .86; }
+        .theme-bloom .demo-hero-orbit { width: min(390px, 100%); background: radial-gradient(circle at 40% 34%, #f8d9a7 0 12%, transparent 13%), radial-gradient(circle at 55% 58%, #9bb887 0 26%, #3d7353 27% 45%, #1e493b 46% 64%, #e9c6a5 65%); box-shadow: 24px 28px 0 rgba(197,94,72,.18); transform: rotate(5deg); }
+        .theme-bloom .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-bloom .demo-content-card { border: 0; border-radius: 0; background: #f7f2df; }
+        .theme-bloom .demo-card-detail { color: #c55e48; }
+
+        /* Cornerstone: warm café atmosphere with menu-first hierarchy. */
+        .theme-cornerstone { --concept-ink: #f6ede0; --concept-accent: #e8a668; --concept-muted: #c5b4a2; --concept-block: #86533a; --concept-surface: #2d211d; }
+        .theme-cornerstone .demo-site-shell { background: #2d211d; color: #f6ede0; }
+        .theme-cornerstone .demo-site-nav { border-bottom: 1px solid rgba(246,237,224,.18); }
+        .theme-cornerstone .demo-site-nav div { font-family: Georgia, serif; }
+        .theme-cornerstone .demo-site-hero { display: block; min-height: 590px; padding-top: 7rem; text-align: center; background: radial-gradient(circle at 50% 34%, rgba(232,166,104,.35), transparent 24%), linear-gradient(145deg, #3b2721, #201715); }
+        .theme-cornerstone .demo-site-hero > div:first-child { max-width: 720px; margin: auto; }
+        .theme-cornerstone .demo-site-hero h1 { margin: 1rem auto; font-family: Georgia, serif; font-size: clamp(3.5rem, 8vw, 8rem); font-weight: 400; line-height: .83; }
+        .theme-cornerstone .demo-hero-orbit { width: 130px; height: 130px; margin: 46px auto 0; background: #e8a668; color: #2d211d; transform: none; box-shadow: 0 0 0 20px rgba(232,166,104,.12), 0 0 0 40px rgba(232,166,104,.06); }
+        .theme-cornerstone .demo-content-grid { grid-template-columns: 1.3fr 1fr 1fr 1fr; }
+        .theme-cornerstone .demo-content-card { border-color: rgba(246,237,224,.2); border-radius: 0; background: transparent; }
+        .theme-cornerstone .demo-content-card h3 { font-family: Georgia, serif; font-weight: 400; }
+
+        /* ClearSmile: calm clinical whitespace and appointment-led structure. */
+        .theme-clearsmile { --concept-ink: #174d5d; --concept-accent: #1db8ae; --concept-muted: #66828a; --concept-block: #b7e4df; --concept-surface: #f5fbfa; }
+        .theme-clearsmile .demo-site-nav { border-bottom: 2px solid #b7e4df; }
+        .theme-clearsmile .demo-site-nav strong { letter-spacing: -.06em; text-transform: none; }
+        .theme-clearsmile .demo-site-hero { grid-template-columns: 1fr .8fr; min-height: 510px; background: #e8f5f3; }
+        .theme-clearsmile .demo-site-hero h1 { max-width: 500px; font-size: clamp(3rem, 6vw, 6rem); font-weight: 500; letter-spacing: -.08em; }
+        .theme-clearsmile .demo-hero-orbit { width: 290px; border-radius: 44% 56% 60% 40%; background: linear-gradient(140deg, #fff, #b7e4df); color: #174d5d; transform: rotate(12deg); box-shadow: inset -20px -20px 0 rgba(29,184,174,.15); }
+        .theme-clearsmile .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-clearsmile .demo-content-card { border: 0; border-top: 3px solid #1db8ae; border-radius: 0; background: #fff; box-shadow: 0 18px 40px rgba(23,77,93,.08); }
+
+        /* Apex: high-contrast service conversion with industrial rhythm. */
+        .theme-apex { --concept-ink: #f2f4ef; --concept-accent: #d7a837; --concept-muted: #bdc7c0; --concept-block: #3f5759; --concept-surface: #17282b; }
+        .theme-apex .demo-site-shell { background: #17282b; }
+        .theme-apex .demo-site-nav { border-bottom: 1px solid rgba(242,244,239,.16); }
+        .theme-apex .demo-site-nav strong { font-family: monospace; letter-spacing: .12em; }
+        .theme-apex .demo-site-hero { min-height: 520px; background: linear-gradient(110deg, #17282b 0 58%, #d7a837 58%); }
+        .theme-apex .demo-site-hero h1 { max-width: 510px; font-family: monospace; font-size: clamp(2.7rem, 6vw, 6rem); line-height: .92; text-transform: uppercase; }
+        .theme-apex .demo-hero-orbit { width: 250px; border-radius: 16px; background: repeating-linear-gradient(135deg, #f2f4ef 0 10px, #17282b 10px 20px); color: #17282b; transform: rotate(-8deg); }
+        .theme-apex .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-apex .demo-content-card { border: 1px solid rgba(215,168,55,.45); border-radius: 0; background: #21383b; }
+
+        /* Greenline: optimistic sustainability with a radial energy motif. */
+        .theme-greenline .demo-site-nav { border-bottom: 1px solid rgba(22,61,56,.18); }
+        .theme-greenline .demo-site-hero { min-height: 560px; background: radial-gradient(circle at 75% 45%, #e4a72f 0 13%, transparent 14%), radial-gradient(circle at 72% 42%, #24554a 0 28%, transparent 29%), #e6f0df; }
+        .theme-greenline .demo-site-hero h1 { max-width: 540px; font-size: clamp(3rem, 7vw, 7rem); line-height: .88; letter-spacing: -.09em; }
+        .theme-greenline .demo-hero-orbit { display: none; }
+        .theme-greenline .demo-content-grid { grid-template-columns: 1.2fr .8fr .8fr; }
+        .theme-greenline .demo-content-card { border: 0; border-radius: 22px; background: #f5f0d7; }
+
+        /* Velora and Meridian: editorial property and assured consulting systems. */
+        .theme-velora .demo-site-nav { border-bottom: 1px solid rgba(52,71,91,.2); }
+        .theme-velora .demo-site-hero { grid-template-columns: 1.1fr .9fr; background: linear-gradient(120deg, #e9eff0 0 63%, #c2d0d6 63%); }
+        .theme-velora .demo-site-hero h1 { font-family: Georgia, serif; font-size: clamp(3.2rem, 7vw, 7rem); font-weight: 400; line-height: .86; }
+        .theme-velora .demo-hero-orbit { width: 310px; border-radius: 0; background: linear-gradient(155deg, #c9b294, #657d84); transform: rotate(3deg); }
+        .theme-velora .demo-content-grid { grid-template-columns: repeat(4, 1fr); }
+        .theme-velora .demo-content-card { border: 0; border-radius: 0; background: #fff; }
+        .theme-meridian .demo-site-shell { background: #19373c; color: #e8eee9; }
+        .theme-meridian .demo-site-nav { border-bottom: 1px solid rgba(232,238,233,.18); }
+        .theme-meridian .demo-site-hero { display: block; min-height: 560px; padding-top: 7rem; background: linear-gradient(125deg, #19373c, #28575b); }
+        .theme-meridian .demo-site-hero h1 { max-width: 780px; font-size: clamp(3.8rem, 8vw, 8.5rem); line-height: .82; }
+        .theme-meridian .demo-hero-orbit { display: none; }
+        .theme-meridian .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-meridian .demo-content-card { border: 1px solid rgba(112,199,178,.35); border-radius: 0; background: rgba(56,87,91,.38); }
+
+        /* Summit, Maison and NovaTech make the education and commerce directions distinct. */
+        .theme-summit .demo-site-nav { border-bottom: 3px solid #db6f4f; }
+        .theme-summit .demo-site-hero { grid-template-columns: .85fr 1.15fr; background: #edf0f8; }
+        .theme-summit .demo-site-hero h1 { font-family: Georgia, serif; font-size: clamp(3.2rem, 7vw, 7rem); font-weight: 400; line-height: .85; }
+        .theme-summit .demo-hero-orbit { width: 360px; border-radius: 18% 82% 30% 70%; background: linear-gradient(145deg, #db6f4f, #c4cde1); transform: rotate(-13deg); }
+        .theme-summit .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-summit .demo-content-card { border: 0; border-radius: 14px; background: #fff; box-shadow: 8px 8px 0 #c4cde1; }
+        .theme-maison .demo-site-shell { background: #332522; color: #f2e6d1; }
+        .theme-maison .demo-site-nav { border-bottom: 1px solid rgba(242,230,209,.22); }
+        .theme-maison .demo-site-nav strong { font-family: Georgia, serif; font-size: 1.2rem; font-weight: 400; letter-spacing: .08em; }
+        .theme-maison .demo-site-hero { display: block; min-height: 590px; padding-top: 8rem; background: radial-gradient(circle at 72% 42%, rgba(214,154,91,.4), transparent 22%), #332522; }
+        .theme-maison .demo-site-hero h1 { max-width: 760px; font-family: Georgia, serif; font-size: clamp(4rem, 9vw, 9rem); font-weight: 400; line-height: .78; }
+        .theme-maison .demo-hero-orbit { display: none; }
+        .theme-maison .demo-content-grid { grid-template-columns: repeat(4, 1fr); }
+        .theme-maison .demo-content-card { border: 1px solid rgba(214,154,91,.35); border-radius: 0; background: #5e4037; }
+        .theme-novatech .demo-site-shell { background: #0c272f; color: #e9f2f2; }
+        .theme-novatech .demo-site-nav { border-bottom: 1px solid rgba(106,224,208,.3); }
+        .theme-novatech .demo-site-hero { min-height: 560px; background: linear-gradient(135deg, #0c272f, #28535b 50%, #123941); }
+        .theme-novatech .demo-site-hero h1 { max-width: 650px; font-size: clamp(3.2rem, 7vw, 7.5rem); line-height: .82; letter-spacing: -.1em; }
+        .theme-novatech .demo-hero-orbit { width: 290px; background: conic-gradient(from 45deg, #6ae0d0, #28535b, #e9f2f2, #6ae0d0); color: #0c272f; transform: rotate(22deg); box-shadow: 0 0 70px rgba(106,224,208,.35); }
+        .theme-novatech .demo-content-grid { grid-template-columns: repeat(2, 1fr); }
+        .theme-novatech .demo-content-card { border-color: rgba(106,224,208,.35); border-radius: 6px; background: rgba(21,54,62,.85); }
+
+        /* Automotive, events, booking and client portal directions. */
+        .theme-autohaus .demo-site-shell { background: #1e3539; color: #e7eceb; }
+        .theme-autohaus .demo-site-nav { border-bottom: 1px solid rgba(231,236,235,.2); }
+        .theme-autohaus .demo-site-hero { min-height: 600px; background: linear-gradient(120deg, #1e3539 0 45%, #405c61 45% 70%, #1e3539 70%); }
+        .theme-autohaus .demo-site-hero h1 { font-size: clamp(3.5rem, 8vw, 8rem); line-height: .8; text-transform: uppercase; }
+        .theme-autohaus .demo-hero-orbit { width: 410px; border-radius: 10px; background: linear-gradient(145deg, #e56d4d, #182c30 55%, #aabbb8); transform: skewY(-7deg) rotate(4deg); }
+        .theme-autohaus .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-autohaus .demo-content-card { border: 0; border-radius: 4px; background: #405c61; }
+        .theme-eventsphere .demo-site-shell { background: #44344d; color: #f8eee4; }
+        .theme-eventsphere .demo-site-nav { border-bottom: 1px solid rgba(248,238,228,.2); }
+        .theme-eventsphere .demo-site-hero { min-height: 570px; background: radial-gradient(circle at 20% 30%, #f5b36b, transparent 14%), radial-gradient(circle at 75% 70%, #6b4b64, transparent 30%), #44344d; }
+        .theme-eventsphere .demo-site-hero h1 { max-width: 700px; font-family: Georgia, serif; font-size: clamp(4rem, 9vw, 9rem); font-weight: 400; line-height: .78; }
+        .theme-eventsphere .demo-hero-orbit { width: 220px; background: radial-gradient(circle at 30% 30%, #f5b36b, #6b4b64 45%, #251f32 46%); color: #f8eee4; }
+        .theme-eventsphere .demo-content-grid { grid-template-columns: 1fr 1fr; }
+        .theme-eventsphere .demo-content-card { border: 1px solid rgba(245,179,107,.4); border-radius: 20px 0 20px 0; background: #6b4b64; }
+        .theme-booklypro .demo-site-nav { border-bottom: 2px solid #e17391; }
+        .theme-booklypro .demo-site-hero { grid-template-columns: 1.2fr .8fr; background: #edf0f8; }
+        .theme-booklypro .demo-site-hero h1 { max-width: 580px; font-size: clamp(3.2rem, 7vw, 7rem); line-height: .84; }
+        .theme-booklypro .demo-hero-orbit { width: 290px; border-radius: 50%; background: repeating-conic-gradient(#e17391 0 12deg, #c7d1e5 12deg 24deg); color: #273457; transform: rotate(-17deg); }
+        .theme-booklypro .demo-content-grid { grid-template-columns: repeat(3, 1fr); }
+        .theme-booklypro .demo-content-card { border: 0; border-radius: 12px; background: #fff; box-shadow: 0 18px 45px rgba(39,52,87,.1); }
+        .theme-clientconnect .demo-site-shell { background: #102a32; color: #e7f1f0; }
+        .theme-clientconnect .demo-site-nav { border-bottom: 1px solid rgba(107,208,186,.3); }
+        .theme-clientconnect .demo-site-hero { display: block; min-height: 540px; padding-top: 7rem; background: linear-gradient(135deg, #102a32, #335862); }
+        .theme-clientconnect .demo-site-hero h1 { max-width: 720px; font-size: clamp(3.5rem, 8vw, 8rem); line-height: .8; }
+        .theme-clientconnect .demo-hero-orbit { display: none; }
+        .theme-clientconnect .demo-content-grid { grid-template-columns: 1fr 1fr 1fr; }
+        .theme-clientconnect .demo-content-card { border: 1px solid rgba(107,208,186,.32); border-radius: 10px; background: #335862; }
+
+        /* Management systems: product UI first, with different visual language per tool. */
+        .theme-stockpilot .demo-management { background: #17372f; color: #e7f2ec; }
+        .theme-stockpilot .demo-management-top, .theme-stockpilot .demo-tabs, .theme-stockpilot .demo-toolbar, .theme-stockpilot .demo-table-wrap, .theme-stockpilot .demo-add-record-panel { max-width: 1120px; }
+        .theme-stockpilot .demo-metrics article, .theme-stockpilot .demo-table-wrap, .theme-stockpilot .demo-add-record-panel { border: 1px solid rgba(139,214,168,.3); background: #24554a; }
+        .theme-stockpilot .demo-tabs button.is-active { border-color: #8bd6a8; }
+        .theme-finflow .demo-management { background: #24241e; color: #eee9dc; }
+        .theme-finflow .demo-management-top { padding-bottom: 2rem; border-bottom: 1px solid rgba(229,187,105,.25); }
+        .theme-finflow .demo-metrics { grid-template-columns: 1fr 1fr 2fr; }
+        .theme-finflow .demo-metrics article { border-radius: 0; background: #5b5a42; }
+        .theme-finflow .demo-table-wrap { border: 1px solid rgba(229,187,105,.35); background: #37352a; }
+        .theme-staffcore .demo-management { background: #edf2f7; color: #273d5a; }
+        .theme-staffcore .demo-management-top { max-width: 1120px; padding: 2.5rem; border-radius: 24px; background: #c4d2e0; }
+        .theme-staffcore .demo-metrics { max-width: 1120px; }
+        .theme-staffcore .demo-metrics article { border: 0; border-radius: 18px; background: #fff; box-shadow: 0 12px 30px rgba(39,61,90,.1); }
+        .theme-staffcore .demo-table-wrap { border-radius: 16px; background: #fff; box-shadow: 0 12px 30px rgba(39,61,90,.08); }
+        .theme-projectflow .demo-management { background: #132e37; color: #eaf1f2; }
+        .theme-projectflow .demo-metrics { grid-template-columns: repeat(3, 1fr); }
+        .theme-projectflow .demo-metrics article { border: 1px solid rgba(230,180,95,.35); border-radius: 0; background: #3a5964; }
+        .theme-projectflow .demo-table-wrap { border: 1px solid rgba(230,180,95,.35); background: #1d3c45; }
+        .theme-servicedesk .demo-management { background: #eef2fa; color: #27314c; }
+        .theme-servicedesk .demo-management-top { max-width: 1120px; padding: 2rem; border-left: 6px solid #5f8ee8; background: #fff; }
+        .theme-servicedesk .demo-metrics article { border: 0; border-radius: 8px; background: #c8d5ee; }
+        .theme-servicedesk .demo-table-wrap { border: 1px solid #c8d5ee; border-radius: 8px; background: #fff; }
+
+        @media (max-width: 700px) {
+            .demo-site-shell .demo-site-hero, .theme-bloom .demo-site-hero, .theme-clearsmile .demo-site-hero, .theme-velora .demo-site-hero, .theme-booklypro .demo-site-hero { grid-template-columns: 1fr; }
+            .demo-site-shell .demo-site-hero { min-height: 500px; padding: 2.5rem 1rem; }
+            .demo-site-shell .demo-site-hero h1 { font-size: clamp(2.7rem, 13vw, 5rem); }
+            .demo-site-shell .demo-hero-orbit { width: min(220px, 75vw); margin-top: 2.5rem; }
+            .theme-cornerstone .demo-site-hero, .theme-meridian .demo-site-hero, .theme-maison .demo-site-hero, .theme-clientconnect .demo-site-hero { padding-top: 5rem; }
+            .theme-apex .demo-site-hero { background: #17282b; }
+            .theme-apex .demo-hero-orbit { display: none; }
+            .theme-greenline .demo-site-hero { background: #e6f0df; }
+            .theme-eventsphere .demo-site-hero h1 { font-size: clamp(3.1rem, 14vw, 6rem); }
+            .theme-finflow .demo-metrics { grid-template-columns: 1fr 1fr; }
+            .theme-projectflow .demo-metrics { grid-template-columns: 1fr; }
+        }
+
+        /* Pricing is part of the public site's existing editorial system. */
+        #pricing { scroll-margin-top: 88px; }
+        .pricing-heading { max-width: 850px; margin: 0 auto 30px; }
+        .pricing-heading > p { max-width: 720px; margin: 18px auto 0; color: var(--muted); font-size: 1.05rem; line-height: 1.75; }
+        .pricing-intro-note { display: flex; align-items: center; gap: 16px; max-width: 900px; margin: 0 auto 72px; padding: 20px 24px; border-left: 3px solid var(--teal); background: #f2f7f5; }
+        .pricing-note-mark { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 50%; color: var(--deep); background: rgba(32,196,190,.15); font-family: "Space Grotesk", sans-serif; font-weight: 700; }
+        .pricing-intro-note p { margin: 0; color: var(--muted); line-height: 1.65; }
+        .pricing-intro-note strong { color: var(--ink); }
+        .pricing-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
+        .pricing-section-heading h3, .partnership-panel h3, .costs-panel h3, .pricing-cta-band h3 { margin: 7px 0 0; color: var(--ink); font-size: clamp(1.8rem, 3.8vw, 3rem); letter-spacing: -.055em; line-height: 1; }
+        .pricing-section-heading > p { max-width: 520px; margin: 0; color: var(--muted); line-height: 1.7; }
+        .pricing-cards { display: grid; gap: 18px; align-items: stretch; }
+        .pricing-website-grid, .pricing-three-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .pricing-four-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .pricing-package { gap: 13px; min-width: 0; padding: 25px 22px; border-color: rgba(24,52,58,.13); box-shadow: 0 14px 36px rgba(11,38,45,.055); }
+        .pricing-package h4 { margin: 0; color: var(--ink); font-family: "Space Grotesk", sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: -.035em; }
+        .package-summary { min-height: 5.2em; font-size: .91rem; }
+        .package-price-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 11px; border-top: 1px solid rgba(24,52,58,.1); color: var(--muted); font-size: .82rem; }
+        .package-price-row strong, .maintenance-price { color: var(--deep); font-family: "Space Grotesk", sans-serif; font-size: 1.2rem; font-weight: 700; text-align: right; }
+        .package-price-row small, .maintenance-price small { color: var(--muted); font-family: "DM Sans", sans-serif; font-size: .72rem; font-weight: 500; }
+        .package-setup { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: baseline; margin-top: 2px; padding: 12px; background: #f2f7f5; }
+        .package-setup > span { color: var(--muted); font-size: .78rem; }
+        .package-setup > strong { color: var(--ink); font-size: .95rem; text-align: right; }
+        .package-setup > small { grid-column: 1 / -1; color: var(--muted); font-size: .7rem; line-height: 1.5; }
+        .pricing-package ul { flex: 1 0 auto; margin: 2px 0 8px; padding-left: 18px; color: var(--ink); font-size: .86rem; line-height: 1.75; }
+        .pricing-package .btn { width: 100%; white-space: normal; }
+        .pricing-package.featured-plan { border-top: 3px solid var(--teal); background: linear-gradient(180deg, rgba(221,247,242,.52), #fff 38%); }
+        .partnership-panel { display: grid; grid-template-columns: 1.05fr .95fr; gap: 36px; margin: 66px 0 84px; padding: clamp(24px, 4vw, 48px); border: 1px solid rgba(24,52,58,.13); border-radius: 20px; background: #f6f7f4; }
+        .partnership-copy p, .costs-panel > p { color: var(--muted); line-height: 1.75; }
+        .partnership-copy p:first-of-type { margin-top: 18px; }
+        .partnership-copy p:last-child { margin-bottom: 0; }
+        .partnership-detail { padding-left: 28px; border-left: 1px solid rgba(24,52,58,.15); }
+        .partnership-detail h4 { color: var(--ink); font-size: 1rem; font-weight: 700; }
+        .partnership-detail ul { margin: 15px 0 20px; padding-left: 18px; color: var(--muted); font-size: .9rem; line-height: 1.75; }
+        .partnership-detail .inline-link, .additional-services-wrap > p a { color: var(--deep); font-weight: 700; text-decoration: none; }
+        .pricing-subsection-heading { margin-top: 72px; }
+        .maintenance-price { padding: 5px 0 12px; text-align: left; font-size: 1.65rem; }
+        .maintenance-grid .price-card { gap: 14px; }
+        .maintenance-boundary { max-width: 900px; margin: 20px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.7; }
+        .additional-services-wrap { padding: 8px 24px 22px; border: 1px solid rgba(24,52,58,.12); border-radius: 16px; background: #fbfcfa; }
+        .additional-services { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 42px; margin: 0; }
+        .additional-services > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(24,52,58,.09); }
+        .additional-services dt { color: var(--ink); font-size: .9rem; font-weight: 500; }
+        .additional-services dd { flex: 0 0 auto; margin: 0; color: var(--deep); font-weight: 700; text-align: right; }
+        .additional-services-wrap > p { margin: 20px 0 0; color: var(--muted); font-size: .85rem; }
+        .costs-panel { display: grid; grid-template-columns: .8fr 1.2fr; gap: 36px; margin-top: 58px; padding: 30px; border-top: 1px solid rgba(24,52,58,.16); border-bottom: 1px solid rgba(24,52,58,.16); }
+        .costs-panel > p { margin: 0; }
+        .commercial-terms { margin-top: 64px; padding: clamp(24px, 4vw, 42px); border: 1px solid rgba(24,52,58,.12); border-radius: 20px; background: #f6f7f4; }
+        .commercial-terms-heading { max-width: 720px; }
+        .commercial-terms-heading h3 { margin: 7px 0 12px; color: var(--ink); font-size: clamp(1.8rem, 3.8vw, 3rem); letter-spacing: -.055em; line-height: 1; }
+        .commercial-terms-heading p, .commercial-terms-grid p { color: var(--muted); line-height: 1.7; }
+        .commercial-terms-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 28px; }
+        .commercial-terms-grid article { padding: 22px; border: 1px solid rgba(24,52,58,.1); background: rgba(255,255,255,.72); }
+        .commercial-terms-grid h4 { margin: 0 0 10px; color: var(--ink); font-size: 1.05rem; }
+        .commercial-terms-grid p { margin: 0 0 12px; font-size: .9rem; }
+        .commercial-terms-grid p:last-child { margin-bottom: 0; }
+        .pricing-cta-band { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 64px; padding: 30px; border-radius: 16px; background: #eaf2ef; }
+        .pricing-cta-band h3 { max-width: 620px; font-size: clamp(1.6rem, 3vw, 2.35rem); }
+        .pricing-cta-band .btn { flex: 0 0 auto; }
+        @media (max-width: 991.98px) {
+            .pricing-four-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pricing-section-heading { align-items: start; flex-direction: column; gap: 12px; }
+            .pricing-section-heading > p { max-width: 680px; }
+            .partnership-panel { grid-template-columns: 1fr; gap: 24px; }
+            .partnership-detail { padding: 24px 0 0; border-top: 1px solid rgba(24,52,58,.15); border-left: 0; }
+            .costs-panel { grid-template-columns: 1fr; gap: 16px; }
+            .commercial-terms-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 767.98px) {
+            .pricing-website-grid, .pricing-three-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pricing-intro-note { align-items: flex-start; margin-bottom: 52px; padding: 17px; }
+            .package-summary { min-height: 0; }
+        }
+        @media (max-width: 575.98px) {
+            .pricing-website-grid, .pricing-three-grid, .pricing-four-grid, .additional-services { grid-template-columns: 1fr; }
+            .pricing-package { padding: 22px 19px; }
+            .pricing-subsection-heading { margin-top: 54px; }
+            .partnership-panel { margin: 48px 0 60px; padding: 22px 19px; }
+            .additional-services-wrap { padding-right: 16px; padding-left: 16px; }
+            .costs-panel { margin-top: 44px; padding: 24px 0; }
+            .commercial-terms { margin-top: 44px; padding: 22px 19px; }
+            .pricing-cta-band { align-items: stretch; flex-direction: column; margin-top: 44px; padding: 24px 19px; }
+            .pricing-cta-band .btn { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .pricing .price-card { transition: none; }
         }
     </style>
 
