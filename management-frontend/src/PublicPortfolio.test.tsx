@@ -35,15 +35,31 @@ describe('public portfolio integration', () => {
     expect(websiteHtml).toContain('color: var(--ink)')
   })
 
-  it('uses measured masonry rows for natural artwork proportions', () => {
+  it('uses uniform responsive card frames and removes masonry measurements', () => {
     expect(websiteHtml).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
-    expect(websiteHtml).toContain('grid-auto-rows: 8px')
-    expect(websiteHtml).toContain('grid-auto-flow: row')
-    expect(portfolioScript).toContain('gridRowEnd')
-    expect(portfolioScript).toContain('ResizeObserver')
+    expect(websiteHtml).not.toContain('grid-auto-rows')
+    expect(portfolioScript).not.toContain('gridRowEnd')
+    expect(portfolioScript).not.toContain('ResizeObserver')
     expect(websiteHtml).toContain('object-fit: contain')
+    expect(websiteHtml).toContain('height: clamp(240px, 22vw, 280px)')
+    expect(websiteHtml).toContain('transition: opacity .45s ease, transform .45s')
     expect(websiteHtml).toContain('grid-template-columns: repeat(2, minmax(0, 1fr))')
     expect(websiteHtml).toContain('grid-template-columns: 1fr')
+  })
+
+  it('uses only genuine additional images for Graphic Design card autoplay', async () => {
+    prepareWebsite()
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'Multi-image artwork', department: 'Graphic Design', category: 'Branding', description: 'A real set.', images: ['/one.webp', '/two.webp'], projectUrl: '' },
+      { title: 'Single-image artwork', department: 'Graphic Design', category: 'Logos', description: 'One image.', imageUrl: '/single.webp', projectUrl: '' },
+    ] }) }))
+
+    window.eval(portfolioScript)
+    const designGrid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
+    await vi.waitFor(() => expect(designGrid.querySelectorAll('.portfolio-item')).toHaveLength(2))
+    expect(designGrid.querySelectorAll('.portfolio-item')[0].querySelectorAll('img')).toHaveLength(2)
+    expect(designGrid.querySelectorAll('.portfolio-item')[1].querySelectorAll('img')).toHaveLength(1)
+    expect(portfolioScript).toContain('2500')
   })
 
   it('does not include public artwork placeholders in the managed portfolio markup', () => {

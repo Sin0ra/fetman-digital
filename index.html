@@ -3041,10 +3041,8 @@
         #managed-portfolios #graphic-design-portfolio .managed-project-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            grid-auto-rows: 8px;
-            grid-auto-flow: row;
-            align-items: start;
             gap: 1.5rem;
+            align-items: stretch;
         }
 
         #managed-portfolios #graphic-design-portfolio .portfolio-item {
@@ -3055,9 +3053,10 @@
         }
 
         #managed-portfolios #graphic-design-portfolio .portfolio-item[hidden] { display: none; }
-        #managed-portfolios #graphic-design-portfolio .portfolio-item .card { height: auto; border: 0; background: transparent; }
-        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { display: block; width: 100%; overflow: hidden; background: rgba(255, 255, 255, .08); }
-        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-item .card { display: flex; height: 100%; flex-direction: column; border: 0; background: transparent; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { position: relative; display: block; width: 100%; height: clamp(240px, 22vw, 280px); overflow: hidden; background: rgba(255, 255, 255, .08); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; opacity: 0; transform: scale(1); transition: opacity .45s ease, transform .45s cubic-bezier(.2, .7, .2, 1); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img.is-active { opacity: 1; transform: scale(1.018); }
         #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover img,
         #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible img { transform: scale(1.035); }
         #managed-portfolios #graphic-design-portfolio .portfolio .card-body { padding-top: 1rem; }
@@ -3083,9 +3082,9 @@
         .graphic-artwork-modal-open { overflow: hidden; }
 
         @keyframes graphic-gallery-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        @media (prefers-reduced-motion: reduce) { #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; } #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { transition: none; } }
+        @media (prefers-reduced-motion: reduce) { #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; } #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { transition: none; transform: none; } }
         @media (max-width: 900px) { #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        @media (max-width: 600px) { .graphic-design-gallery-tools { align-items: flex-start; flex-direction: column; } .graphic-design-filters { justify-content: flex-start; } #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; } .graphic-artwork-dialog { padding: 1rem; } }
+        @media (max-width: 600px) { .graphic-design-gallery-tools { align-items: flex-start; flex-direction: column; } .graphic-design-filters { justify-content: flex-start; } #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; } #managed-portfolios #graphic-design-portfolio .portfolio-image-link { height: 210px; } .graphic-artwork-dialog { padding: 1rem; } }
         @media (max-width: 480px) { #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: 1fr; } }
 
         #managed-portfolios .portfolio-collection + .portfolio-collection {
@@ -3114,111 +3113,6 @@
             grid-template-columns: repeat(12, minmax(0, 1fr));
             gap: 24px;
             margin: 0 !important;
-        }
-
-        .graphic-design-carousel .managed-project-grid {
-            display: grid !important;
-            grid-template-columns: minmax(0, 1fr);
-            position: relative;
-        }
-
-        .graphic-design-carousel .managed-project-grid > .portfolio-item {
-            grid-column: 1;
-            grid-row: 1;
-            align-self: start;
-            display: block;
-            width: 100%;
-            padding: 0;
-            opacity: 0;
-            pointer-events: none;
-            visibility: hidden;
-            transition: opacity .45s ease, visibility 0s linear .45s;
-        }
-
-        .graphic-design-carousel .managed-project-grid > .portfolio-item.is-active {
-            opacity: 1;
-            pointer-events: auto;
-            visibility: visible;
-            transition-delay: 0s;
-            animation: graphic-project-pop .55s cubic-bezier(.2, .75, .25, 1) both;
-        }
-
-        @keyframes graphic-project-pop {
-            from { opacity: 0; transform: scale(.975); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .graphic-design-carousel .managed-project-grid .card {
-            border-radius: 14px;
-            overflow: hidden;
-            border-color: rgba(255, 255, 255, .18);
-            background: #f7f5ef;
-            box-shadow: 0 28px 60px rgba(0, 0, 0, .24);
-            transition: transform .3s ease, box-shadow .3s ease;
-        }
-
-        .graphic-design-carousel .managed-project-grid .portfolio-image-link::after {
-            display: none;
-        }
-
-        .graphic-design-carousel .managed-project-grid .portfolio-image-cta {
-            border-color: rgba(15, 175, 169, .38);
-            background: rgba(255, 255, 255, .94);
-            color: var(--deep);
-        }
-
-        .graphic-design-carousel .managed-project-grid .portfolio-image-link {
-            display: flex;
-            width: 100%;
-            height: min(380px, 42vw);
-            min-height: 220px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .graphic-design-carousel .managed-project-grid .portfolio-image-link img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            object-position: center;
-        }
-
-        .graphic-carousel-status {
-            display: block;
-            width: fit-content;
-            min-width: 62px;
-            margin: 20px auto 0;
-            color: var(--muted);
-            font-size: .85rem;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-            .graphic-design-carousel .managed-project-grid .card:hover,
-            .graphic-design-carousel .managed-project-grid .card:focus-within {
-                box-shadow: 0 26px 54px rgba(6, 43, 51, .14);
-                transform: translateY(-3px);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .graphic-design-carousel .managed-project-grid > .portfolio-item {
-                transition: none;
-                animation: none !important;
-            }
-
-            .graphic-design-carousel .managed-project-grid .card {
-                transition: none;
-            }
-
-        }
-
-        @media (max-width: 767px) {
-            .graphic-design-carousel .managed-project-grid .portfolio-image-link {
-                height: min(240px, 68vw);
-                min-height: 180px;
-            }
         }
 
         .managed-project-grid > .portfolio-item {

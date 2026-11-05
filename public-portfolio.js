@@ -35,9 +35,10 @@
     card.className = 'col-md-6 portfolio-item website-project';
     card.dataset.portfolioCategory = project.department === 'Graphic Design' ? graphicCategoryBucket(category) : category.toLowerCase();
     card.dataset.portfolioDepartment = project.department || '';
-    const image = typeof project.imageUrl === 'string' ? project.imageUrl.trim() : '';
+    const images = getProjectImages(project);
+    const image = images[0] || '';
     const imageAlt = project.title?.trim() || `${category} artwork`;
-    const imageMarkup = image ? `<img class="card-img-top" loading="lazy" decoding="async" alt="${escapeAttribute(imageAlt)} preview" src="${escapeAttribute(image)}">` : '';
+    const imageMarkup = image ? images.map((source, index) => `<img class="card-img-top${index === 0 ? ' is-active' : ''}" loading="lazy" decoding="async"${index ? ' aria-hidden="true" alt=""' : ` alt="${escapeAttribute(imageAlt)} preview"`} src="${escapeAttribute(source)}">`).join('') : '';
     const mediaFrame = image
       ? (projectUrl
         ? `<a class="portfolio-image-link" href="${escapeAttribute(projectUrl)}" target="_blank" rel="noopener noreferrer">${imageMarkup}<span class="portfolio-image-cta">View project <span aria-hidden="true">↗</span></span></a>`
@@ -49,7 +50,18 @@
     const descriptionMarkup = project.description ? `<p class="card-text">${escapeHtml(project.description)}</p>` : '';
     const titleMarkup = project.title?.trim() ? `<h4 class="card-title">${escapeHtml(project.title)}</h4>` : '';
     card.innerHTML = `<div class="card">${mediaFrame}<div class="card-body"><p class="portfolio-category">${escapeHtml(category)}</p>${titleMarkup}${descriptionMarkup}${project.title?.trim() || project.description?.trim() ? projectLink : ''}</div></div>`;
+    const imageFrame = card.querySelector('.portfolio-image-link');
+    if (imageFrame && images.length > 1) imageFrame.dataset.artworkImages = JSON.stringify(images);
     return card;
+  }
+
+  function getProjectImages(project) {
+    const candidates = [
+      ...(Array.isArray(project.images) ? project.images : []),
+      ...(Array.isArray(project.imageUrls) ? project.imageUrls : []),
+      project.imageUrl,
+    ];
+    return [...new Set(candidates.filter((value) => typeof value === 'string').map((value) => value.trim()).filter((value) => value && isImageUrl(value)))];
   }
 
   function isValidProject(project) {
@@ -117,51 +129,21 @@
     let activeFilter = 'all';
     let artworkRestoreFocus;
     let observer;
-    let masonryObserver;
-    let masonryFrame;
-    const imageListeners = new Map();
-    const requestFrame = (callback) => typeof window.requestAnimationFrame === 'function' ? window.requestAnimationFrame(callback) : window.setTimeout(callback, 0);
-    const cancelFrame = (frame) => typeof window.cancelAnimationFrame === 'function' ? window.cancelAnimationFrame(frame) : window.clearTimeout(frame);
+    const autoplayCleanups = [];
+    let modalOpen = false;
     const categoryNames = ['Branding', 'Logos', 'Posters', 'Social Media', 'Packaging', 'Campaigns'];
     const normalized = (value) => String(value || '').trim().toLowerCase();
     const cardsInGrid = () => [...grid.querySelectorAll('.portfolio-item')];
     const matches = (card, query) => !query || card.textContent.toLowerCase().includes(query);
     const showEmptyState = (visible) => { empty.hidden = visible; };
-    const layoutMasonry = () => {
-      masonryFrame = undefined;
-      const styles = getComputedStyle(grid);
-      const rowHeight = Number.parseFloat(styles.gridAutoRows) || 8;
-      const rowGap = Number.parseFloat(styles.rowGap) || 0;
-      cardsInGrid().forEach((card) => {
-        if (card.hidden) { card.style.gridRowEnd = 'auto'; return; }
-        const height = card.getBoundingClientRect().height;
-        const span = Math.max(1, Math.ceil((height + rowGap) / (rowHeight + rowGap)));
-        const value = `span ${span}`;
-        if (card.style.gridRowEnd !== value) card.style.gridRowEnd = value;
-      });
-    };
-    const scheduleMasonry = () => {
-      if (masonryFrame !== undefined) return;
-      masonryFrame = requestFrame(layoutMasonry);
-    };
-    const bindMasonryImages = () => {
-      cardsInGrid().forEach((card) => {
-        const image = card.querySelector('img');
-        if (!image || imageListeners.has(image)) return;
-        const listener = () => scheduleMasonry();
-        image.addEventListener('load', listener);
-        imageListeners.set(image, listener);
-      });
-    };
     const refresh = (query = '') => {
       const cards = cardsInGrid();
       const visible = cards.filter((card) => (activeFilter === 'all' || normalized(card.dataset.portfolioCategory) === normalized(activeFilter)) && matches(card, query));
       cards.forEach((card) => { card.hidden = !visible.includes(card); card.classList.toggle('graphic-gallery-card-visible', visible.includes(card)); });
       showEmptyState(visible.length > 0);
-      bindMasonryImages();
-      scheduleMasonry();
       return visible;
     };
+    const setAutoplayPaused = (paused) => autoplayCleanups.forEach((control) => control.setPaused(paused));
     const openArtwork = (card) => {
       const image = card.querySelector('img');
       if (!artworkModal || !artworkPreview || !image) return;
@@ -170,10 +152,12 @@
       artworkPreview.querySelector('img').removeAttribute('loading');
       if (artworkTitle) artworkTitle.textContent = card.querySelector('.card-title')?.textContent.trim() || 'Graphic artwork';
       artworkModal.hidden = false;
+      modalOpen = true;
+      setAutoplayPaused(true);
       document.body.classList.add('graphic-artwork-modal-open');
       artworkModal.querySelector('[data-graphic-artwork-close]')?.focus();
     };
-    const closeArtwork = () => { if (!artworkModal) return; artworkModal.hidden = true; artworkPreview?.replaceChildren(); document.body.classList.remove('graphic-artwork-modal-open'); artworkRestoreFocus?.focus?.(); };
+    const closeArtwork = () => { if (!artworkModal) return; artworkModal.hidden = true; artworkPreview?.replaceChildren(); document.body.classList.remove('graphic-artwork-modal-open'); modalOpen = false; setAutoplayPaused(false); artworkRestoreFocus?.focus?.(); };
     const renderFilters = () => {
       const available = new Set(cardsInGrid().map((card) => normalized(card.dataset.portfolioCategory)));
       const labels = ['All work', ...categoryNames.filter((name) => available.has(normalized(name)))];
@@ -191,18 +175,42 @@
       }
     });
     if ('IntersectionObserver' in window) { observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('graphic-gallery-card-visible'); observer.unobserve(entry.target); } }), { threshold: .08 }); cardsInGrid().forEach((card) => observer.observe(card)); }
-    if ('ResizeObserver' in window) { masonryObserver = new ResizeObserver(scheduleMasonry); masonryObserver.observe(grid); }
-    window.addEventListener('resize', scheduleMasonry);
+    const bindAutoplay = (card, index) => {
+      const frame = card.querySelector('.portfolio-image-link[data-artwork-images]');
+      const slides = frame ? [...frame.querySelectorAll('img')] : [];
+      if (!frame || slides.length < 2 || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+      let activeIndex = 0;
+      let globallyPaused = false;
+      let hoverPaused = false;
+      let focusPaused = false;
+      let timer;
+      const rotate = () => {
+        if (globallyPaused || hoverPaused || focusPaused || modalOpen || card.hidden) return;
+        const nextIndex = (activeIndex + 1) % slides.length;
+        slides[activeIndex].classList.remove('is-active');
+        slides[nextIndex].classList.add('is-active');
+        activeIndex = nextIndex;
+      };
+      const start = () => { clearInterval(timer); if (!globallyPaused && !hoverPaused && !focusPaused) timer = window.setInterval(rotate, 2500); };
+      const setPaused = (value) => { globallyPaused = value; if (globallyPaused) clearInterval(timer); else start(); };
+      const onEnter = () => { hoverPaused = true; clearInterval(timer); };
+      const onLeave = () => { hoverPaused = false; start(); };
+      const onFocusIn = () => { focusPaused = true; clearInterval(timer); };
+      const onFocusOut = (event) => { if (!card.contains(event.relatedTarget)) { focusPaused = false; start(); } };
+      card.addEventListener('mouseenter', onEnter);
+      card.addEventListener('mouseleave', onLeave);
+      card.addEventListener('focusin', onFocusIn);
+      const stagger = window.setTimeout(start, index * 350);
+      card.addEventListener('focusout', onFocusOut);
+      autoplayCleanups.push({ card, setPaused, cleanup() { clearTimeout(stagger); clearInterval(timer); card.removeEventListener('mouseenter', onEnter); card.removeEventListener('mouseleave', onLeave); card.removeEventListener('focusin', onFocusIn); card.removeEventListener('focusout', onFocusOut); } });
+    };
     renderFilters();
+    cardsInGrid().forEach(bindAutoplay);
     return {
-      refresh(query) { renderFilters(); return refresh(query); },
+      refresh(query) { renderFilters(); const visible = refresh(query); cardsInGrid().forEach((card, index) => { if (!autoplayCleanups.some((control) => control.card === card)) bindAutoplay(card, index); }); return visible; },
       destroy() {
         observer?.disconnect();
-        masonryObserver?.disconnect();
-        window.removeEventListener('resize', scheduleMasonry);
-        if (masonryFrame !== undefined) cancelFrame(masonryFrame);
-        imageListeners.forEach((listener, image) => image.removeEventListener('load', listener));
-        imageListeners.clear();
+        autoplayCleanups.splice(0).forEach((control) => control.cleanup());
       },
     };
   }
