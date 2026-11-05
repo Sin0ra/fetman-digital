@@ -46,6 +46,14 @@ describe('public portfolio integration', () => {
     expect(websiteHtml).toContain('color: var(--ink)')
   })
 
+  it('keeps managed portfolio artwork in bounded responsive thumbnail frames', () => {
+    expect(websiteHtml).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
+    expect(websiteHtml).toContain('height: clamp(240px, 20vw, 280px)')
+    expect(websiteHtml).toContain('object-fit: contain')
+    expect(websiteHtml).toContain('grid-template-columns: repeat(2, minmax(0, 1fr))')
+    expect(websiteHtml).toContain('height: min(220px, 62vw)')
+  })
+
   it('does not include public artwork placeholders in the managed portfolio markup', () => {
     expect(websiteHtml).not.toContain('Artwork slot')
     expect(websiteHtml).not.toContain('View slot details')

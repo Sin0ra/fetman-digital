@@ -3171,8 +3171,8 @@
 
         #managed-portfolios #graphic-design-portfolio .portfolio-item[hidden] { display: none; }
         #managed-portfolios #graphic-design-portfolio .portfolio-item .card { height: 100%; border: 0; background: transparent; }
-        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { display: block; overflow: hidden; aspect-ratio: 4 / 3; background: rgba(255, 255, 255, .08); }
-        #managed-portfolios #graphic-design-portfolio .portfolio img { height: 100%; aspect-ratio: auto; object-fit: contain; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link { display: flex; width: 100%; height: clamp(240px, 20vw, 280px); align-items: center; justify-content: center; overflow: hidden; background: rgba(255, 255, 255, .08); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
         #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover img,
         #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible img { transform: scale(1.035); }
         #managed-portfolios #graphic-design-portfolio .portfolio .card-body { padding-top: 1rem; }
@@ -3198,7 +3198,7 @@
         .graphic-artwork-modal-open { overflow: hidden; }
 
         @keyframes graphic-gallery-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        @media (prefers-reduced-motion: reduce) { #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; } #managed-portfolios #graphic-design-portfolio .portfolio img { transition: none; } }
+        @media (prefers-reduced-motion: reduce) { #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; } #managed-portfolios #graphic-design-portfolio .portfolio-image-link img { transition: none; } }
         @media (max-width: 900px) { #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (max-width: 600px) { .graphic-design-gallery-tools { align-items: flex-start; flex-direction: column; } .graphic-design-filters { justify-content: flex-start; } #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: 1fr; } .graphic-artwork-dialog { padding: 1rem; } }
 
@@ -3350,7 +3350,20 @@
         }
 
         .managed-project-grid .portfolio-image-link {
-            min-height: 230px;
+            display: flex;
+            width: 100%;
+            height: clamp(240px, 20vw, 280px);
+            min-height: 0;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #managed-portfolios .managed-project-grid .portfolio-image-link img {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: auto;
+            object-fit: contain;
         }
 
         .it-division {
@@ -4098,6 +4111,12 @@
 
             .managed-project-grid > .portfolio-item {
                 grid-column: 1 / -1;
+            }
+
+            #managed-portfolios .managed-project-grid .portfolio-image-link,
+            #managed-portfolios #graphic-design-portfolio .portfolio-image-link {
+                height: min(220px, 62vw);
+                min-height: 180px;
             }
 
             .it-grid,
