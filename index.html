@@ -2799,6 +2799,73 @@
             margin: 0 !important;
         }
 
+        .graphic-design-carousel .managed-project-grid {
+            display: block !important;
+            position: relative;
+        }
+
+        .graphic-design-carousel .managed-project-grid > .portfolio-item {
+            display: none;
+            width: 100%;
+            padding: 0;
+        }
+
+        .graphic-design-carousel .managed-project-grid > .portfolio-item.is-active {
+            display: block;
+        }
+
+        .graphic-design-carousel .managed-project-grid .card {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 22px 48px rgba(6, 43, 51, .1);
+        }
+
+        .graphic-design-carousel .managed-project-grid .portfolio-image-link {
+            min-height: clamp(260px, 42vw, 520px);
+        }
+
+        .graphic-carousel-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .graphic-carousel-button {
+            display: inline-grid;
+            width: 44px;
+            height: 44px;
+            place-items: center;
+            border: 1px solid rgba(15, 175, 169, .45);
+            border-radius: 50%;
+            background: #FFFFFF;
+            color: var(--deep);
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .graphic-carousel-button:hover,
+        .graphic-carousel-button:focus-visible {
+            border-color: var(--teal);
+            background: var(--deep);
+            color: #FFFFFF;
+        }
+
+        .graphic-carousel-status {
+            min-width: 62px;
+            color: var(--muted);
+            font-size: .85rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .graphic-carousel-button {
+                transition: none;
+            }
+        }
+
         .managed-project-grid > .portfolio-item {
             grid-column: span 6;
             width: auto;

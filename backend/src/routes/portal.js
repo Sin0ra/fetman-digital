@@ -7,7 +7,10 @@ const sharp = require("sharp");
 const { requireDeveloper } = require("../middleware/auth");
 const { requireCsrf } = require("../middleware/csrf");
 
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_UPLOAD_BYTES = 20 * 1024 * 1024;
+const TARGET_IMAGE_BYTES = 500 * 1024;
+const MAX_IMAGE_BYTES = 1024 * 1024;
+const MAX_IMAGE_PIXELS = 40_000_000;
 const departments = ["Graphic Design", "IT"];
 const httpUrlSchema = z.string().trim().url().max(500).refine((value) => {
   if (value === "") return true;
@@ -131,13 +134,13 @@ function createPortalRouter({ pool, mediaDirectory }) {
   router.get("/media", async (_request, response, next) => {
     try { const [rows] = await pool.execute("SELECT id, original_name AS originalName, media_type AS mediaType, byte_size AS byteSize, created_at AS createdAt FROM media_assets ORDER BY id DESC"); return response.json({ media: rows.map((row) => ({ ...row, id: String(row.id), previewUrl: `/api/developer/media/${row.id}` })) }); } catch (error) { return next(error); }
   });
-  router.post("/media", requireCsrf, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: MAX_IMAGE_BYTES }), async (request, response, next) => {
+  router.post("/media", requireCsrf, express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: MAX_IMAGE_UPLOAD_BYTES }), async (request, response, next) => {
     if (!Buffer.isBuffer(request.body) || !request.body.length) return response.status(400).json({ error: "Upload a JPEG, PNG, or WebP image." });
     let filePath;
     try {
-      const metadata = await sharp(request.body).metadata();
-      if (!metadata.format || !["jpeg", "png", "webp"].includes(metadata.format) || !metadata.width || !metadata.height || metadata.width * metadata.height > 40_000_000) return response.status(415).json({ error: "The uploaded image is invalid or too large." });
-      const converted = await sharp(request.body).webp({ quality: 84 }).toBuffer();
+      const metadata = await sharp(request.body, { failOn: "error", limitInputPixels: MAX_IMAGE_PIXELS, sequentialRead: true }).metadata();
+      if (!metadata.format || !["jpeg", "png", "webp"].includes(metadata.format) || !metadata.width || !metadata.height || metadata.width * metadata.height > MAX_IMAGE_PIXELS || (metadata.pages ?? 1) > 1) return response.status(415).json({ error: "The uploaded image is invalid or too large." });
+      const converted = await processPortfolioImage(request.body);
       const storageName = `${randomUUID()}.webp`;
       await fs.mkdir(mediaDirectory, { recursive: true, mode: 0o700 });
       filePath = path.join(mediaDirectory, storageName);
@@ -150,6 +153,8 @@ function createPortalRouter({ pool, mediaDirectory }) {
       if (filePath) {
         try { await fs.unlink(filePath); } catch (cleanupError) { if (cleanupError.code !== "ENOENT") console.error("Failed to clean up media upload.", { errorCode: cleanupError.code }); }
       }
+      if (error.code === "IMAGE_OUTPUT_TOO_LARGE") return response.status(413).json({ error: error.message });
+      if (typeof error.code === "string" && error.code.startsWith("ERR_")) return response.status(415).json({ error: "The uploaded image is invalid or unsupported." });
       if (["EACCES", "ENOENT", "EROFS"].includes(error.code)) return response.status(503).json({ error: "Persistent media storage is unavailable." });
       return next(error);
     }
@@ -188,4 +193,35 @@ async function saveProject(pool, request, response, next, id) {
 }
 async function readSetting(pool, key) { const [rows] = await pool.execute("SELECT setting_value FROM site_settings WHERE setting_key = ?", [key]); if (!rows[0]) throw new Error("Setting missing"); return rows[0].setting_value; }
 
-module.exports = { createPortalRouter, departments, projectSchema, projectUpdateSchema, departmentSchema };
+module.exports = {
+  createPortalRouter,
+  departments,
+  projectSchema,
+  projectUpdateSchema,
+  departmentSchema,
+  MAX_IMAGE_UPLOAD_BYTES,
+  TARGET_IMAGE_BYTES,
+  MAX_IMAGE_BYTES,
+  processPortfolioImage,
+};
+
+async function processPortfolioImage(input) {
+  const attempts = [
+    [2000, 84], [2000, 76], [2000, 68], [2000, 60], [2000, 52],
+    [1800, 50], [1600, 48], [1400, 46], [1200, 44], [1000, 42], [800, 40],
+  ];
+  let bestUnderLimit;
+  for (const [dimension, quality] of attempts) {
+    const output = await sharp(input, { failOn: "error", limitInputPixels: MAX_IMAGE_PIXELS, sequentialRead: true })
+      .rotate()
+      .resize({ width: dimension, height: dimension, fit: "inside", withoutEnlargement: true })
+      .webp({ quality, effort: 5, smartSubsample: true })
+      .toBuffer();
+    if (output.length <= TARGET_IMAGE_BYTES) return output;
+    if (output.length <= MAX_IMAGE_BYTES && (!bestUnderLimit || output.length < bestUnderLimit.length)) bestUnderLimit = output;
+  }
+  if (bestUnderLimit) return bestUnderLimit;
+  const error = new Error("The processed image is too large after compression.");
+  error.code = "IMAGE_OUTPUT_TOO_LARGE";
+  throw error;
+}

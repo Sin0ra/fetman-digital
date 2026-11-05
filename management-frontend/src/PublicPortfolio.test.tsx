@@ -139,4 +139,26 @@ describe('public portfolio integration', () => {
     expect(designGrid.textContent).not.toContain('Invalid URL')
     expect(itGrid.textContent).not.toContain('Missing category')
   })
+
+  it('presents Graphic Design projects one at a time with carousel controls', async () => {
+    prepareWebsite()
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: 'https://example.test/first' },
+      { title: 'Second design project', department: 'Graphic Design', category: 'Campaign', description: 'Second project.', projectUrl: 'https://example.test/second' },
+    ] }) })
+    vi.stubGlobal('fetch', fetchMock)
+
+    window.eval(portfolioScript)
+    const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
+    await vi.waitFor(() => expect(designCollection.textContent).toContain('First design project'))
+
+    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
+    expect(designCollection.querySelector('[aria-label="Previous Graphic Design project"]')).toBeTruthy()
+    expect(designCollection.querySelector('[aria-label="Next Graphic Design project"]')).toBeTruthy()
+    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 2')
+
+    ;(designCollection.querySelector('[aria-label="Next Graphic Design project"]') as HTMLButtonElement).click()
+    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('2 / 2')
+    expect(designCollection.querySelector('.is-active')?.textContent).toContain('Second design project')
+  })
 })

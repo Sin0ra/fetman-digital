@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
+const sharp = require('sharp');
 const { describe, it } = require('node:test');
-const { departmentSchema, projectSchema, projectUpdateSchema } = require('../src/routes/portal');
+const { departmentSchema, projectSchema, projectUpdateSchema, MAX_IMAGE_BYTES, MAX_IMAGE_UPLOAD_BYTES, TARGET_IMAGE_BYTES, processPortfolioImage } = require('../src/routes/portal');
 
 const baseProject = {
   department: 'IT',
@@ -13,6 +14,26 @@ const baseProject = {
 };
 
 describe('owner portfolio validation', () => {
+  it('uses a 20 MB original limit and a 1 MB processed output limit', () => {
+    assert.equal(MAX_IMAGE_UPLOAD_BYTES, 20 * 1024 * 1024);
+    assert.equal(MAX_IMAGE_BYTES, 1024 * 1024);
+  });
+
+  it('resizes and converts valid portfolio images before output validation', async () => {
+    const input = await sharp({ create: { width: 3200, height: 1800, channels: 3, background: { r: 12, g: 86, b: 92 } } }).png().toBuffer();
+    const output = await processPortfolioImage(input);
+    const metadata = await sharp(output).metadata();
+    assert.equal(metadata.format, 'webp');
+    assert.ok(metadata.width <= 2000);
+    assert.ok(metadata.height <= 2000);
+    assert.ok(output.length <= TARGET_IMAGE_BYTES);
+    assert.ok(output.length <= MAX_IMAGE_BYTES);
+  });
+
+  it('rejects invalid portfolio image data', async () => {
+    await assert.rejects(() => processPortfolioImage(Buffer.from('not an image')), /Input buffer contains unsupported image format|invalid/i);
+  });
+
   it('normalizes empty optional image fields to null', () => {
     const result = projectSchema.safeParse({ ...baseProject, imageUrl: '   ', imageAssetId: '' });
     assert.equal(result.success, true);

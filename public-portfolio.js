@@ -5,6 +5,7 @@
   const departmentGrids = new Map([...document.querySelectorAll('[data-portfolio-department]')].map((grid) => [grid.dataset.portfolioDepartment, grid]));
   const managedCollections = [...departmentGrids.values()].map((grid) => grid.closest('.portfolio-collection')).filter(Boolean);
   const search = document.getElementById('search-bar');
+  let graphicCarousel;
   if (!portfolio || !legacyGrid || !legacyCollection || !search) return;
 
   legacyCollection.hidden = true;
@@ -17,6 +18,7 @@
     cards().forEach((card) => {
       card.hidden = !card.textContent.toLowerCase().includes(query);
     });
+    graphicCarousel?.refresh();
   }
 
   function createProjectCard(project) {
@@ -69,6 +71,7 @@
         const grid = collection.querySelector('[data-portfolio-department]');
         collection.hidden = !grid || grid.children.length === 0;
       });
+      graphicCarousel = createGraphicDesignCarousel(departmentGrids.get('Graphic Design'));
       update();
     } catch {
       // An unavailable public API must leave the portfolio empty.
@@ -78,6 +81,61 @@
   search.addEventListener('input', update);
   update();
   void loadProjects();
+
+  function createGraphicDesignCarousel(grid) {
+    if (!grid) return null;
+    const collection = grid.closest('.portfolio-collection');
+    if (!collection || collection.querySelector('.graphic-carousel-controls')) return null;
+    collection.classList.add('graphic-design-carousel');
+    const controls = document.createElement('div');
+    controls.className = 'graphic-carousel-controls';
+    const previous = document.createElement('button');
+    previous.type = 'button';
+    previous.className = 'graphic-carousel-button';
+    previous.setAttribute('aria-label', 'Previous Graphic Design project');
+    previous.textContent = '←';
+    const status = document.createElement('span');
+    status.className = 'graphic-carousel-status';
+    status.setAttribute('aria-live', 'polite');
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'graphic-carousel-button';
+    next.setAttribute('aria-label', 'Next Graphic Design project');
+    next.textContent = '→';
+    controls.append(previous, status, next);
+    collection.append(controls);
+
+    let activeIndex = 0;
+    let timer;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const visibleCards = () => [...grid.querySelectorAll('.portfolio-item')].filter((card) => !card.hidden);
+    const stop = () => { if (timer) window.clearInterval(timer); timer = undefined; };
+    const start = () => {
+      stop();
+      if (!reducedMotion && visibleCards().length > 1) timer = window.setInterval(() => show(activeIndex + 1), 5000);
+    };
+    function show(index) {
+      const cardsToShow = visibleCards();
+      if (!cardsToShow.length) {
+        grid.querySelectorAll('.portfolio-item').forEach((card) => card.classList.remove('is-active'));
+        status.textContent = '';
+        controls.hidden = true;
+        return;
+      }
+      activeIndex = (index + cardsToShow.length) % cardsToShow.length;
+      grid.querySelectorAll('.portfolio-item').forEach((card) => card.classList.remove('is-active'));
+      cardsToShow[activeIndex].classList.add('is-active');
+      controls.hidden = cardsToShow.length < 2;
+      status.textContent = `${activeIndex + 1} / ${cardsToShow.length}`;
+    }
+    previous.addEventListener('click', () => { show(activeIndex - 1); start(); });
+    next.addEventListener('click', () => { show(activeIndex + 1); start(); });
+    collection.addEventListener('mouseenter', stop);
+    collection.addEventListener('mouseleave', start);
+    collection.addEventListener('focusin', stop);
+    collection.addEventListener('focusout', (event) => { if (!collection.contains(event.relatedTarget)) start(); });
+    return { refresh() { show(activeIndex); start(); } };
+  }
 
   function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&#38;', '<': '&#60;', '>': '&#62;', "'": '&#39;', '"': '&#34;' }[character])); }
   function escapeAttribute(value) { return escapeHtml(value); }

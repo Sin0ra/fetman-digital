@@ -181,6 +181,7 @@ describe('single-owner developer portal', () => {
     await user.type(screen.getByLabelText('Category'), 'Branding')
     await user.upload(input, new File(['first'], 'design.png', { type: 'image/png' }))
     expect((await screen.findByAltText('Selected project preview')).getAttribute('src')).toBe('/api/developer/media/21')
+    expect(screen.getByText(/Original: .*Processed:/)).toBeTruthy()
     expect(fetchMock.mock.calls.some(([request, init]) => String(request) === '/api/developer/media' && init?.method === 'POST' && init?.headers && (init.headers as Record<string, string>)['X-File-Name'] === 'design.png')).toBe(true)
 
     await user.upload(input, new File(['second'], 'replacement.webp', { type: 'image/webp' }))
@@ -213,8 +214,8 @@ describe('single-owner developer portal', () => {
 
     await user.upload(input, new File(['svg'], 'not-image.svg', { type: 'image/svg+xml' }))
     expect((await screen.findByRole('alert')).textContent).toContain('Choose a JPEG, PNG, or WebP image.')
-    await user.upload(input, new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'large.png', { type: 'image/png' }))
-    expect((await screen.findByRole('alert')).textContent).toContain('Image uploads are limited to 5 MB.')
+    await user.upload(input, new File([new Uint8Array(20 * 1024 * 1024 + 1)], 'large.png', { type: 'image/png' }))
+    expect((await screen.findByRole('alert')).textContent).toContain('Image uploads are limited to 20 MB.')
     await user.upload(input, new File(['png'], 'broken.png', { type: 'image/png' }))
     expect((await screen.findByRole('alert')).textContent).toContain('The uploaded image is invalid or too large.')
   })
