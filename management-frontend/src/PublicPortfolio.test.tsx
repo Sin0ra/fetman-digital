@@ -112,6 +112,7 @@ describe('public portfolio integration', () => {
       { title: 'Legacy project', department: null, category: 'Existing', description: 'Unclassified work.', projectUrl: 'https://example.test/legacy' },
     ] }) })
     vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers()
 
     window.eval(portfolioScript)
     await vi.waitFor(() => expect(designGrid.textContent).toContain('Design project'))
@@ -140,7 +141,7 @@ describe('public portfolio integration', () => {
     expect(itGrid.textContent).not.toContain('Missing category')
   })
 
-  it('presents Graphic Design projects one at a time with carousel controls', async () => {
+  it('presents Graphic Design projects one at a time with an indicator', async () => {
     prepareWebsite()
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
       { title: 'First design project', department: 'Graphic Design', category: 'Branding', description: 'First project.', projectUrl: 'https://example.test/first' },
@@ -153,13 +154,24 @@ describe('public portfolio integration', () => {
     await vi.waitFor(() => expect(designCollection.textContent).toContain('First design project'))
 
     expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
-    expect(designCollection.querySelector('[aria-label="Previous Graphic Design project"]')).toBeTruthy()
-    expect(designCollection.querySelector('[aria-label="Next Graphic Design project"]')).toBeTruthy()
+    expect(designCollection.querySelector('.graphic-carousel-controls')).toBeNull()
+    expect(designCollection.querySelectorAll('button')).toHaveLength(0)
     expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 2')
+  })
 
-    ;(designCollection.querySelector('[aria-label="Next Graphic Design project"]') as HTMLButtonElement).click()
-    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('2 / 2')
-    expect(designCollection.querySelector('.is-active')?.textContent).toContain('Second design project')
+  it('keeps a single Graphic Design project visible without navigation controls', async () => {
+    prepareWebsite()
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'Only design project', department: 'Graphic Design', category: 'Branding', description: 'A single project.', projectUrl: '' },
+    ] }) }))
+
+    window.eval(portfolioScript)
+    const designCollection = document.querySelector('#graphic-design-portfolio') as HTMLElement
+    await vi.waitFor(() => expect(designCollection.textContent).toContain('Only design project'))
+
+    expect(designCollection.querySelector('.graphic-carousel-status')?.textContent).toBe('1 / 1')
+    expect(designCollection.querySelectorAll('.portfolio-item.is-active')).toHaveLength(1)
+    expect(designCollection.querySelectorAll('button')).toHaveLength(0)
   })
 
   it('loops Graphic Design slides every five seconds and defines a compact contained image frame', async () => {
@@ -167,6 +179,7 @@ describe('public portfolio integration', () => {
     expect(websiteHtml).toContain('height: min(240px, 68vw)')
     expect(websiteHtml).toContain('object-fit: contain')
     expect(websiteHtml).toContain('object-position: center')
+    expect(websiteHtml).toContain('.graphic-design-carousel .managed-project-grid .portfolio-image-link::after')
 
     prepareWebsite()
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [

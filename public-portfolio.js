@@ -85,25 +85,12 @@
   function createGraphicDesignCarousel(grid) {
     if (!grid) return null;
     const collection = grid.closest('.portfolio-collection');
-    if (!collection || collection.querySelector('.graphic-carousel-controls')) return null;
+    if (!collection || collection.querySelector('.graphic-carousel-status')) return null;
     collection.classList.add('graphic-design-carousel');
-    const controls = document.createElement('div');
-    controls.className = 'graphic-carousel-controls';
-    const previous = document.createElement('button');
-    previous.type = 'button';
-    previous.className = 'graphic-carousel-button';
-    previous.setAttribute('aria-label', 'Previous Graphic Design project');
-    previous.textContent = '←';
     const status = document.createElement('span');
     status.className = 'graphic-carousel-status';
     status.setAttribute('aria-live', 'polite');
-    const next = document.createElement('button');
-    next.type = 'button';
-    next.className = 'graphic-carousel-button';
-    next.setAttribute('aria-label', 'Next Graphic Design project');
-    next.textContent = '→';
-    controls.append(previous, status, next);
-    collection.append(controls);
+    collection.append(status);
 
     let activeIndex = 0;
     let timer;
@@ -120,17 +107,13 @@
       if (!cardsToShow.length) {
         grid.querySelectorAll('.portfolio-item').forEach((card) => card.classList.remove('is-active'));
         status.textContent = '';
-        controls.hidden = true;
         return;
       }
       activeIndex = (index + cardsToShow.length) % cardsToShow.length;
       grid.querySelectorAll('.portfolio-item').forEach((card) => card.classList.remove('is-active'));
       cardsToShow[activeIndex].classList.add('is-active');
-      controls.hidden = cardsToShow.length < 2;
       status.textContent = `${activeIndex + 1} / ${cardsToShow.length}`;
     }
-    previous.addEventListener('click', () => { show(activeIndex - 1); start(); });
-    next.addEventListener('click', () => { show(activeIndex + 1); start(); });
     collection.addEventListener('mouseenter', stop);
     collection.addEventListener('mouseleave', start);
     collection.addEventListener('focusin', stop);
