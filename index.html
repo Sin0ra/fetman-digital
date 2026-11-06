@@ -1183,6 +1183,17 @@
                             <label for="website">Website</label>
                             <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
                         </div>
+                        <div class="enquiry-success" data-enquiry-success role="status" aria-live="polite" aria-atomic="true" hidden>
+                            <span class="enquiry-success-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                                    <path d="m5 12.5 4.5 4.5L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </span>
+                            <div>
+                                <h3>Enquiry sent successfully!</h3>
+                                <p>Thank you for contacting Fetman Digital. We've received your enquiry and will be in touch soon.</p>
+                            </div>
+                        </div>
                         <div class="form-row">
                             <label for="name">Name</label>
                             <input id="name" name="name" type="text" required>
@@ -1225,6 +1236,7 @@
                                 <option value="R25,000+">R25,000+</option>
                             </select>
                         </div>
+                        <p class="enquiry-error" data-enquiry-error role="alert" aria-live="assertive" hidden></p>
                         <button type="submit" class="btn btn-primary submit-btn">Send enquiry</button>
                     </form>
                 </div>
@@ -1382,6 +1394,9 @@
                 const project = (formData.get("project") || "").toString().trim();
                 const website = (formData.get("website") || "").toString().trim();
                 const submitButton = projectEnquiryForm.querySelector(".submit-btn");
+                const successMessage = projectEnquiryForm.querySelector("[data-enquiry-success]");
+                const errorMessage = projectEnquiryForm.querySelector("[data-enquiry-error]");
+                if (errorMessage) { errorMessage.hidden = true; errorMessage.textContent = ""; }
                 if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Sending…"; }
                 try {
                     const response = await fetch('/api/public/enquiries', {
@@ -1391,9 +1406,13 @@
                     const result = await response.json().catch(() => ({}));
                     if (!response.ok) throw new Error(result.error || 'Unable to send your enquiry.');
                     projectEnquiryForm.reset();
-                    window.alert(result.message || 'Your enquiry was sent successfully.');
+                    projectEnquiryForm.classList.add("is-success");
+                    if (successMessage) successMessage.hidden = false;
                 } catch (error) {
-                    window.alert(error instanceof Error ? error.message : 'Unable to send your enquiry.');
+                    if (errorMessage) {
+                        errorMessage.textContent = error instanceof Error ? error.message : 'Unable to send your enquiry.';
+                        errorMessage.hidden = false;
+                    }
                 } finally {
                     if (submitButton) { submitButton.disabled = false; submitButton.textContent = "Send enquiry"; }
                 }
@@ -2082,6 +2101,61 @@
             border-radius: 20px;
             background: rgba(255,255,255,.05);
             border: 1px solid rgba(255,255,255,.08);
+        }
+
+        .contact-form.is-success > .form-row,
+        .contact-form.is-success > .submit-btn {
+            display: none;
+        }
+
+        .enquiry-success[hidden],
+        .enquiry-error[hidden] {
+            display: none;
+        }
+
+        .enquiry-success {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 22px;
+            border: 1px solid rgba(32, 196, 190, .45);
+            border-radius: 14px;
+            background: rgba(32, 196, 190, .1);
+            color: #fff;
+        }
+
+        .enquiry-success-icon {
+            display: grid;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--bright);
+            color: var(--deep);
+        }
+
+        .enquiry-success-icon svg {
+            width: 23px;
+            height: 23px;
+        }
+
+        .enquiry-success h3 {
+            margin: 0 0 7px;
+            color: #fff;
+            font-size: clamp(1.05rem, 3vw, 1.25rem);
+        }
+
+        .enquiry-success p {
+            margin: 0;
+            color: rgba(255, 255, 255, .82);
+            line-height: 1.6;
+        }
+
+        .enquiry-error {
+            margin: 0 0 16px;
+            color: #ffd1d1;
+            line-height: 1.5;
         }
 
         .website-trap {
