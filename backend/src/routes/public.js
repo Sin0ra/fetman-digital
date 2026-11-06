@@ -18,12 +18,24 @@ function createPublicRouter({ pool, smtp, recipient, mediaDirectory }) {
     if (parsed.data.website) return response.status(400).json({ error: "Unable to send enquiry." });
     try {
       await pool.execute("INSERT INTO enquiries (full_name, email, service, message) VALUES (?, ?, ?, ?)", [parsed.data.fullName, parsed.data.email, parsed.data.service, parsed.data.message]);
-      if (!smtp.host) return response.status(503).json({ error: "Enquiry saved, but email delivery is not configured yet." });
+    } catch (error) {
+      return next(withDiagnostic(error, { stage: "database_insert", category: "database" }));
+    }
+    if (!smtp.host) return response.status(503).json({ error: "Enquiry saved, but email delivery is not configured yet." });
+    try {
       await sendEnquiry(smtp, recipient, parsed.data);
       return response.status(202).json({ message: "Your enquiry was sent successfully." });
-    } catch (error) { return next(error); }
+    } catch (error) {
+      return next(withDiagnostic(error, error?.diagnostic || { stage: "smtp_setup", category: "configuration" }));
+    }
   });
   return router;
+}
+function withDiagnostic(error, diagnostic) {
+  const wrapped = new Error("Enquiry processing failed.");
+  wrapped.diagnostic = diagnostic;
+  if (typeof error?.code === "string" && /^[A-Z0-9_]{1,64}$/.test(error.code)) wrapped.diagnostic.errorCode = error.code;
+  return wrapped;
 }
 function safeHttpUrl(value) { try { const parsed = new URL(value); return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null; } catch { return null; } }
 module.exports = { createPublicRouter };

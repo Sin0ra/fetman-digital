@@ -9,40 +9,101 @@ function sendEnquiry(config, recipient, enquiry) {
   return new Promise((resolve, reject) => {
     let socket;
     let buffer = "";
+    let responseCode = null;
     let step = 0;
+    let stage = config.secure ? "tls_handshake" : "connection";
     const commands = [
-      { code: 220, command: null },
-      { code: 250, command: `EHLO fetmandigital.local` },
-      ...(config.secure ? [] : [{ code: 220, command: "STARTTLS", upgrade: true }]),
-      ...(config.secure ? [] : [{ code: 250, command: `EHLO fetmandigital.local` }]),
-      { code: 250, command: `AUTH LOGIN` },
-      { code: 334, command: Buffer.from(config.user).toString("base64") },
-      { code: 235, command: Buffer.from(config.password).toString("base64") },
-      { code: 250, command: `MAIL FROM:<${safeFrom}>` },
-      { code: 250, command: `RCPT TO:<${safeRecipient}>` },
-      { code: 354, command: "DATA" },
-      { code: 250, command: buildMessage(safeFrom, safeRecipient, { ...enquiry, email: safeReplyTo, service: safeService }) },
-      { code: 221, command: "QUIT" },
+      { code: 220, command: null, stage: "greeting" },
+      { code: 250, command: "EHLO fetmandigital.local", stage: "ehlo" },
+      ...(config.secure ? [] : [{ code: 220, command: "STARTTLS", upgrade: true, stage: "starttls" }]),
+      ...(config.secure ? [] : [{ code: 250, command: "EHLO fetmandigital.local", stage: "ehlo" }]),
+      { code: 250, command: "AUTH LOGIN", stage: "authentication" },
+      { code: 334, command: Buffer.from(config.user).toString("base64"), stage: "authentication" },
+      { code: 235, command: Buffer.from(config.password).toString("base64"), stage: "authentication" },
+      { code: 250, command: `MAIL FROM:<${safeFrom}>`, stage: "mail_from" },
+      { code: 250, command: `RCPT TO:<${safeRecipient}>`, stage: "recipient" },
+      { code: 354, command: "DATA", stage: "message_data" },
+      { code: 250, command: buildMessage(safeFrom, safeRecipient, { ...enquiry, email: safeReplyTo, service: safeService }), stage: "message_acceptance" },
+      { code: 221, command: "QUIT", stage: "quit" },
     ];
-    const fail = (error) => { socket?.destroy(); reject(error); };
-    const next = () => { const current = commands[step++]; if (!current) return resolve(); if (current.command === null) return; socket.write(`${current.command}\r\n`); };
-    const onData = (chunk) => {
-      buffer += chunk.toString();
-      if (!buffer.endsWith("\r\n")) return;
-      const lines = buffer.split(/\r\n/).filter(Boolean); const last = lines.at(-1); buffer = "";
-      const code = Number(last?.slice(0, 3));
+    const fail = (category, errorCode, smtpCode) => {
+      socket?.destroy();
+      const error = new Error("SMTP delivery failed.");
+      error.diagnostic = { stage, category, ...(errorCode ? { errorCode } : {}), ...(smtpCode ? { smtpCode } : {}) };
+      reject(error);
+    };
+    const next = () => {
+      const current = commands[step++];
+      if (!current) return resolve();
+      if (current.command === null) return;
+      stage = current.stage;
+      try {
+        socket.write(`${current.command}\r\n`);
+      } catch (error) {
+        fail(categoryForSocketError(error, stage), safeErrorCode(error));
+      }
+    };
+    const processResponse = (code) => {
       const current = commands[step - 1];
-      if (code !== current.code) return fail(new Error(`SMTP rejected command with code ${code}.`));
+      if (code !== current.code) {
+        const diagnostic = smtpResponseDiagnostic(current.stage, code);
+        return fail(diagnostic.category, undefined, diagnostic.smtpCode);
+      }
       if (current.upgrade) {
-        socket.removeListener("data", onData); socket = tls.connect({ socket, servername: config.host, rejectUnauthorized: true }, () => { socket.on("data", onData); next(); }); socket.on("error", fail); return;
+        stage = "tls_handshake";
+        socket.removeListener("data", onData);
+        socket = tls.connect({ socket, host: config.host, ...(net.isIP(config.host) ? {} : { servername: config.host }), rejectUnauthorized: true }, () => {
+          stage = "greeting";
+          socket.on("data", onData);
+          next();
+        });
+        socket.on("error", (error) => fail(categoryForSocketError(error, stage), safeErrorCode(error)));
+        return;
       }
       if (current.code === 354) { socket.write(`${commands[step++].command}\r\n`); return; }
       next();
     };
-    socket = config.secure ? tls.connect({ host: config.host, port: config.port, servername: config.host, rejectUnauthorized: true }) : net.connect({ host: config.host, port: config.port });
-    socket.setTimeout(15000, () => fail(new Error("SMTP connection timed out."))); socket.on("error", fail); socket.on("data", onData); if (config.secure) socket.on("secureConnect", next); else socket.on("connect", next);
+    const onData = (chunk) => {
+      buffer += chunk.toString();
+      let end;
+      while ((end = buffer.indexOf("\r\n")) !== -1) {
+        const line = buffer.slice(0, end);
+        buffer = buffer.slice(end + 2);
+        const match = /^(\d{3})([ -])/.exec(line);
+        if (!match) return fail("protocol", undefined);
+        const code = Number(match[1]);
+        if (responseCode !== null && responseCode !== code) return fail("protocol", undefined, code);
+        responseCode = code;
+        if (match[2] === "-") continue;
+        responseCode = null;
+        processResponse(code);
+        if (socket?.destroyed) return;
+      }
+    };
+    socket = config.secure ? tls.connect({ host: config.host, port: config.port, ...(net.isIP(config.host) ? {} : { servername: config.host }), rejectUnauthorized: true }) : net.connect({ host: config.host, port: config.port });
+    socket.setTimeout(15000, () => fail(stage === "connection" || stage === "tls_handshake" ? stage : "timeout", "ETIMEDOUT"));
+    socket.on("error", (error) => fail(categoryForSocketError(error, stage), safeErrorCode(error)));
+    socket.on("data", onData);
+    if (config.secure) socket.on("secureConnect", () => { stage = "greeting"; next(); });
+    else socket.on("connect", () => { stage = "greeting"; next(); });
   });
 }
+
+function categoryForSocketError(error, stage) {
+  const code = safeErrorCode(error) || "";
+  if (stage === "tls_handshake" || /^(?:ERR_TLS|ERR_SSL|CERT_|DEPTH_ZERO_|UNABLE_TO_VERIFY)/.test(code)) return "tls";
+  if (stage === "authentication") return "authentication";
+  if (stage === "connection") return "connection";
+  return "transport";
+}
+
+function safeErrorCode(error) {
+  return typeof error?.code === "string" && /^[A-Z0-9_]{1,64}$/.test(error.code) ? error.code : undefined;
+}
+function smtpResponseDiagnostic(stage, smtpCode) {
+  return { stage, category: stage === "authentication" ? "authentication" : "smtp_rejected", smtpCode };
+}
+
 function buildMessage(from, recipient, enquiry) {
   const safeFrom = validateAddress(from, "From");
   const safeRecipient = validateAddress(recipient, "To");
@@ -77,4 +138,4 @@ function encodeMimeHeader(value) {
     : value;
 }
 
-module.exports = { buildMessage, sendEnquiry };
+module.exports = { buildMessage, sendEnquiry, smtpResponseDiagnostic };

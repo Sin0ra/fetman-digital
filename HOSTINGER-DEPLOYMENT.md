@@ -81,6 +81,13 @@ email delivery is not configured. Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`,
 form on the temporary Hostinger URL. Do not configure the final domain, DNS, or
 business email as part of this deployment.
 
+At startup, the backend logs whether each SMTP-related environment variable is
+present, as booleans only. Request errors include a failure stage and category;
+SMTP rejections include the numeric response code. Credentials, SMTP response
+text, and enquiry contents are not logged. Enquiries are inserted before email
+delivery, so an SMTP failure can return an HTTP 500 even though the enquiry was
+saved; check the corresponding database record before retrying a submission.
+
 Maintenance mode is changed from the authenticated Developer Portal. It is
 stored in MariaDB, blocks public website/API paths with the maintenance page,
 and leaves health, authentication, and portal paths accessible.

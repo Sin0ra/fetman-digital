@@ -76,7 +76,22 @@ function createApp(config, { pool, sessionStore, publicSiteDirectory, management
     app.use(createPublicSiteApp({ pool, siteDirectory: publicSiteDirectory }));
   }
   app.use((_request, response) => response.status(404).json({ error: "Not found" }));
-  app.use((error, request, response, next) => { if (response.headersSent) return next(error); console.error("Unhandled request error", { method: request.method, path: request.path, errorCode: typeof error?.code === "string" ? error.code : "INTERNAL_ERROR" }); return response.status(Number.isInteger(error.status) ? error.status : 500).json({ error: Number.isInteger(error.status) ? "Invalid request" : "Internal server error" }); });
+  app.use((error, request, response, next) => {
+    if (response.headersSent) return next(error);
+    const diagnostic = error?.diagnostic || {};
+    const errorCode = typeof diagnostic.errorCode === "string" && /^[A-Z0-9_]{1,64}$/.test(diagnostic.errorCode)
+      ? diagnostic.errorCode
+      : typeof error?.code === "string" && /^[A-Z0-9_]{1,64}$/.test(error.code) ? error.code : "INTERNAL_ERROR";
+    console.error("Unhandled request error", {
+      method: request.method,
+      path: request.path,
+      errorCode,
+      ...(typeof diagnostic.stage === "string" ? { failureStage: diagnostic.stage } : {}),
+      ...(typeof diagnostic.category === "string" ? { failureCategory: diagnostic.category } : {}),
+      ...(Number.isInteger(diagnostic.smtpCode) ? { smtpCode: diagnostic.smtpCode } : {}),
+    });
+    return response.status(Number.isInteger(error.status) ? error.status : 500).json({ error: Number.isInteger(error.status) ? "Invalid request" : "Internal server error" });
+  });
   return app;
 }
 

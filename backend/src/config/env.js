@@ -52,8 +52,15 @@ function parseConfig(environment) {
     contactRecipient: value.CONTACT_RECIPIENT_EMAIL,
     smtp: { host: value.SMTP_HOST, port: value.SMTP_PORT, secure: value.SMTP_SECURE,
       user: value.SMTP_USER, password: value.SMTP_PASSWORD,
-      from: value.SMTP_FROM || value.SMTP_USER || value.CONTACT_RECIPIENT_EMAIL },
+      from: value.SMTP_FROM || value.SMTP_USER || value.CONTACT_RECIPIENT_EMAIL,
+      environmentAvailability: getEnvironmentAvailability(environment) },
   };
+}
+
+function getEnvironmentAvailability(environment) {
+  return Object.fromEntries([
+    "SMTP_HOST", "SMTP_PORT", "SMTP_SECURE", "SMTP_USER", "SMTP_PASSWORD", "SMTP_FROM", "CONTACT_RECIPIENT_EMAIL",
+  ].map((name) => [name, typeof environment[name] === "string" && environment[name].trim() !== ""]));
 }
 
 function isLoopbackHost(host) {
@@ -71,4 +78,4 @@ function loadConfig() {
   return parseConfig(process.env);
 }
 
-module.exports = { isLoopbackHost, loadConfig, parseConfig };
+module.exports = { getEnvironmentAvailability, isLoopbackHost, loadConfig, parseConfig };

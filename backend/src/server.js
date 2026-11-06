@@ -19,6 +19,7 @@ async function startServer() {
     await pool.query("SELECT session_id FROM sessions LIMIT 0");
     await pool.query("SELECT setting_key FROM site_settings LIMIT 0");
     app.locals.startupReady = true;
+    console.log("SMTP environment availability", config.smtp.environmentAvailability);
     console.log(`Fetman application listening at http://${config.host}:${config.port}`);
     const shutdown = async () => { await new Promise((resolve) => server.close(resolve)); sessionStore.close(); await pool.end(); };
     process.once("SIGINT", shutdown); process.once("SIGTERM", shutdown);
