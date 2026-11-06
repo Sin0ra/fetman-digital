@@ -71,7 +71,8 @@ describe("public site maintenance enforcement", () => {
     assert.equal(response.status, 200);
     assert.match(html, /Fetman Digital/);
     assert.match(html, /<section id="portfolio"/);
-    assert.ok(html.includes("Published work with a clear point of view."));
+    assert.ok(html.includes("Visual work with a point of view."));
+    assert.ok(html.includes("Digital work with a clear purpose."));
   });
 
   it("serves only the branded maintenance page for every public path while ON", async () => {
