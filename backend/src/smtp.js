@@ -17,7 +17,7 @@ function sendEnquiry(config, recipient, enquiry) {
       { code: 250, command: "EHLO fetmandigital.local", stage: "ehlo" },
       ...(config.secure ? [] : [{ code: 220, command: "STARTTLS", upgrade: true, stage: "starttls" }]),
       ...(config.secure ? [] : [{ code: 250, command: "EHLO fetmandigital.local", stage: "ehlo" }]),
-      { code: 250, command: "AUTH LOGIN", stage: "authentication" },
+      { code: 334, command: "AUTH LOGIN", stage: "authentication" },
       { code: 334, command: Buffer.from(config.user).toString("base64"), stage: "authentication" },
       { code: 235, command: Buffer.from(config.password).toString("base64"), stage: "authentication" },
       { code: 250, command: `MAIL FROM:<${safeFrom}>`, stage: "mail_from" },
