@@ -4347,6 +4347,123 @@
         @media (prefers-reduced-motion: reduce) {
             .pricing .price-card { transition: none; }
         }
+
+        /* Public Graphic Design gallery: a composed 12-column editorial rhythm. */
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid {
+            display: grid !important;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            grid-auto-rows: minmax(210px, auto);
+            gap: clamp(16px, 2vw, 28px);
+            align-items: stretch;
+        }
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item {
+            grid-column: span 6;
+            width: auto;
+            padding: 0;
+            animation: graphic-gallery-enter .7s cubic-bezier(.2, .75, .25, 1) both;
+        }
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-featured {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-support-top,
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-support-bottom {
+            grid-column: span 5;
+        }
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-wide { grid-column: span 7; }
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-narrow { grid-column: span 5; }
+        #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-half { grid-column: span 6; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-item .card {
+            display: flex;
+            height: 100%;
+            flex-direction: column;
+            border: 0;
+            border-radius: 14px;
+            background: transparent;
+        }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link {
+            position: relative;
+            display: flex;
+            height: clamp(220px, 22vw, 300px);
+            min-height: 0;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 14px;
+            background: #e8eeea;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, .16);
+            isolation: isolate;
+        }
+        #managed-portfolios #graphic-design-portfolio .editorial-featured .portfolio-image-link {
+            height: 100%;
+            min-height: 430px;
+        }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link::before {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(180deg, transparent 48%, rgba(6, 43, 51, .28));
+            content: "";
+            opacity: 0;
+            transition: opacity .35s ease;
+        }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link img {
+            position: relative;
+            z-index: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 1;
+            transform: scale(1);
+            transition: transform .5s cubic-bezier(.2, .7, .2, 1);
+        }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover img,
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible img { transform: scale(1.035); }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover::before,
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible::before { opacity: 1; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible,
+        #managed-portfolios #graphic-design-portfolio .portfolio-link:focus-visible,
+        #managed-portfolios #graphic-design-portfolio .graphic-design-filters button:focus-visible {
+            outline: 3px solid var(--bright);
+            outline-offset: 4px;
+        }
+        #managed-portfolios #graphic-design-portfolio .card-body { padding: 1rem .1rem .15rem; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-category { margin-bottom: .35rem; color: var(--bright); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+        #managed-portfolios #graphic-design-portfolio .card-title { margin-bottom: .35rem; color: #fff; font-size: clamp(1.05rem, 1.6vw, 1.45rem); }
+        #managed-portfolios #graphic-design-portfolio .card-text { max-width: 44ch; color: rgba(255, 255, 255, .7); font-size: .9rem; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-link { color: #fff; font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-cta { position: absolute; z-index: 2; right: 1rem; bottom: 1rem; padding: .55rem .75rem; border: 1px solid rgba(255, 255, 255, .58); border-radius: 999px; background: rgba(6, 43, 51, .68); color: #fff; font-size: .72rem; letter-spacing: .05em; opacity: 0; transform: translateY(6px); transition: opacity .3s ease, transform .3s ease; }
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:hover .portfolio-image-cta,
+        #managed-portfolios #graphic-design-portfolio .portfolio-image-link:focus-visible .portfolio-image-cta { opacity: 1; transform: translateY(0); }
+        @media (max-width: 900px) {
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: auto; }
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-featured,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-support-top,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-support-bottom,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-wide,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-narrow { grid-column: span 1; grid-row: auto; }
+            #managed-portfolios #graphic-design-portfolio .editorial-featured .portfolio-image-link { height: clamp(300px, 42vw, 440px); min-height: 0; }
+        }
+        @media (max-width: 600px) {
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid { grid-template-columns: 1fr; gap: 2rem; }
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-featured,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-support-top,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-support-bottom,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-wide,
+            #managed-portfolios #graphic-design-portfolio .managed-project-grid > .portfolio-item.editorial-narrow { grid-column: span 1; }
+            #managed-portfolios #graphic-design-portfolio .portfolio-image-link,
+            #managed-portfolios #graphic-design-portfolio .editorial-featured .portfolio-image-link { height: min(112vw, 430px); min-height: 260px; }
+            #managed-portfolios #graphic-design-portfolio .portfolio-image-cta { opacity: 1; transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #managed-portfolios #graphic-design-portfolio .portfolio-item { animation: none; }
+            #managed-portfolios #graphic-design-portfolio .portfolio-image-link img,
+            #managed-portfolios #graphic-design-portfolio .portfolio-image-link::before,
+            #managed-portfolios #graphic-design-portfolio .portfolio-image-cta { transition: none; }
+        }
     </style>
 
 </body>

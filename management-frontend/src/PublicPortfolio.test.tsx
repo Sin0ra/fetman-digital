@@ -35,19 +35,20 @@ describe('public portfolio integration', () => {
     expect(websiteHtml).toContain('color: var(--ink)')
   })
 
-  it('uses uniform responsive card frames and removes masonry measurements', () => {
-    expect(websiteHtml).toContain('grid-template-columns: repeat(3, minmax(0, 1fr))')
-    expect(websiteHtml).not.toContain('grid-auto-rows')
+  it('uses an editorial responsive grid and avoids masonry measurements', () => {
+    expect(websiteHtml).toContain('grid-template-columns: repeat(12, minmax(0, 1fr))')
+    expect(websiteHtml).toContain('grid-column: span 7')
+    expect(websiteHtml).toContain('grid-column: span 5')
     expect(portfolioScript).not.toContain('gridRowEnd')
     expect(portfolioScript).not.toContain('ResizeObserver')
+    expect(portfolioScript).not.toContain('setInterval')
     expect(websiteHtml).toContain('object-fit: contain')
-    expect(websiteHtml).toContain('height: clamp(240px, 22vw, 280px)')
-    expect(websiteHtml).toContain('transition: opacity .45s ease, transform .45s')
+    expect(websiteHtml).toContain('prefers-reduced-motion: reduce')
     expect(websiteHtml).toContain('grid-template-columns: repeat(2, minmax(0, 1fr))')
     expect(websiteHtml).toContain('grid-template-columns: 1fr')
   })
 
-  it('uses only genuine additional images for Graphic Design card autoplay', async () => {
+  it('uses the single published imageUrl without autoplay or duplicated artwork', async () => {
     prepareWebsite()
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
       { title: 'Multi-image artwork', department: 'Graphic Design', category: 'Branding', description: 'A real set.', images: ['/one.webp', '/two.webp'], projectUrl: '' },
@@ -57,9 +58,9 @@ describe('public portfolio integration', () => {
     window.eval(portfolioScript)
     const designGrid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
     await vi.waitFor(() => expect(designGrid.querySelectorAll('.portfolio-item')).toHaveLength(2))
-    expect(designGrid.querySelectorAll('.portfolio-item')[0].querySelectorAll('img')).toHaveLength(2)
+    expect(designGrid.querySelectorAll('.portfolio-item')[0].querySelectorAll('img')).toHaveLength(0)
     expect(designGrid.querySelectorAll('.portfolio-item')[1].querySelectorAll('img')).toHaveLength(1)
-    expect(portfolioScript).toContain('2500')
+    expect(designGrid.querySelectorAll('.portfolio-item')[1].querySelector('.portfolio-image-link')?.getAttribute('data-artwork-images')).toBeNull()
   })
 
   it('does not include public artwork placeholders in the managed portfolio markup', () => {
@@ -207,6 +208,39 @@ describe('public portfolio integration', () => {
     await userEvent.click(designCollection.querySelector('[data-graphic-filter="campaigns"]') as HTMLElement)
     expect(designCollection.querySelector('.portfolio-item:not([hidden])')?.textContent).toContain('Second design project')
     expect(designCollection.querySelector('.portfolio-item:not([hidden])')?.textContent).not.toContain('First design project')
+    expect(designCollection.querySelector('.portfolio-item:not([hidden])')?.classList.contains('editorial-featured')).toBe(true)
+  })
+
+  it('composes three projects as one feature with two supporting cards', async () => {
+    prepareWebsite()
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects: [
+      { title: 'Featured project', department: 'Graphic Design', category: 'Branding', description: 'Feature.', imageUrl: '/feature.webp', projectUrl: '' },
+      { title: 'Upper support', department: 'Graphic Design', category: 'Logos', description: 'Support one.', imageUrl: '/upper.webp', projectUrl: '' },
+      { title: 'Lower support', department: 'Graphic Design', category: 'Campaign', description: 'Support two.', imageUrl: '/lower.webp', projectUrl: '' },
+    ] }) }))
+
+    window.eval(portfolioScript)
+    const grid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
+    await vi.waitFor(() => expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(3))
+
+    expect(grid.querySelector('.portfolio-item:nth-child(1)')?.classList.contains('editorial-featured')).toBe(true)
+    expect(grid.querySelector('.portfolio-item:nth-child(2)')?.classList.contains('editorial-support-top')).toBe(true)
+    expect(grid.querySelector('.portfolio-item:nth-child(3)')?.classList.contains('editorial-support-bottom')).toBe(true)
+  })
+
+  it.each([
+    [1, ['editorial-featured']],
+    [2, ['editorial-half', 'editorial-half']],
+    [6, ['editorial-wide', 'editorial-narrow', 'editorial-wide', 'editorial-narrow', 'editorial-wide', 'editorial-narrow']],
+  ])('recalculates the editorial rhythm for %s visible projects', async (count, expectedClasses) => {
+    prepareWebsite()
+    const projects = Array.from({ length: count }, (_, index) => ({ title: `Project ${index + 1}`, department: 'Graphic Design', category: 'Branding', description: 'Project.', imageUrl: `/project-${index + 1}.webp`, projectUrl: '' }))
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ projects }) }))
+
+    window.eval(portfolioScript)
+    const grid = document.querySelector('[data-portfolio-department="Graphic Design"]') as HTMLElement
+    await vi.waitFor(() => expect(grid.querySelectorAll('.portfolio-item')).toHaveLength(count))
+    expect([...grid.querySelectorAll('.portfolio-item')].map((card) => expectedClasses.find((name) => card.classList.contains(name)))).toEqual(expectedClasses)
   })
 
   it('renders untitled Graphic Design artwork without a blank heading', async () => {
