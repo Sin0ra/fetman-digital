@@ -1384,6 +1384,19 @@
         void loadEditableSiteContent();
 
         if (projectEnquiryForm) {
+            let successResetTimeout;
+            const restoreEnquiryForm = () => {
+                window.clearTimeout(successResetTimeout);
+                successResetTimeout = undefined;
+                projectEnquiryForm.classList.remove("is-success");
+                const successMessage = projectEnquiryForm.querySelector("[data-enquiry-success]");
+                if (successMessage) successMessage.hidden = true;
+            };
+            ["pointerdown", "focusin", "keydown"].forEach((eventName) => {
+                projectEnquiryForm.addEventListener(eventName, () => {
+                    if (projectEnquiryForm.classList.contains("is-success")) restoreEnquiryForm();
+                });
+            });
             projectEnquiryForm.addEventListener("submit", async function (event) {
                 event.preventDefault();
                 const formData = new FormData(projectEnquiryForm);
@@ -1396,6 +1409,10 @@
                 const submitButton = projectEnquiryForm.querySelector(".submit-btn");
                 const successMessage = projectEnquiryForm.querySelector("[data-enquiry-success]");
                 const errorMessage = projectEnquiryForm.querySelector("[data-enquiry-error]");
+                window.clearTimeout(successResetTimeout);
+                successResetTimeout = undefined;
+                projectEnquiryForm.classList.remove("is-success");
+                if (successMessage) successMessage.hidden = true;
                 if (errorMessage) { errorMessage.hidden = true; errorMessage.textContent = ""; }
                 if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Sending…"; }
                 try {
@@ -1408,6 +1425,9 @@
                     projectEnquiryForm.reset();
                     projectEnquiryForm.classList.add("is-success");
                     if (successMessage) successMessage.hidden = false;
+                    successResetTimeout = window.setTimeout(() => {
+                        restoreEnquiryForm();
+                    }, 6000);
                 } catch (error) {
                     if (errorMessage) {
                         errorMessage.textContent = error instanceof Error ? error.message : 'Unable to send your enquiry.';
