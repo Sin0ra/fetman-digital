@@ -7,12 +7,35 @@ const { readMaintenanceMode, safeErrorCode } = require("./maintenance-mode");
 const DEFAULT_SITE_DIRECTORY = path.resolve(__dirname, "../..");
 const PUBLIC_FILES = new Set([
   "index.html",
+  "graphic-design.html",
+  "it-services.html",
+  "pricing.html",
+  "contact.html",
+  "about.html",
   "maintenance.html",
   "public-portfolio.js",
+  "site-ui.js",
+  "public-site.css",
   "Fetman Digital website background-optimized-1920.jpg",
   "Fetman Digital website background-optimized-960.jpg",
   "Fetman Digital website background.jpg",
   "fetman digital 2023 black.png",
+  "assets/brand/ChatGPT Image Nov 17, 2026, 08_59_15 AM.jpg",
+  "assets/brand/ChatGPT Image Nov 17, 2026, 08_59_20 AM.jpg",
+  "Branding img/fetman-company-profile-1200.jpg",
+  "Branding img/deals-on-wheels-1200.jpg",
+  "Branding img/dj-olga-bookings-1200.jpg",
+  "Branding img/pub-on-frere-1200.jpg",
+  "Branding img/thursday-braaiday-1200.jpg",
+  "logo img/Sino and Sma Trading.jpg",
+  "logo img/Totana white logo.png",
+  "logo img/fetman digital 2023 black.png",
+  "Branding img/1.jpg",
+  "Branding img/DJ OLGA BOOKINGS.jpg",
+  "Branding img/Fetman Digital Company Profile 1.jpg",
+  "Branding img/Pub on Frere turns 2.jpg",
+  "Branding img/deals on wheels Poster-SHAQ.jpg",
+  "Branding img/thursday braaiday-Recovered~1.jpg",
 ]);
 
 function createPublicSiteApp({ pool, siteDirectory = DEFAULT_SITE_DIRECTORY }) {
@@ -64,7 +87,7 @@ function createPublicSiteApp({ pool, siteDirectory = DEFAULT_SITE_DIRECTORY }) {
   app.get("*splat", async (request, response, next) => {
     const requestedPath = decodeRequestPath(request.path).replace(/^\/+|\/+$/g, "");
     const fileName = requestedPath || "index.html";
-    if (fileName.includes("/") || !PUBLIC_FILES.has(fileName)) return next();
+    if (!PUBLIC_FILES.has(fileName)) return next();
     try {
       const contents = await fs.readFile(path.join(siteDirectory, fileName));
       if (/\.html?$/i.test(fileName)) {

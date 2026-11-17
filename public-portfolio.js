@@ -6,6 +6,7 @@
   const legacyCollection = legacyGrid?.closest('.portfolio-collection');
   const departmentGrids = new Map([...document.querySelectorAll('[data-portfolio-department]')].map((grid) => [grid.dataset.portfolioDepartment, grid]));
   const managedCollections = [...departmentGrids.values()].map((grid) => grid.closest('.portfolio-collection')).filter(Boolean);
+  const loadingMessage = document.querySelector('[data-portfolio-loading]');
   let graphicGallery;
   if (!portfolio || !legacyGrid || !legacyCollection) return;
 
@@ -78,10 +79,12 @@
     // department split in the markup so the owner can classify work without losing
     // older unclassified projects.
     try {
-      const response = await fetch('/api/public/portfolio', { headers: { Accept: 'application/json' }, cache: 'no-store' });
-      if (!response.ok) return;
+      const requestedDepartment = departmentGrids.has('Graphic Design') ? 'Graphic Design' : departmentGrids.has('IT') ? 'IT' : '';
+      const endpoint = requestedDepartment ? `/api/public/portfolio?department=${encodeURIComponent(requestedDepartment)}` : '/api/public/portfolio';
+      const response = await fetch(endpoint, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+      if (!response.ok) { loadingMessage?.remove(); graphicGallery?.setError(); graphicGallery?.setLoading(false); return; }
       const result = await response.json();
-      if (!Array.isArray(result.projects)) return;
+      if (!Array.isArray(result.projects)) { loadingMessage?.remove(); graphicGallery?.setError(); graphicGallery?.setLoading(false); return; }
       result.projects.forEach((project) => {
         if (!isValidProject(project)) return;
         const target = departmentGrids.get(project.department) || legacyGrid;
@@ -94,9 +97,13 @@
       });
       const graphicCollection = departmentGrids.get('Graphic Design')?.closest('.portfolio-collection');
       if (graphicCollection) graphicCollection.hidden = false;
+      loadingMessage?.remove();
+      graphicGallery?.setLoading(false);
       update();
     } catch {
-      // An unavailable public API must leave the portfolio empty.
+      loadingMessage?.remove();
+      graphicGallery?.setError();
+      graphicGallery?.setLoading(false);
     }
   }
 
@@ -116,19 +123,21 @@
     const filters = tools.querySelector('.graphic-design-filters');
     const empty = document.createElement('div');
     empty.className = 'graphic-design-empty-state';
-    empty.innerHTML = '<span class="graphic-design-empty-mark" aria-hidden="true">✦</span><h4>New work is on its way.</h4><p>This collection will feature Fetman Digital artwork across branding, logos, posters, social media, packaging and campaigns.</p><a class="btn btn-outline-primary" href="#it-division">Explore our services</a>';
+    empty.innerHTML = '<h4>No published Graphic Design projects yet.</h4><p>Published Graphic Design work will appear here when it is available.</p><a class="text-link" href="contact.html">Discuss a design brief ↗</a>';
+    empty.hidden = true;
     grid.after(empty);
     const artworkModal = document.querySelector('[data-graphic-artwork-modal]');
     const artworkPreview = artworkModal?.querySelector('[data-graphic-artwork-preview]');
     const artworkTitle = artworkModal?.querySelector('[data-graphic-artwork-title]');
     let activeFilter = 'all';
+    let loading = true;
     let artworkRestoreFocus;
     let observer;
     const categoryNames = ['Branding', 'Logos', 'Posters', 'Social Media', 'Packaging', 'Campaigns'];
     const normalized = (value) => String(value || '').trim().toLowerCase();
     const cardsInGrid = () => [...grid.querySelectorAll('.portfolio-item')];
     const matches = (card, query) => !query || card.textContent.toLowerCase().includes(query);
-    const showEmptyState = (visible) => { empty.hidden = visible; };
+    const showEmptyState = (visible) => { empty.hidden = !visible; };
     const applyEditorialLayout = (visible) => {
       const layoutClasses = ['editorial-featured', 'editorial-support-top', 'editorial-support-bottom', 'editorial-half', 'editorial-wide', 'editorial-narrow'];
       cardsInGrid().forEach((card) => {
@@ -146,7 +155,7 @@
       const visible = cards.filter((card) => (activeFilter === 'all' || normalized(card.dataset.portfolioCategory) === normalized(activeFilter)) && matches(card, query));
       cards.forEach((card) => { card.hidden = !visible.includes(card); card.classList.toggle('graphic-gallery-card-visible', visible.includes(card)); });
       applyEditorialLayout(visible);
-      showEmptyState(visible.length > 0);
+      showEmptyState(!loading && visible.length === 0);
       return visible;
     };
     const openArtwork = (card) => {
@@ -181,6 +190,8 @@
     renderFilters();
     return {
       refresh(query) { renderFilters(); return refresh(query); },
+      setLoading(value) { loading = value; refresh(); },
+      setError() { const heading = empty.querySelector('h4'); const message = empty.querySelector('p'); if (heading) heading.textContent = 'Graphic Design projects are temporarily unavailable.'; if (message) message.textContent = 'Please check back soon or contact Fetman Digital to discuss your brief.'; },
       destroy() {
         observer?.disconnect();
       },
